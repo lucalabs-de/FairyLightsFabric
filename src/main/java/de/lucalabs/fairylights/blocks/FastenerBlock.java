@@ -1,7 +1,16 @@
 package de.lucalabs.fairylights.blocks;
 
+import de.lucalabs.fairylights.blocks.entity.FastenerBlockEntity;
+import de.lucalabs.fairylights.components.FairyLightComponents;
+import de.lucalabs.fairylights.connection.HangingLightsConnection;
+import de.lucalabs.fairylights.fastener.accessor.BlockFastenerAccessor;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -9,8 +18,13 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
@@ -81,8 +95,12 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level level, final BlockState state, final BlockEntityType<T> type) {
-        if (level.isClientSide()) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
+            final World world,
+            final BlockState state,
+            final BlockEntityType<T> type) {
+
+        if (world.isClient()) {
             return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tickClient);
         }
         return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tick);
@@ -96,34 +114,42 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onRemove(final BlockState state, final Level world, final BlockPos pos, final BlockState newState, final boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
+    public void onStateReplaced(
+            final BlockState state,
+            final World world,
+            final BlockPos pos,
+            final BlockState newState,
+            final boolean isMoving) {
+        if (!state.isOf(newState.getBlock())) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof FastenerBlockEntity) {
-                entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(f -> f.dropItems(world, pos));
+                FairyLightComponents.FASTENER.get(entity).get().ifPresent(f -> f.dropItems(world, pos));
             }
-            super.onRemove(state, world, pos, newState, isMoving);
+            super.onStateReplaced(state, world, pos, newState, isMoving);
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public boolean canSurvive(final BlockState state, final LevelReader world, final BlockPos pos) {
-        final Direction facing = state.getValue(FACING);
-        final BlockPos attachedPos = pos.relative(facing.getOpposite());
+    public boolean canPlaceAt(final BlockState state, final WorldView world, final BlockPos pos) {
+        final Direction facing = state.get(FACING);
+        final BlockPos attachedPos = pos.offset(facing.getOpposite());
         final BlockState attachedState = world.getBlockState(attachedPos);
-        return attachedState.is(BlockTags.LEAVES) || attachedState.isFaceSturdy(world, attachedPos, facing) || facing == Direction.UP && attachedState.is(BlockTags.WALLS);
+        return attachedState.isIn(BlockTags.LEAVES)
+                || attachedState.isSideSolidFullSquare(world, attachedPos, facing)
+                || facing == Direction.UP && attachedState.isIn(BlockTags.WALLS);
     }
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(final BlockPlaceContext context) {
-        BlockState result = this.defaultBlockState();
-        final Level world = context.getLevel();
-        final BlockPos pos = context.getClickedPos();
-        for (final Direction dir : context.getNearestLookingDirections()) {
-            result = result.setValue(FACING, dir.getOpposite());
-            if (result.canSurvive(world, pos)) {
-                return result.setValue(TRIGGERED, world.hasNeighborSignal(pos.relative(dir)));
+    public BlockState getPlacementState(final ItemPlacementContext context) {
+        BlockState result = this.getDefaultState();
+        final World world = context.getWorld();
+        final BlockPos pos = context.getBlockPos();
+        for (final Direction dir : context.getPlacementDirections()) {
+            result = result.with(FACING, dir.getOpposite());
+            if (result.canPlaceAt(world, pos)) {
+                return result.with(TRIGGERED, world.isReceivingRedstonePower(pos.offset(dir)));
             }
         }
         return null;
@@ -131,34 +157,43 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
 
     @SuppressWarnings("deprecation")
     @Override
-    public void neighborChanged(final BlockState state, final Level world, final BlockPos pos, final Block blockIn, final BlockPos fromPos, final boolean isMoving) {
-        if (state.canSurvive(world, pos)) {
-            final boolean receivingPower = world.hasNeighborSignal(pos);
-            final boolean isPowered = state.getValue(TRIGGERED);
+    public void neighborUpdate(
+            final BlockState state,
+            final World world,
+            final BlockPos pos,
+            final Block blockIn,
+            final BlockPos fromPos,
+            final boolean isMoving) {
+
+        if (state.canPlaceAt(world, pos)) {
+            final boolean receivingPower = world.isReceivingRedstonePower(pos);
+            final boolean isPowered = state.get(TRIGGERED);
             if (receivingPower && !isPowered) {
-                world.scheduleTick(pos, this, 2);
-                world.setBlock(pos, state.setValue(TRIGGERED, true), 4);
+                world.scheduleBlockTick(pos, this, 2);
+                world.setBlockState(pos, state.with(TRIGGERED, true), 4);
             } else if (!receivingPower && isPowered) {
-                world.setBlock(pos, state.setValue(TRIGGERED, false), 4);
+                world.setBlockState(pos, state.with(TRIGGERED, false), 4);
             }
         } else {
             final BlockEntity entity = world.getBlockEntity(pos);
-            dropResources(state, world, pos, entity);
+            dropStacks(state, world, pos, entity);
             world.removeBlock(pos, false);
         }
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public boolean hasAnalogOutputSignal(final BlockState state) {
+    public boolean hasComparatorOutput(final BlockState state) {
         return true;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public int getAnalogOutputSignal(final BlockState state, final Level world, final BlockPos pos) {
+    public int getComparatorOutput(final BlockState state, final World world, final BlockPos pos) {
         final BlockEntity entity = world.getBlockEntity(pos);
-        if (entity == null) return super.getAnalogOutputSignal(state, world, pos);
-        return entity.getCapability(CapabilityHandler.FASTENER_CAP).map(f -> f.getAllConnections().stream()).orElse(Stream.empty())
+        if (entity == null) return super.getComparatorOutput(state, world, pos);
+
+        return FairyLightComponents.FASTENER.get(entity).get().map(f -> f.getAllConnections().stream()).orElse(Stream.empty())
                 .filter(HangingLightsConnection.class::isInstance)
                 .map(HangingLightsConnection.class::cast)
                 .mapToInt(c -> (int) Math.ceil(c.getJingleProgress() * 15))
@@ -167,28 +202,28 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
 
     @SuppressWarnings("deprecation")
     @Override
-    public void tick(final BlockState state, final ServerLevel world, final BlockPos pos, final RandomSource random) {
+    public void scheduledTick(final BlockState state, final ServerWorld world, final BlockPos pos, final Random random) {
         this.jingle(world, pos);
     }
 
-    private void jingle(final Level world, final BlockPos pos) {
+    private void jingle(final World world, final BlockPos pos) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (!(entity instanceof FastenerBlockEntity)) {
             return;
         }
-        entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(fastener -> fastener.getAllConnections().stream()
+
+        FairyLightComponents.FASTENER.get(entity).get().flatMap(fastener -> fastener.getAllConnections().stream()
                 .filter(HangingLightsConnection.class::isInstance)
                 .map(HangingLightsConnection.class::cast)
                 .filter(conn -> conn.canCurrentlyPlayAJingle() && conn.isDestination(new BlockFastenerAccessor(fastener.getPos())) && world.getBlockState(fastener.getPos()).getValue(TRIGGERED))
-                .findFirst().ifPresent(conn -> ServerEventHandler.tryJingle(world, conn))
-        );
+                .findFirst()).ifPresent(conn -> ServerEventHandler.tryJingle(world, conn));
     }
 
-    public Vec3 getOffset(final Direction facing, final float offset) {
+    public Vec3d getOffset(final Direction facing, final float offset) {
         return getFastenerOffset(facing, offset);
     }
 
-    public static Vec3 getFastenerOffset(final Direction facing, final float offset) {
+    public static Vec3d getFastenerOffset(final Direction facing, final float offset) {
         double x = offset, y = offset, z = offset;
         switch (facing) {
             case DOWN:
@@ -209,6 +244,6 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
                 x += 0.375F;
                 y += 0.375F;
         }
-        return new Vec3(x, y, z);
+        return new Vec3d(x, y, z);
     }
 }

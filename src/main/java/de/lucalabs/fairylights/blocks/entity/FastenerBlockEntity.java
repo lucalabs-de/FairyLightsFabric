@@ -3,7 +3,6 @@ package de.lucalabs.fairylights.blocks.entity;
 import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
-import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;

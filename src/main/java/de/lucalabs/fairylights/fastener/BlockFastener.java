@@ -6,7 +6,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
 
 public final class BlockFastener extends AbstractFastener<BlockFastenerAccessor> {
     private final FastenerBlockEntity fastener;
@@ -27,7 +26,7 @@ public final class BlockFastener extends AbstractFastener<BlockFastenerAccessor>
 
     @Override
     public boolean isMoving() {
-        return this.view.isMoving(this.getWorld(), this.fastener.getBlockPos());
+        return this.view.isMoving(this.getWorld(), this.fastener.getPos());
     }
 
     @Override
@@ -37,7 +36,10 @@ public final class BlockFastener extends AbstractFastener<BlockFastenerAccessor>
 
     @Override
     public Vec3d getConnectionPoint() {
-        return this.view.getPosition(this.getWorld(), this.fastener.getBlockPos(), Vec3.atLowerCornerOf(this.getPos()).add(this.fastener.getOffset()));
+        return this.view.getPosition(
+                this.getWorld(),
+                this.fastener.getPos(),
+                Vec3d.of(this.getPos()).add(this.fastener.getOffset()));
     }
 
     @Override

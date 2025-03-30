@@ -30,7 +30,7 @@ public abstract class ConnectionMessage extends PacketByteBuf {
             final UUID id,
             final Predicate<? super Connection> typePredicate,
             final World world) {
-        return accessor.get(world, false).map(Optional::of).orElse(Optional.empty()).flatMap(f -> (Optional<C>) f.get(id).filter(typePredicate));
+        return accessor.get(world, false).flatMap(f -> (Optional<C>) f.get(id).filter(typePredicate));
     }
 
     protected static ParsedData parse(PacketByteBuf buf) {

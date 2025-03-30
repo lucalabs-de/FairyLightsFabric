@@ -1,12 +1,14 @@
 package de.lucalabs.fairylights.connection;
 
 import de.lucalabs.fairylights.collision.Collidable;
+import de.lucalabs.fairylights.collision.CollidableList;
 import de.lucalabs.fairylights.collision.Intersection;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.feature.FeatureType;
-import de.lucalabs.fairylights.net.InteractionConnectionMessage;
+import de.lucalabs.fairylights.items.ConnectionItem;
+import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.util.CubicBezier;
 import de.lucalabs.fairylights.util.Curve;
@@ -17,11 +19,14 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -38,28 +43,18 @@ public abstract class Connection implements NbtSerializable {
     private static final CubicBezier SLACK_CURVE = new CubicBezier(0.495F, 0.505F, 0.495F, 0.505F);
 
     private static final float MAX_SLACK = 3;
-
-    private final ConnectionType<?> type;
-
     protected final Fastener<?> fastener;
-
+    private final ConnectionType<?> type;
     private final UUID uuid;
-
-    private FastenerAccessor destination;
-
-    @Nullable
-    private FastenerAccessor prevDestination;
-
     protected World world;
-
-    @Nullable
-    private Curve catenary;
-
     @Nullable
     protected Curve prevCatenary;
-
     protected float slack = 1;
-
+    private FastenerAccessor destination;
+    @Nullable
+    private FastenerAccessor prevDestination;
+    @Nullable
+    private Curve catenary;
     private Collidable collision = Collidable.empty();
 
     private boolean updateCatenary;
@@ -92,12 +87,12 @@ public abstract class Connection implements NbtSerializable {
         return this.prevCatenary == null ? this.catenary : this.prevCatenary;
     }
 
-    public void setWorld(final World world) {
-        this.world = world;
-    }
-
     public final World getWorld() {
         return this.world;
+    }
+
+    public void setWorld(final World world) {
+        this.world = world;
     }
 
     public final Collidable getCollision() {
@@ -112,14 +107,14 @@ public abstract class Connection implements NbtSerializable {
         return this.uuid;
     }
 
+    public final FastenerAccessor getDestination() {
+        return this.destination;
+    }
+
     public final void setDestination(final Fastener<?> destination) {
         this.prevDestination = this.destination;
         this.destination = destination.createAccessor();
         this.computeCatenary();
-    }
-
-    public final FastenerAccessor getDestination() {
-        return this.destination;
     }
 
     public boolean isDestination(final FastenerAccessor location) {
@@ -205,13 +200,20 @@ public abstract class Connection implements NbtSerializable {
         return this.fastener.reconnect(this.world, this, destination);
     }
 
-    public boolean interact(final PlayerEntity player, final Vec3d hit, final FeatureType featureType, final int feature, final ItemStack heldStack, final Hand hand) {
+    public boolean interact(
+            final PlayerEntity player,
+            final Vec3d hit,
+            final FeatureType featureType,
+            final int feature,
+            final ItemStack heldStack,
+            final Hand hand) {
+
         final Item item = heldStack.getItem();
         if (item instanceof ConnectionItem && !this.matches(heldStack)) {
             return this.replace(player, hit, heldStack);
-        } else if (heldStack.is(Tags.Items.STRING)) {
+        } else if (heldStack.isOf(Items.STRING)) {
             return this.slacken(hit, heldStack, 0.2F);
-        } else if (heldStack.is(Items.STICK)) {
+        } else if (heldStack.isOf(Items.STICK)) {
             return this.slacken(hit, heldStack, -0.2F);
         }
         return false;
@@ -256,13 +258,17 @@ public abstract class Connection implements NbtSerializable {
         return true;
     }
 
-    public void onConnect(final World world, final PlayerEntity user, final ItemStack heldStack) {}
+    public void onConnect(final World world, final PlayerEntity user, final ItemStack heldStack) {
+    }
 
-    protected void onRemove() {}
+    protected void onRemove() {
+    }
 
-    protected void onUpdate() {}
+    protected void onUpdate() {
+    }
 
-    protected void onCalculateCatenary(final boolean relocated) {}
+    protected void onCalculateCatenary(final boolean relocated) {
+    }
 
     public final boolean update(final Vec3d from) {
         this.prevCatenary = this.catenary;
@@ -321,22 +327,22 @@ public abstract class Connection implements NbtSerializable {
         final float stepSize = 0.25F;
         final float loopsPerBlock = 1.0F;
         final float radius = 0.33F;
-        final int steps = (int) (Mth.TWO_PI * radius * loopsPerBlock * length / stepSize);
-        final float rad = -Mth.TWO_PI * (loopsPerBlock * length);
+        final int steps = (int) (MathHelper.TAU * radius * loopsPerBlock * length / stepSize);
+        final float rad = -MathHelper.TAU * (loopsPerBlock * length);
         final float[] x = new float[steps];
         final float[] y = new float[steps];
         final float[] z = new float[steps];
         float helixLength = 0.0F;
         for (int i = 0; i < steps; i++) {
             float t = (float) i / (steps - 1);
-            x[i] = radius * Mth.cos(t * rad);
+            x[i] = radius * MathHelper.cos(t * rad);
             y[i] = t * height;
-            z[i] = radius * Mth.sin(t * rad);
+            z[i] = radius * MathHelper.sin(t * rad);
             if (i > 0) {
-                helixLength += Mth.sqrt(
-                        Mth.square(x[i] - x[i - 1]) +
-                                Mth.square(y[i] - y[i - 1]) +
-                                Mth.square(z[i] - z[i - 1]));
+                helixLength += MathHelper.sqrt(
+                        MathHelper.square(x[i] - x[i - 1]) +
+                                MathHelper.square(y[i] - y[i - 1]) +
+                                MathHelper.square(z[i] - z[i - 1]));
             }
         }
         return new Curve3d(steps, x, y, z, helixLength);
@@ -352,7 +358,7 @@ public abstract class Connection implements NbtSerializable {
         }
         final float r = this.getRadius();
         final Catenary.SegmentIterator it = this.catenary.iterator();
-        final AABB[] bounds = new AABB[count - 1];
+        final Box[] bounds = new Box[count - 1];
         int index = 0;
         while (it.next()) {
             final float x0 = it.getX(0.0F);
@@ -398,7 +404,8 @@ public abstract class Connection implements NbtSerializable {
         return new NbtCompound();
     }
 
-    public void deserializeLogic(final NbtCompound compound) {}
+    public void deserializeLogic(final NbtCompound compound) {
+    }
 
     static class Segment implements Feature {
         static final Segment INSTANCE = new Segment();

@@ -1,10 +1,11 @@
-package de.lucalabs.fairylights.net;
+package de.lucalabs.fairylights.net.serverbound;
 
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.collision.Intersection;
 import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.PlayerAction;
 import de.lucalabs.fairylights.feature.FeatureType;
+import de.lucalabs.fairylights.net.ConnectionMessage;
 import de.lucalabs.fairylights.util.Utils;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,14 +31,14 @@ public class InteractionConnectionMessage extends ConnectionMessage {
             final Intersection intersection) {
         super(connection);
 
-        Vec3d hit = intersection.getResult();
+        Vec3d hit = intersection.result();
 
         writeByte(type.ordinal());
         writeDouble(hit.x);
         writeDouble(hit.y);
         writeDouble(hit.z);
-        writeVarInt(intersection.getFeatureType().getId());
-        writeVarInt(intersection.getFeature().getId());
+        writeVarInt(intersection.featureType().getId());
+        writeVarInt(intersection.feature().getId());
     }
 
     public static void apply(
@@ -68,7 +69,7 @@ public class InteractionConnectionMessage extends ConnectionMessage {
                     if (action == PlayerAction.ATTACK) {
                         connection.disconnect(player, hit);
                     } else {
-                        interact(player, connection, action, hit);
+                        interact(player, connection, featureType, featureId, hit);
                     }
                 }
             });
