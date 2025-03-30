@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.blocks;
 
+import de.lucalabs.fairylights.blocks.entity.FairyLightBlockEntities;
 import de.lucalabs.fairylights.blocks.entity.FastenerBlockEntity;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import net.minecraft.block.*;
@@ -90,21 +91,14 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
     @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getOutlineShape(final BlockState state, final BlockView worldIn, final BlockPos pos, final ShapeContext context) {
-        switch (state.get(FACING)) {
-            case NORTH:
-                return NORTH_BOX;
-            case SOUTH:
-                return SOUTH_BOX;
-            case WEST:
-                return WEST_BOX;
-            case EAST:
-                return EAST_BOX;
-            case DOWN:
-                return DOWN_BOX;
-            case UP:
-            default:
-                return UP_BOX;
-        }
+        return switch (state.get(FACING)) {
+            case NORTH -> NORTH_BOX;
+            case SOUTH -> SOUTH_BOX;
+            case WEST -> WEST_BOX;
+            case EAST -> EAST_BOX;
+            case DOWN -> DOWN_BOX;
+            default -> UP_BOX;
+        };
     }
 
     @Override
@@ -120,9 +114,9 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
             final BlockEntityType<T> type) {
 
         if (world.isClient()) {
-            return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tickClient);
+            return createTickerHelper(type, FairyLightBlockEntities.FASTENER, FastenerBlockEntity::tickClient);
         }
-        return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tick);
+        return createTickerHelper(type, FairyLightBlockEntities.FASTENER, FastenerBlockEntity::tick);
     }
 
     @SuppressWarnings("deprecation")

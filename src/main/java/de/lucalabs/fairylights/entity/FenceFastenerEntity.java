@@ -237,6 +237,12 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
         return new EntitySpawnS2CPacket(this);
     }
 
+    // TODO check if this breaks something. It is supposed to replace the setShouldReceiveVelocityUpdates(false) in EntityType registration
+    @Override
+    public boolean hasNoGravity() {
+        return true;
+    }
+
     // TODO this should not be needed, as the components api does serialization and sychronisation, verify that this is true
 //    @Override
 //    public void writeCustomDataToNbt(NbtCompound nbt) {

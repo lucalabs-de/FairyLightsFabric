@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public final class FastenerBlockEntity extends BlockEntity {
     public FastenerBlockEntity(final BlockPos pos, final BlockState state) {
-        super(FLBlockEntities.FASTENER.get(), pos, state);
+        super(FairyLightBlockEntities.FASTENER, pos, state);
     }
 
     // TODO check if this is ever needed
