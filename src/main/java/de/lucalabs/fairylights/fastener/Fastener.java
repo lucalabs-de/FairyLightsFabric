@@ -15,11 +15,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface Fastener<F extends FastenerAccessor> extends Component {
-    @Override
+public interface Fastener<F extends FastenerAccessor> {
     void writeToNbt(NbtCompound tag);
 
-    @Override
     void readFromNbt(NbtCompound tag);
 
     Optional<Connection> get(final UUID id);

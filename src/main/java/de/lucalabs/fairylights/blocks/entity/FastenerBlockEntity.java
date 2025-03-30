@@ -1,8 +1,9 @@
 package de.lucalabs.fairylights.blocks.entity;
 
 import de.lucalabs.fairylights.blocks.FastenerBlock;
+import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
-import de.lucalabs.fairylights.util.compat.LazyOptional;
+import dev.onyxstudios.cca.api.v3.component.ComponentProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -11,6 +12,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.Optional;
 
 public final class FastenerBlockEntity extends BlockEntity {
     public FastenerBlockEntity(final BlockPos pos, final BlockState state) {
@@ -72,7 +75,7 @@ public final class FastenerBlockEntity extends BlockEntity {
         super.markRemoved();
     }
 
-    private LazyOptional<Fastener<?>> getFastener() {
-        return this.getCapability(CapabilityHandler.FASTENER_CAP);
+    private Optional<Fastener<?>> getFastener() {
+        return FairyLightComponents.FASTENER.get(this).get();
     }
 }
