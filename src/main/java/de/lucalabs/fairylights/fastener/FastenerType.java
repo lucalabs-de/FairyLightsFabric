@@ -2,6 +2,8 @@ package de.lucalabs.fairylights.fastener;
 
 import de.lucalabs.fairylights.fastener.accessor.BlockFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
+import de.lucalabs.fairylights.fastener.accessor.FenceFastenerAccessor;
+import de.lucalabs.fairylights.fastener.accessor.PlayerFastenerAccessor;
 import net.minecraft.nbt.NbtCompound;
 
 import java.util.HashMap;

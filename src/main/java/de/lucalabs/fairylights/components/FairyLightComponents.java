@@ -2,6 +2,11 @@ package de.lucalabs.fairylights.components;
 
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.blocks.entity.FastenerBlockEntity;
+import de.lucalabs.fairylights.entity.FenceFastenerEntity;
+import de.lucalabs.fairylights.fastener.BlockFastener;
+import de.lucalabs.fairylights.fastener.FenceFastener;
+import de.lucalabs.fairylights.fastener.PlayerFastener;
+import de.lucalabs.fairylights.fastener.RegularBlockView;
 import dev.onyxstudios.cca.api.v3.block.BlockComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.block.BlockComponentInitializer;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -23,11 +28,15 @@ public class FairyLightComponents implements EntityComponentInitializer, BlockCo
 
     @Override
     public void registerBlockComponentFactories(BlockComponentFactoryRegistry registry) {
-        registry.registerFor(FastenerBlockEntity.class, FASTENER, be -> FastenerComponent.DEFAULT);
+        registry.registerFor(
+                FastenerBlockEntity.class,
+                FASTENER,
+                be -> FastenerComponent.DEFAULT.setFastener(new BlockFastener(be, new RegularBlockView())));
     }
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerFor(PlayerEntity.class, FASTENER, e -> FastenerComponent.DEFAULT);
+        registry.registerFor(PlayerEntity.class, FASTENER, e -> FastenerComponent.DEFAULT.setFastener(new PlayerFastener(e)));
+        registry.registerFor(FenceFastenerEntity.class, FASTENER, e -> FastenerComponent.DEFAULT.setFastener(new FenceFastener(e)));
     }
 }

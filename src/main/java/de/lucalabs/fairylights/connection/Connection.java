@@ -2,18 +2,18 @@ package de.lucalabs.fairylights.connection;
 
 import de.lucalabs.fairylights.collision.Collidable;
 import de.lucalabs.fairylights.collision.CollidableList;
+import de.lucalabs.fairylights.collision.FeatureCollisionTree;
 import de.lucalabs.fairylights.collision.Intersection;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
+import de.lucalabs.fairylights.fastener.FenceFastener;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
+import de.lucalabs.fairylights.feature.Feature;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.items.ConnectionItem;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
-import de.lucalabs.fairylights.util.CubicBezier;
-import de.lucalabs.fairylights.util.Curve;
-import de.lucalabs.fairylights.util.NbtSerializable;
-import de.lucalabs.fairylights.util.Utils;
+import de.lucalabs.fairylights.util.*;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,9 +35,7 @@ import java.util.UUID;
 
 public abstract class Connection implements NbtSerializable {
     public static final int MAX_LENGTH = 32;
-
     public static final double PULL_RANGE = 5;
-
     public static final FeatureType CORD_FEATURE = FeatureType.register("cord");
 
     private static final CubicBezier SLACK_CURVE = new CubicBezier(0.495F, 0.505F, 0.495F, 0.505F);
@@ -232,15 +230,15 @@ public abstract class Connection implements NbtSerializable {
             this.fastener.removeConnection(this);
             dest.removeConnection(this.uuid);
             if (this.shouldDrop()) {
-                ItemHandlerHelper.giveItemToPlayer(player, this.getItemStack());
+                ItemHelper.giveItemToPlayer(player, this.getItemStack());
             }
-            final CompoundTag data = heldStack.getTag();
+            final NbtCompound data = heldStack.getNbt();
             final ConnectionType<? extends Connection> type = ((ConnectionItem) heldStack.getItem()).getConnectionType();
-            final Connection conn = this.fastener.connect(this.world, dest, type, data == null ? new CompoundTag() : data, true);
+            final Connection conn = this.fastener.connect(this.world, dest, type, data == null ? new NbtCompound() : data, true);
             conn.slack = this.slack;
-            conn.onConnect(player.level(), player, heldStack);
-            heldStack.shrink(1);
-            this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.CORD_CONNECT.get(), SoundSource.BLOCKS, 1, 1);
+            conn.onConnect(player.getWorld(), player, heldStack);
+            heldStack.decrement(1);
+            this.world.playSound(null, hit.x, hit.y, hit.z, FairyLightSounds.CORD_CONNECT, SoundCategory.BLOCKS, 1, 1);
             return true;
         }).orElse(false);
     }
@@ -249,12 +247,12 @@ public abstract class Connection implements NbtSerializable {
         if (this.slack <= 0 && amount < 0 || this.slack >= MAX_SLACK && amount > 0) {
             return true;
         }
-        this.slack = Mth.clamp(this.slack + amount, 0, MAX_SLACK);
+        this.slack = MathHelper.clamp(this.slack + amount, 0, MAX_SLACK);
         if (this.slack < 1e-2F) {
             this.slack = 0;
         }
         this.computeCatenary();
-        this.world.playSound(null, hit.x, hit.y, hit.z, FLSounds.CORD_STRETCH.get(), SoundSource.BLOCKS, 1, 0.8F + (MAX_SLACK - this.slack) * 0.4F);
+        this.world.playSound(null, hit.x, hit.y, hit.z, FairyLightSounds.CORD_STRETCH, SoundCategory.BLOCKS, 1, 0.8F + (MAX_SLACK - this.slack) * 0.4F);
         return true;
     }
 
@@ -281,12 +279,12 @@ public abstract class Connection implements NbtSerializable {
             if (pull > 0) {
                 final int stage = (int) (pull + 0.1F);
                 if (stage > this.prevStretchStage) {
-                    this.world.playSound(null, point.x, point.y, point.z, FLSounds.CORD_STRETCH.get(), SoundSource.BLOCKS, 0.25F, 0.5F + stage / 8F);
+                    this.world.playSound(null, point.x, point.y, point.z, FairyLightSounds.CORD_STRETCH, SoundCategory.BLOCKS, 0.25F, 0.5F + stage / 8F);
                 }
                 this.prevStretchStage = stage;
             }
             if (dist > MAX_LENGTH + PULL_RANGE) {
-                this.world.playSound(null, point.x, point.y, point.z, FLSounds.CORD_SNAP.get(), SoundSource.BLOCKS, 0.75F, 0.8F + this.world.random.nextFloat() * 0.3F);
+                this.world.playSound(null, point.x, point.y, point.z, FairyLightSounds.CORD_SNAP, SoundCategory.BLOCKS, 0.75F, 0.8F + this.world.random.nextFloat() * 0.3F);
                 this.remove();
             } else if (dest.isMoving()) {
                 dest.resistSnap(from);
@@ -304,10 +302,16 @@ public abstract class Connection implements NbtSerializable {
             final Vec3d vec = point.subtract(from);
             if (vec.length() > 1e-6) {
                 final Direction facing = this.fastener.getFacing();
-                if (this.fastener instanceof FenceFastener && dest instanceof FenceFastener && vec.horizontalDistance() < 1e-2) {
+                if (this.fastener instanceof FenceFastener && dest instanceof FenceFastener && vec.horizontalLength() < 1e-2) {
                     this.catenary = this.verticalHelix(vec);
                 } else {
-                    this.catenary = Catenary.from(vec, facing.getAxis() == Direction.Axis.Y ? 0.0F : (float) Math.toRadians(90.0F + facing.toYRot()), SLACK_CURVE, this.slack);
+                    this.catenary = Catenary.from(
+                            vec,
+                            facing.getAxis() == Direction.Axis.Y
+                                    ? 0.0F
+                                    : (float) Math.toRadians(90.0F + facing.asRotation()),
+                            SLACK_CURVE,
+                            this.slack);
                 }
                 this.onCalculateCatenary(!this.destination.equals(this.prevDestination));
                 final CollidableList.Builder bob = new CollidableList.Builder();
@@ -345,7 +349,7 @@ public abstract class Connection implements NbtSerializable {
                                 MathHelper.square(z[i] - z[i - 1]));
             }
         }
-        return new Curve3d(steps, x, y, z, helixLength);
+        return new Curve3D(steps, x, y, z, helixLength);
     }
 
     public void addCollision(final CollidableList.Builder collision, final Vec3d origin) {
@@ -367,10 +371,10 @@ public abstract class Connection implements NbtSerializable {
             final float x1 = it.getX(1.0F);
             final float y1 = it.getY(1.0F);
             final float z1 = it.getZ(1.0F);
-            bounds[index++] = new AABB(
+            bounds[index++] = new Box(
                     origin.x + x0, origin.y + y0, origin.z + z0,
                     origin.x + x1, origin.y + y1, origin.z + z1
-            ).inflate(r);
+            ).expand(r);
         }
         collision.add(FeatureCollisionTree.build(CORD_FEATURE, i -> Segment.INSTANCE, i -> bounds[i], 1, bounds.length - 2));
     }

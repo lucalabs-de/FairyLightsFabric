@@ -4,17 +4,20 @@ import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.ConnectionType;
+import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -32,6 +35,10 @@ public abstract class ConnectionItem extends Item {
     public ConnectionItem(final Settings properties, final ConnectionType<?> type) {
         super(properties);
         this.type = type;
+    }
+
+    public static boolean isFence(final BlockState state) {
+        return state.isSolid() && state.isIn(BlockTags.FENCES);
     }
 
     public final ConnectionType<?> getConnectionType() {
@@ -67,9 +74,9 @@ public abstract class ConnectionItem extends Item {
             }
             return ActionResult.SUCCESS;
         } else if (isFence(currentBlockState)) {
-            final HangingEntity entity = FenceFastenerEntity.findHanging(world, clickPos);
+            final AbstractDecorationEntity entity = FenceFastenerEntity.findHanging(world, clickPos);
             if (entity == null || entity instanceof FenceFastenerEntity) {
-                if (!world.isClientSide()) {
+                if (!world.isClient()) {
                     this.connectFence(stack, user, world, clickPos, (FenceFastenerEntity) entity);
                 }
                 return ActionResult.SUCCESS;
@@ -79,17 +86,17 @@ public abstract class ConnectionItem extends Item {
     }
 
     private boolean isConnectionInOtherHand(final World world, final PlayerEntity user, final ItemStack stack) {
-        final Fastener<?> attacher = user.getCapability(CapabilityHandler.FASTENER_CAP).orElseThrow(IllegalStateException::new);
+        final Fastener<?> attacher = FairyLightComponents.FASTENER.get(user).get().orElseThrow(IllegalStateException::new);
         return attacher.getFirstConnection().filter(connection -> {
             final NbtCompound nbt = connection.serializeLogic();
-            return nbt.isEmpty() ? stack.hasTag() : !NbtUtils.compareNbt(nbt, stack.getTag(), true);
+            return nbt.isEmpty() ? stack.hasNbt() : !NbtHelper.matches(nbt, stack.getNbt(), true);
         }).isPresent();
     }
 
     private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity != null) {
-            entity.getCapability(CapabilityHandler.FASTENER_CAP).ifPresent(fastener -> this.connect(stack, user, world, fastener));
+            FairyLightComponents.FASTENER.get(entity).get().ifPresent(fastener -> this.connect(stack, user, world, fastener));
         }
     }
 
@@ -152,10 +159,12 @@ public abstract class ConnectionItem extends Item {
         } else {
             playConnectSound = true;
         }
-        this.connect(stack, user, world, fastener.getCapability(CapabilityHandler.FASTENER_CAP).orElseThrow(IllegalStateException::new), playConnectSound);
-    }
 
-    public static boolean isFence(final BlockState state) {
-        return state.isSolid() && state.isIn(BlockTags.FENCES);
+        this.connect(
+                stack,
+                user,
+                world,
+                FairyLightComponents.FASTENER.get(fastener).get().orElseThrow(IllegalStateException::new),
+                playConnectSound);
     }
 }

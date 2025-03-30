@@ -8,7 +8,7 @@ import java.util.Optional;
 public abstract class GenericComponent<T> implements Component {
 
     @Nullable
-    T delegate;
+    protected T delegate;
 
     GenericComponent() {
         this.delegate = null;

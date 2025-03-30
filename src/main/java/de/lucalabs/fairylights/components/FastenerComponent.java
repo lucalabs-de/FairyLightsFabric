@@ -20,4 +20,9 @@ public final class FastenerComponent extends GenericComponent<Fastener<?>> {
             delegate.writeToNbt(nbtCompound);
         }
     }
+
+    public FastenerComponent setFastener(Fastener<?> fastener) {
+       this.delegate = fastener;
+       return this;
+    }
 }

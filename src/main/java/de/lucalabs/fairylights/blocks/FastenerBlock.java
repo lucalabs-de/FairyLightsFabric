@@ -2,15 +2,12 @@ package de.lucalabs.fairylights.blocks;
 
 import de.lucalabs.fairylights.blocks.entity.FastenerBlockEntity;
 import de.lucalabs.fairylights.components.FairyLightComponents;
-import de.lucalabs.fairylights.connection.HangingLightsConnection;
-import de.lucalabs.fairylights.fastener.accessor.BlockFastenerAccessor;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -19,28 +16,20 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 public final class FastenerBlock extends FacingBlock implements BlockEntityProvider {
     public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 
     private static final VoxelShape NORTH_BOX = Block.createCuboidShape(6.0D, 6.0D, 12.0D, 10.0D, 10.0D, 16.0D);
-
     private static final VoxelShape SOUTH_BOX = Block.createCuboidShape(6.0D, 6.0D, 0.0D, 10.0D, 10.0D, 4.0D);
-
     private static final VoxelShape WEST_BOX = Block.createCuboidShape(12.0D, 6.0D, 6.0D, 16.0D, 10.0D, 10.0D);
-
     private static final VoxelShape EAST_BOX = Block.createCuboidShape(0.0D, 6.0D, 6.0D, 4.0D, 10.0D, 10.0D);
-
     private static final VoxelShape DOWN_BOX = Block.createCuboidShape(6.0D, 12.0D, 6.0D, 10.0D, 16.0D, 10.0D);
-
     private static final VoxelShape UP_BOX = Block.createCuboidShape(6.0D, 0.0D, 6.0D, 10.0D, 4.0D, 10.0D);
 
     public FastenerBlock(final Block.Settings properties) {
@@ -49,6 +38,36 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
                 .with(FACING, Direction.NORTH)
                 .with(TRIGGERED, false)
         );
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, BlockEntityType<E> expect, BlockEntityTicker<? super E> ticker) {
+        return expect == actual ? (BlockEntityTicker<A>) ticker : null;
+    }
+
+    public static Vec3d getFastenerOffset(final Direction facing, final float offset) {
+        double x = offset, y = offset, z = offset;
+        switch (facing) {
+            case DOWN:
+                y += 0.75F;
+            case UP:
+                x += 0.375F;
+                z += 0.375F;
+                break;
+            case WEST:
+                x += 0.75F;
+            case EAST:
+                z += 0.375F;
+                y += 0.375F;
+                break;
+            case NORTH:
+                z += 0.75F;
+            case SOUTH:
+                x += 0.375F;
+                y += 0.375F;
+        }
+        return new Vec3d(x, y, z);
     }
 
     @Override
@@ -104,12 +123,6 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
             return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tickClient);
         }
         return createTickerHelper(type, FLBlockEntities.FASTENER.get(), FastenerBlockEntity::tick);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    private static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> actual, BlockEntityType<E> expect, BlockEntityTicker<? super E> ticker) {
-        return expect == actual ? (BlockEntityTicker<A>) ticker : null;
     }
 
     @SuppressWarnings("deprecation")
@@ -181,69 +194,7 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
         }
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public boolean hasComparatorOutput(final BlockState state) {
-        return true;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public int getComparatorOutput(final BlockState state, final World world, final BlockPos pos) {
-        final BlockEntity entity = world.getBlockEntity(pos);
-        if (entity == null) return super.getComparatorOutput(state, world, pos);
-
-        return FairyLightComponents.FASTENER.get(entity).get().map(f -> f.getAllConnections().stream()).orElse(Stream.empty())
-                .filter(HangingLightsConnection.class::isInstance)
-                .map(HangingLightsConnection.class::cast)
-                .mapToInt(c -> (int) Math.ceil(c.getJingleProgress() * 15))
-                .max().orElse(0);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public void scheduledTick(final BlockState state, final ServerWorld world, final BlockPos pos, final Random random) {
-        this.jingle(world, pos);
-    }
-
-    private void jingle(final World world, final BlockPos pos) {
-        final BlockEntity entity = world.getBlockEntity(pos);
-        if (!(entity instanceof FastenerBlockEntity)) {
-            return;
-        }
-
-        FairyLightComponents.FASTENER.get(entity).get().flatMap(fastener -> fastener.getAllConnections().stream()
-                .filter(HangingLightsConnection.class::isInstance)
-                .map(HangingLightsConnection.class::cast)
-                .filter(conn -> conn.canCurrentlyPlayAJingle() && conn.isDestination(new BlockFastenerAccessor(fastener.getPos())) && world.getBlockState(fastener.getPos()).getValue(TRIGGERED))
-                .findFirst()).ifPresent(conn -> ServerEventHandler.tryJingle(world, conn));
-    }
-
     public Vec3d getOffset(final Direction facing, final float offset) {
         return getFastenerOffset(facing, offset);
-    }
-
-    public static Vec3d getFastenerOffset(final Direction facing, final float offset) {
-        double x = offset, y = offset, z = offset;
-        switch (facing) {
-            case DOWN:
-                y += 0.75F;
-            case UP:
-                x += 0.375F;
-                z += 0.375F;
-                break;
-            case WEST:
-                x += 0.75F;
-            case EAST:
-                z += 0.375F;
-                y += 0.375F;
-                break;
-            case NORTH:
-                z += 0.75F;
-            case SOUTH:
-                x += 0.375F;
-                y += 0.375F;
-        }
-        return new Vec3d(x, y, z);
     }
 }

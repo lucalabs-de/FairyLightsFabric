@@ -337,7 +337,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
         }
 
         Optional<Connection> get(final World world) {
-            return this.fastener.get(world, false).map(Optional::of).orElse(Optional.empty()).flatMap(f -> f.get(this.id));
+            return this.fastener.get(world, false).flatMap(f -> f.get(this.id));
         }
     }
 }

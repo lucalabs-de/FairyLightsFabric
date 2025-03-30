@@ -4,10 +4,9 @@ import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
+import de.lucalabs.fairylights.items.HangingLightsConnectionItem;
 import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.items.SimpleLightVariant;
-import de.lucalabs.fairylights.jingle.Jingle;
-import de.lucalabs.fairylights.jingle.JinglePlayer;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
@@ -28,31 +27,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public final class HangingLightsConnection extends HangingFeatureConnection<Light<?>> {
     private static final int MAX_LIGHT = 15;
-
     private static final int LIGHT_UPDATE_WAIT = 400;
-
     private static final int LIGHT_UPDATE_RATE = 10;
 
-    private StringType string;
-
-    private List<ItemStack> pattern;
-
-    private JinglePlayer jinglePlayer = new JinglePlayer();
-
-    private boolean wasPlaying = false;
-
-    private boolean isOn = true;
-
     private final Set<BlockPos> litBlocks = new HashSet<>();
-
     private final Set<BlockPos> oldLitBlocks = new HashSet<>();
 
+    private StringType string;
+    private List<ItemStack> pattern;
+    private boolean isOn = true;
     private int lightUpdateTime = (int) (Math.random() * LIGHT_UPDATE_WAIT / 2);
 
     private int lightUpdateIndex;
@@ -70,15 +58,6 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
 
     public StringType getString() {
         return this.string;
-    }
-
-    @Nullable
-    public Jingle getPlayingJingle() {
-        return this.jinglePlayer.getJingle();
-    }
-
-    public void play(final Jingle jingle, final int lightOffset) {
-        this.jinglePlayer.play(jingle, lightOffset);
     }
 
     @Override
@@ -134,13 +113,6 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
 
     @Override
     public void onUpdate() {
-        this.jinglePlayer.tick(this.world, this.fastener.getConnectionPoint(), this.features, this.world.isClient());
-        final boolean playing = this.jinglePlayer.isPlaying();
-        if (playing || this.wasPlaying) {
-            this.updateNeighbors(this.fastener);
-            this.getDestination().get(this.world, false).ifPresent(this::updateNeighbors);
-        }
-        this.wasPlaying = playing;
         final boolean on = !this.isDynamic() && this.isOn;
         for (final Light<?> light : this.features) {
             light.tick(this.world, this.fastener.getConnectionPoint());
@@ -251,18 +223,9 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         }
     }
 
-    public boolean canCurrentlyPlayAJingle() {
-        return !this.jinglePlayer.isPlaying();
-    }
-
-    public float getJingleProgress() {
-        return this.jinglePlayer.getProgress();
-    }
-
     @Override
     public NbtCompound serialize() {
         final NbtCompound compound = super.serialize();
-        compound.put("jinglePlayer", this.jinglePlayer.serialize());
         compound.putBoolean("isOn", this.isOn);
         final NbtList litBlocks = new NbtList();
         for (final BlockPos litBlock : this.litBlocks) {
@@ -275,12 +238,6 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     @Override
     public void deserialize(final NbtCompound compound) {
         super.deserialize(compound);
-        if (this.jinglePlayer == null) {
-            this.jinglePlayer = new JinglePlayer();
-        }
-        if (!this.jinglePlayer.isPlaying()) {
-            this.jinglePlayer.deserialize(compound.getCompound("jinglePlayer"));
-        }
         this.isOn = compound.getBoolean("isOn");
         this.litBlocks.clear();
         final NbtList litBlocks = compound.getList("litBlocks", NbtElement.COMPOUND_TYPE);
@@ -305,7 +262,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     public void deserializeLogic(final NbtCompound compound) {
         super.deserializeLogic(compound);
         this.string = HangingLightsConnectionItem.getString(compound);
-        final NbtList patternList = compound.getList("pattern", Tag.TAG_COMPOUND);
+        final NbtList patternList = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
         this.pattern = new ArrayList<>();
         for (int i = 0; i < patternList.size(); i++) {
             final NbtCompound lightCompound = patternList.getCompound(i);
