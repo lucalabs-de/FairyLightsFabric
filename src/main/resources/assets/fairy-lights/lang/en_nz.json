@@ -1,0 +1,82 @@
+{
+    "itemGroup.fairylights": "Fairy Lights",
+
+    "fairylights.config": "Fairy Lights Configuration",
+
+    "block.fairylights.fastener": "Connection Fastener",
+
+    "item.fairylights.hanging_lights": "Hanging Lights",
+    "item.fairylights.garland": "Vine Garland",
+    "item.fairylights.tinsel": "Tinsel Garland",
+
+    "item.fairyLights.pattern": "Pattern:",
+    "item.fairyLights.twinkle": "Twinkle",
+    "item.fairyLights.tight": "Uncurved",
+
+    "item.fairylights.pennant_bunting": "Pennant Bunting",
+    "item.pennantBunting.colors": "Colours:",
+
+    "item.fairylights.letter_bunting": "Letter Bunting",
+
+    "item.fairylights.pennant": "Pennant",
+
+    "item.light.name": "Light",
+    "block.fairylights.fairy_light": "Fairy Light",
+    "block.fairylights.paper_lantern": "Paper Lantern",
+    "block.fairylights.orb_lantern": "Orb Lantern",
+    "block.fairylights.flower_light": "Flower Light",
+    "block.fairylights.ornate_lantern": "Ornate Lantern",
+    "block.fairylights.oil_lantern": "Oil Lantern",
+    "item.light.luxoBall.name": "Luxo Ball ",
+    "block.fairylights.jack_o_lantern": "Jack o'Lantern",
+    "block.fairylights.skull_light": "Skull Light",
+    "block.fairylights.ghost_light": "Ghost Light",
+    "block.fairylights.spider_light": "Spider Light",
+    "block.fairylights.witch_light": "Witch Light",
+    "block.fairylights.snowflake_light": "Snowflake Light",
+    "block.fairylights.icicle_lights": "Icicle Lights",
+    "block.fairylights.meteor_light": "Meteor Light",
+
+    "item.fairylights.ladder": "Stepladder",
+
+    "entity.fairylights.fastener": "Fastener",
+    "entity.fairylights.ladder": "Stepladder",
+
+    "gui.editLetteredConnection.name": "Set Bunting Text",
+
+    "recipe.ingredient.tooltip": "§7%s",
+    "recipe.ingredient.auxiliary.optional": "(Optional)",
+    "recipe.hangingLights.glowstone": "Causes lights to twinkle",
+    "recipe.hangingLights.light": "Add multiple lights to customise pattern",
+    "recipe.pennantBunting.pennant": "Add multiple pennants to customise pattern",
+
+    "format.pattern.entry": "  %1$s",
+    "format.colored": "%1$s %2$s",
+    "format.text": "Text: %1$s",
+
+    "color.black.name": "Black",
+    "color.red.name": "Red",
+    "color.green.name": "Green",
+    "color.brown.name": "Brown",
+    "color.blue.name": "Blue",
+    "color.purple.name": "Purple",
+    "color.cyan.name": "Cyan",
+    "color.light_gray.name": "Light Grey",
+    "color.gray.name": "Grey",
+    "color.pink.name": "Pink",
+    "color.lime.name": "Lime",
+    "color.yellow.name": "Yellow",
+    "color.light_blue.name": "Light Blue",
+    "color.magenta.name": "Magenta",
+    "color.orange.name": "Orange",
+    "color.white.name": "White",
+
+    "subtitles.block.jingleBell": "Bell jingles",
+    "subtitles.block.cord.connect": "Cord connects",
+    "subtitles.block.cord.disconnect": "Cord disconnects",
+    "subtitles.block.cord.stretch": "Cord stretches",
+    "subtitles.block.cord.snap": "Cord snaps",
+    "subtitles.block.feature.lightTurnOn": "Lights click on",
+    "subtitles.block.feature.lightTurnOff": "Lights click off",
+    "subtitles.block.feature.colorChange": "Colour plops"
+}

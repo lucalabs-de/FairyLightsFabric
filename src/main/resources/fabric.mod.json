@@ -1,0 +1,49 @@
+{
+	"schemaVersion": 1,
+	"id": "fairy-lights",
+	"version": "${version}",
+	"name": "Fairy Lights",
+	"description": "This is an example description! Tell everyone what your mod is about!",
+	"authors": [
+		"lucalabs-de"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/fairy-lights/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"de.lucalabs.fairylights.FairyLights"
+		],
+		"client": [
+			"de.lucalabs.fairylights.FairyLightsClient"
+		],
+		"fabric-datagen": [
+			"de.lucalabs.fairylights.FairyLightsDataGenerator"
+		]
+	},
+	"mixins": [
+		"fairy-lights.mixins.json",
+		{
+			"config": "fairy-lights.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"custom": {
+		"cardinal-components": [
+			"fairylights:fastener"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}
