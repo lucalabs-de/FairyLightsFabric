@@ -1,0 +1,21 @@
+{
+    "replace": false,
+    "values": [
+        "fairylights:fairy_light",
+        "fairylights:paper_lantern",
+        "fairylights:orb_lantern",
+        "fairylights:flower_light",
+        "fairylights:candle_lantern_light",
+        "fairylights:oil_lantern_light",
+        "fairylights:jack_o_lantern",
+        "fairylights:skull_light",
+        "fairylights:ghost_light",
+        "fairylights:spider_light",
+        "fairylights:witch_light",
+        "fairylights:snowflake_light",
+        "fairylights:heart_light",
+        "fairylights:moon_light",
+        "fairylights:star_light",
+        "fairylights:icicle_lights"
+    ]
+}

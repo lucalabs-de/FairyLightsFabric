@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.connection;
 
+import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.feature.light.Light;
@@ -131,7 +132,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     }
 
     private void updateNeighbors(final Fastener<?> fastener) {
-        this.world.updateComparators(fastener.getPos(), FLBlocks.FASTENER.get());
+        this.world.updateComparators(fastener.getPos(), FairyLightBlocks.FASTENER);
     }
 
     @Override

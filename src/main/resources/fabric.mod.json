@@ -37,14 +37,16 @@
 	],
 	"custom": {
 		"cardinal-components": [
-			"fairylights:fastener"
+			"fairylights:fastener",
+			"fairylights:light_variant"
 		]
 	},
 	"depends": {
 		"fabricloader": ">=0.16.10",
+		"fabric": "*",
+		"fabric-api": "*",
 		"minecraft": "~1.20.1",
-		"java": ">=17",
-		"fabric-api": "*"
+		"java": ">=17"
 	},
 	"suggests": {
 		"another-mod": "*"

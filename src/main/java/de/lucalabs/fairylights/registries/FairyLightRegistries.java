@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public final class FairyLightRegistries {
 
     private static final Identifier CONNECTION_TYPE_ID = new Identifier(FairyLights.ID, "connection_type");
-    private static final Identifier STRING_TYPE_ID = new Identifier(FairyLights.ID, "connection_type");
+    private static final Identifier STRING_TYPE_ID = new Identifier(FairyLights.ID, "string_type");
 
     public static final RegistryKey<Registry<ConnectionType<?>>> CONNECTION_TYPE_KEY
             = RegistryKey.ofRegistry(CONNECTION_TYPE_ID);

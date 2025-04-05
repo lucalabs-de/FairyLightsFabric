@@ -8,6 +8,7 @@ import de.lucalabs.fairylights.fastener.FenceFastener;
 import de.lucalabs.fairylights.fastener.PlayerFastener;
 import de.lucalabs.fairylights.fastener.RegularBlockView;
 import de.lucalabs.fairylights.items.LightItem;
+import de.lucalabs.fairylights.items.LightVariant;
 import dev.onyxstudios.cca.api.v3.block.BlockComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.block.BlockComponentInitializer;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
@@ -19,14 +20,13 @@ import dev.onyxstudios.cca.api.v3.item.ItemComponentInitializer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 
-
 public class FairyLightComponents implements EntityComponentInitializer, BlockComponentInitializer, ItemComponentInitializer {
 
     public static final Identifier FASTENER_ID = Identifier.of(FairyLights.ID, "fastener");
     public static final ComponentKey<FastenerComponent> FASTENER =
             ComponentRegistry.getOrCreate(FASTENER_ID, FastenerComponent.class);
 
-    public static final Identifier LIGHT_VARIANT_ID = Identifier.of(FairyLights.ID, "fastener");
+    public static final Identifier LIGHT_VARIANT_ID = Identifier.of(FairyLights.ID, "light_variant");
     public static final ComponentKey<LightVariantComponent> LIGHT_VARIANT =
             ComponentRegistry.getOrCreate(LIGHT_VARIANT_ID, LightVariantComponent.class);
 
@@ -46,6 +46,9 @@ public class FairyLightComponents implements EntityComponentInitializer, BlockCo
 
     @Override
     public void registerItemComponentFactories(ItemComponentFactoryRegistry registry) {
-        registry.register(i -> i instanceof LightItem, LIGHT_VARIANT, i -> new LightVariantComponent(i, LIGHT_VARIANT));
+        registry.register(i -> i instanceof LightItem, LIGHT_VARIANT, i -> {
+            LightVariant<?> lightVariant = ((LightItem) i.getItem()).getBlock().getVariant();
+            return new LightVariantComponent(i, LIGHT_VARIANT).setLightVariant(lightVariant);
+        });
     }
 }

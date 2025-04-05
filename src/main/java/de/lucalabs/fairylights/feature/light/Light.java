@@ -2,38 +2,24 @@ package de.lucalabs.fairylights.feature.light;
 
 import de.lucalabs.fairylights.feature.HangingFeature;
 import de.lucalabs.fairylights.items.LightVariant;
-import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleEffect;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public final class Light<T extends LightBehavior> extends HangingFeature {
     private static final int SWAY_RATE = 10;
-
     private static final int SWAY_PEAK_COUNT = 5;
-
     private static final int SWAY_CYCLE = SWAY_RATE * SWAY_PEAK_COUNT;
 
     private final ItemStack item;
-
     private final LightVariant<T> variant;
-
     private final T behavior;
 
     private int sway;
-
     private boolean swaying;
-
     private boolean swayDirection;
-
     private int tick;
-
-    private int lastJingledTick = -1;
 
     private boolean powered;
 
@@ -54,47 +40,6 @@ public final class Light<T extends LightBehavior> extends HangingFeature {
 
     public LightVariant<T> getVariant() {
         return this.variant;
-    }
-
-    public void jingle(final World world, final Vec3d origin, final int note) {
-        this.jingle(world, origin, note, ParticleTypes.NOTE);
-    }
-
-    public void jingle(final World world, final Vec3d origin, final int note, final ParticleEffect particle) {
-        this.jingle(world, origin, note, FairyLightSounds.JINGLE_BELL, particle);
-    }
-
-    public void jingle(final World world, final Vec3d origin, final int note, final SoundEvent sound, final ParticleEffect... particles) {
-        if (world.isClient()) {
-            final double x = origin.x + this.point.x;
-            final double y = origin.y + this.point.y;
-            final double z = origin.z + this.point.z;
-            for (final ParticleEffect particle : particles) {
-                double vx = world.random.nextGaussian();
-                double vy = world.random.nextGaussian();
-                double vz = world.random.nextGaussian();
-                final double t = world.random.nextDouble() * (0.4 - 0.2) + 0.2;
-                final double mag = t / Math.sqrt(vx * vx + vy * vy + vz * vz);
-                vx *= mag;
-                vy *= mag;
-                vz *= mag;
-                world.addParticle(particle, x + vx, y + vy, z + vz, particle == ParticleTypes.NOTE ? note / 24D : 0, 0, 0);
-            }
-            if (this.lastJingledTick != this.tick) {
-                world.playSoundAtBlockCenter(
-                        x,
-                        y,
-                        z,
-                        sound,
-                        SoundCategory.BLOCKS,
-                        FLConfig.getJingleAmplitude() / 16F,
-                        (float) Math.pow(2, (note - 12) / 12F),
-                        false);
-
-                this.startSwaying(world.random.nextBoolean());
-                this.lastJingledTick = this.tick;
-            }
-        }
     }
 
     public void startSwaying(final boolean swayDirection) {

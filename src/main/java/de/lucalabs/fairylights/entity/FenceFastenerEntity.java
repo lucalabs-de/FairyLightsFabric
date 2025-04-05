@@ -1,8 +1,11 @@
 package de.lucalabs.fairylights.entity;
 
+import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.items.ConnectionItem;
+import de.lucalabs.fairylights.net.FilteredServerPlayNetworking;
+import de.lucalabs.fairylights.net.clientbound.UpdateEntityFastenerMessage;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -38,7 +41,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     }
 
     public FenceFastenerEntity(final World world) {
-        this(FLEntities.FASTENER.get(), world);
+        this(FairyLightEntities.FASTENER, world);
     }
 
     public FenceFastenerEntity(final World world, final BlockPos pos) {
@@ -147,13 +150,14 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     public void onBreak(@Nullable final Entity breaker) {
         this.getFastener().ifPresent(fastener -> fastener.dropItems(this.getWorld(), this.attachmentPos));
         if (breaker != null) {
-            this.getWorld().syncWorldEvent(2001, this.attachmentPos, Block.getRawIdFromState(FLBlocks.FASTENER.get().defaultBlockState()));
+            this.getWorld().syncWorldEvent(2001, this.attachmentPos, Block.getRawIdFromState(FairyLightBlocks.FASTENER.getDefaultState()));
         }
     }
 
     @Override
     public void onPlace() {
-        final BlockSoundGroup sound = FLBlocks.FASTENER.get().getSoundType(FLBlocks.FASTENER.get().defaultBlockState(), this.level(), this.getPos(), null);
+        final BlockSoundGroup sound = FairyLightBlocks.FASTENER
+                .getSoundGroup(FairyLightBlocks.FASTENER.getDefaultState()); //, this.getWorld(), this.getPos(), null);
         this.playSound(sound.getPlaceSound(), (sound.getVolume() + 1) / 2, sound.getPitch() * 0.8F);
     }
 
@@ -194,8 +198,8 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
                 this.dropItem(null);
                 this.remove(RemovalReason.DISCARDED);
             } else if (fastener.update() && !this.getWorld().isClient()) {
-                final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener.serializeNBT());
-                ServerProxy.sendToPlayersWatchingEntity(msg, this);
+                final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener);
+                FilteredServerPlayNetworking.sendToPlayersWatchingEntity(this, UpdateEntityFastenerMessage.ID, msg);
             }
         });
     }
@@ -215,7 +219,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
             if (this.getWorld().isClient()) {
                 player.swingHand(hand);
             } else {
-                this.getFastener().ifPresent(fastener -> ((ConnectionItem) stack.getItem()).connect(stack, player, this.level(), fastener));
+                this.getFastener().ifPresent(fastener -> ((ConnectionItem) stack.getItem()).connect(stack, player, this.getWorld(), fastener));
             }
             return ActionResult.SUCCESS;
         }

@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.blocks.entity;
 
+import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
@@ -41,12 +42,12 @@ public final class FastenerBlockEntity extends BlockEntity {
     }
 
     public Vec3d getOffset() {
-        return FLBlocks.FASTENER.get().getOffset(this.getFacing(), 0.125F);
+        return FairyLightBlocks.FASTENER.getOffset(this.getFacing(), 0.125F);
     }
 
     public Direction getFacing() {
         final BlockState state = this.world.getBlockState(this.pos);
-        if (state.getBlock() != FLBlocks.FASTENER.get()) {
+        if (state.getBlock() != FairyLightBlocks.FASTENER) {
             return Direction.UP;
         }
         return state.get(FastenerBlock.FACING);

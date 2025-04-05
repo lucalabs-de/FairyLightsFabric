@@ -14,7 +14,6 @@ import de.lucalabs.fairylights.items.ConnectionItem;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.util.*;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -36,11 +35,12 @@ import java.util.UUID;
 public abstract class Connection implements NbtSerializable {
     public static final int MAX_LENGTH = 32;
     public static final double PULL_RANGE = 5;
+    public static final float MAX_SLACK = 3;
+
     public static final FeatureType CORD_FEATURE = FeatureType.register("cord");
 
     private static final CubicBezier SLACK_CURVE = new CubicBezier(0.495F, 0.505F, 0.495F, 0.505F);
 
-    private static final float MAX_SLACK = 3;
     protected final Fastener<?> fastener;
     private final ConnectionType<?> type;
     private final UUID uuid;
@@ -167,11 +167,12 @@ public abstract class Connection implements NbtSerializable {
         this.updateCatenary = true;
     }
 
-    public void processClientAction(final PlayerEntity player, final PlayerAction action, final Intersection intersection) {
-        ClientPlayNetworking.send(
-                InteractionConnectionMessage.ID,
-                new InteractionConnectionMessage(this, action, intersection));
-    }
+    // TODO
+//    public void processClientAction(final PlayerEntity player, final PlayerAction action, final Intersection intersection) {
+//        ClientPlayNetworking.send(
+//                InteractionConnectionMessage.ID,
+//                new InteractionConnectionMessage(this, action, intersection));
+//    }
 
     public void disconnect(final PlayerEntity player, final Vec3d hit) {
         this.destination.get(this.world).ifPresent(f -> this.disconnect(f, hit));

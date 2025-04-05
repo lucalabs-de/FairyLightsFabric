@@ -21,8 +21,6 @@ public class LightItem extends BlockItem {
     public LightItem(final LightBlock light, final Settings properties) {
         super(light, properties);
         this.light = light;
-
-        FairyLightComponents.LIGHT_VARIANT.get(this).setLightVariant(this.light.getVariant());
     }
 
     @Override

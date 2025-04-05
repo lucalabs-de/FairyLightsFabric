@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.items;
 
+import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.connection.Connection;
@@ -54,7 +55,7 @@ public abstract class ConnectionItem extends Item {
         final World world = context.getWorld();
         final Direction side = context.getSide();
         final BlockPos clickPos = context.getBlockPos();
-        final Block fastener = FLBlocks.FASTENER.get();
+        final Block fastener = FairyLightBlocks.FASTENER;
         final ItemStack stack = context.getStack();
         if (this.isConnectionInOtherHand(world, user, stack)) {
             return ActionResult.PASS;

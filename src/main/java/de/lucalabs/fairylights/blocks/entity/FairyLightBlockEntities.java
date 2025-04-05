@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.blocks.entity;
 
 import de.lucalabs.fairylights.FairyLights;
+import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
@@ -13,12 +14,12 @@ public final class FairyLightBlockEntities {
 
     public static final BlockEntityType<FastenerBlockEntity> FASTENER = register(
             "fastener",
-            () -> BlockEntityType.Builder.create(FastenerBlockEntity::new, FLBlocks.FASTENER.get()).build(null));
+            () -> BlockEntityType.Builder.create(FastenerBlockEntity::new, FairyLightBlocks.FASTENER).build(null));
 
     public static final BlockEntityType<LightBlockEntity> LIGHT = register("light", () -> BlockEntityType.Builder.create(LightBlockEntity::new,
-            FLBlocks.FAIRY_LIGHT.get(),
-            FLBlocks.PAPER_LANTERN.get(),
-            FLBlocks.INCANDESCENT_LIGHT.get()).build(null));
+            FairyLightBlocks.FAIRY_LIGHT,
+            FairyLightBlocks.PAPER_LANTERN,
+            FairyLightBlocks.INCANDESCENT_LIGHT).build(null));
 
     private FairyLightBlockEntities() {
     }
