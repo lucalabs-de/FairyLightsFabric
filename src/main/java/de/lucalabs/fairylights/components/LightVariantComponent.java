@@ -1,16 +1,15 @@
 package de.lucalabs.fairylights.components;
 
 import de.lucalabs.fairylights.items.LightVariant;
-import net.minecraft.nbt.NbtCompound;
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import net.minecraft.item.ItemStack;
 
-public class LightVariantComponent extends GenericComponent<LightVariant<?>> {
-    @Override
-    public void readFromNbt(NbtCompound nbtCompound) {
-        // no serialization needed // TODO check if that's true
+public class LightVariantComponent extends GenericItemComponent<LightVariant<?>> {
+    public LightVariantComponent(ItemStack stack, ComponentKey<?> key) {
+        super(stack, key);
     }
 
-    @Override
-    public void writeToNbt(NbtCompound nbtCompound) {
-        // no serialization needed
+    public LightVariantComponent setLightVariant(LightVariant<?> variant) {
+        return (LightVariantComponent) super.set(variant);
     }
 }

@@ -3,6 +3,7 @@ package de.lucalabs.fairylights;
 import de.lucalabs.fairylights.blocks.entity.FairyLightBlockEntities;
 import de.lucalabs.fairylights.connection.ConnectionTypes;
 import de.lucalabs.fairylights.entity.FairyLightEntities;
+import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
@@ -23,6 +24,7 @@ public class FairyLights implements ModInitializer {
         FairyLightEntities.initialize();
         FairyLightBlockEntities.initialize();
         FairyLightRegistries.initialize();
+        FairyLightItems.initialize();
 
         ConnectionTypes.initialize();
         StringTypes.initialize();

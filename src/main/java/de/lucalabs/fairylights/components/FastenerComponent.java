@@ -5,8 +5,6 @@ import net.minecraft.nbt.NbtCompound;
 
 public final class FastenerComponent extends GenericComponent<Fastener<?>> {
 
-    public static final FastenerComponent DEFAULT = new FastenerComponent();
-
     @Override
     public void readFromNbt(NbtCompound nbtCompound) {
         if (delegate != null) {
@@ -22,7 +20,6 @@ public final class FastenerComponent extends GenericComponent<Fastener<?>> {
     }
 
     public FastenerComponent setFastener(Fastener<?> fastener) {
-       this.delegate = fastener;
-       return this;
+        return (FastenerComponent) super.set(fastener);
     }
 }
