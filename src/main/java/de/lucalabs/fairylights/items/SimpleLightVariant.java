@@ -57,11 +57,11 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
     // TODO check if the commented-out behaviours are necessary for anything
     private static StandardLightBehavior standardBehavior(final ItemStack stack) {
         final BrightnessLightBehavior brightness;
-//        if (TwinkleBehavior.exists(stack)) {
-//            brightness = new TwinkleBehavior(0.05F, 40);
-//        } else {
+        if (TwinkleBehavior.exists(stack)) {
+            brightness = new TwinkleBehavior(0.05F, 40);
+        } else {
         brightness = new DefaultBrightnessBehavior();
-//        }
+        }
         final ColorLightBehavior color;
 //        if (ColorChangingBehavior.exists(stack)) {
 //            color = ColorChangingBehavior.create(stack);

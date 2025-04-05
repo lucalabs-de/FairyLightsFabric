@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.util;
 
 import de.lucalabs.fairylights.FairyLights;
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
@@ -24,6 +25,8 @@ public final class Tags {
     public static final TagKey<Item> DYES_GREEN = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "green_dyes"));
     public static final TagKey<Item> DYES_RED = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "red_dyes"));
     public static final TagKey<Item> DYES_BLACK = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "black_dyes"));
+
+    public static final TagKey<Block> FENCES = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "fences"));
 
     public static final TagKey<Item> LIGHTS = TagKey.of(RegistryKeys.ITEM, Identifier.of(FairyLights.ID, "lights"));
 

@@ -1,9 +1,10 @@
 package de.lucalabs.fairylights.components;
 
 import de.lucalabs.fairylights.fastener.Fastener;
+import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import net.minecraft.nbt.NbtCompound;
 
-public final class FastenerComponent extends GenericComponent<Fastener<?>> {
+public final class FastenerComponent extends GenericComponent<Fastener<?>> implements AutoSyncedComponent {
 
     @Override
     public void readFromNbt(NbtCompound nbtCompound) {

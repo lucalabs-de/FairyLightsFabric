@@ -11,7 +11,6 @@ import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.feature.Feature;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.items.ConnectionItem;
-import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.util.*;
 import net.minecraft.entity.ItemEntity;
