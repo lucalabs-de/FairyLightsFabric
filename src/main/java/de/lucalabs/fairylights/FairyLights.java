@@ -3,6 +3,7 @@ package de.lucalabs.fairylights;
 import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.entity.FairyLightBlockEntities;
 import de.lucalabs.fairylights.connection.ConnectionTypes;
+import de.lucalabs.fairylights.creativetabs.FairyLightItemGroups;
 import de.lucalabs.fairylights.entity.FairyLightEntities;
 import de.lucalabs.fairylights.events.ServerEventHandler;
 import de.lucalabs.fairylights.items.FairyLightItems;
@@ -31,6 +32,7 @@ public class FairyLights implements ModInitializer {
         FairyLightRegistries.initialize();
         FairyLightItems.initialize();
         FairyLightBlocks.initialize();
+        FairyLightItemGroups.initialize();
 
         ConnectionTypes.initialize();
         StringTypes.initialize();
