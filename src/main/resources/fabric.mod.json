@@ -26,6 +26,9 @@
 		],
 		"cardinal-components": [
 			"de.lucalabs.fairylights.components.FairyLightComponents"
+		],
+		"jei_mod_plugin": [
+			"de.lucalabs.fairylights.integrations.jei.FairyLightJeiPlugin"
 		]
 	},
 	"mixins": [

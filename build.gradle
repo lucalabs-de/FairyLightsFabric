@@ -60,6 +60,7 @@ dependencies {
 		modLocalRuntime("dev.emi:emi-fabric:${emi_version}+${project.minecraft_version}") { transitive = false }
 	}
 
+	modCompileOnly("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
 	if (project.enable_jei.toBoolean()) {
 		modLocalRuntime("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
 	}

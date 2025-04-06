@@ -8,8 +8,10 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public final class FairyLightItems {
 
@@ -47,5 +49,12 @@ public final class FairyLightItems {
 
     public static void initialize() {
         FairyLights.LOGGER.info("Registering items");
+    }
+
+    public static Stream<LightItem> lights() {
+        return Registries.ITEM.getEntrySet().stream()
+                .map(Map.Entry::getValue)
+                .filter(LightItem.class::isInstance)
+                .map(LightItem.class::cast);
     }
 }
