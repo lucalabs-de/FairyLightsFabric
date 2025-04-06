@@ -27,6 +27,7 @@ loom {
 		}
 	}
 
+	accessWidenerPath = file("src/main/resources/fairylights.accesswidener")
 }
 
 fabricApi {

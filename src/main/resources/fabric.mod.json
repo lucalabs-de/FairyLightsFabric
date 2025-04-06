@@ -41,6 +41,7 @@
 			"fairylights:light_variant"
 		]
 	},
+	"accessWidener": "fairylights.accesswidener",
 	"depends": {
 		"fabricloader": ">=0.16.10",
 		"fabric": "*",

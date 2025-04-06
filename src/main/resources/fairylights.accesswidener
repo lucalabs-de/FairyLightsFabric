@@ -1,0 +1,3 @@
+accessWidener	v2	named
+extendable  method  net/minecraft/recipe/Ingredient <init> (Ljava/util/stream/Stream;)V
+extendable	class   net/minecraft/recipe/Ingredient
