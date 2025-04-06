@@ -12,4 +12,9 @@ public class RenderConstants {
             SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
             new Identifier(FairyLights.ID, "entity/connections"));
 
+    @SuppressWarnings("deprecation")
+    public static final SpriteIdentifier TRANSLUCENT_TEXTURE = new SpriteIdentifier(
+            SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
+            new Identifier(FairyLights.ID, "entity/connections"));
+
 }
