@@ -26,14 +26,7 @@ public final class Tags {
     public static final TagKey<Item> DYES_RED = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "red_dyes"));
     public static final TagKey<Item> DYES_BLACK = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "black_dyes"));
 
-    public static final TagKey<Item> STRING = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "string"));
-    public static final TagKey<Item> GLASS_PANES_COLORLESS = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "glass_panes/colorless"));
-    public static final TagKey<Item> INGOTS_IRON = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "ingots/iron"));
-    public static final TagKey<Item> NUGGETS_GOLD = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "nuggets/gold"));
-    public static final TagKey<Item> DUSTS_GLOWSTONE = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "dusts/glowstone"));
-
     public static final TagKey<Block> FENCES = TagKey.of(RegistryKeys.BLOCK, Identifier.of("c", "fences"));
-
 
     public static final TagKey<Item> LIGHTS = TagKey.of(RegistryKeys.ITEM, Identifier.of(FairyLights.ID, "lights"));
     public static final TagKey<Item> TWINKLING_LIGHTS = TagKey.of(RegistryKeys.ITEM, Identifier.of(FairyLights.ID, "twinkling_lights"));
@@ -41,7 +34,10 @@ public final class Tags {
     public static final TagKey<Item> DYEABLE = TagKey.of(RegistryKeys.ITEM, Identifier.of(FairyLights.ID, "dyeable"));
     public static final TagKey<Item> DYEABLE_LIGHTS = TagKey.of(RegistryKeys.ITEM, Identifier.of(FairyLights.ID, "dyeable_lights"));
 
-
     private Tags() {
+    }
+
+    public static void initialize() {
+        FairyLights.LOGGER.info("Initializing tags");
     }
 }

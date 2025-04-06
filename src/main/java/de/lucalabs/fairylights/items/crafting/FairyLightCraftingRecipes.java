@@ -135,7 +135,7 @@ public final class FairyLightCraftingRecipes {
         return new GenericRecipeBuilder(name, () -> LIGHT_TWINKLE)
                 .withShape("L")
                 .withIngredient('L', Tags.TWINKLING_LIGHTS).withOutput('L')
-                .withAuxiliaryIngredient(new InertBasicAuxiliaryIngredient(LazyTagIngredient.of(Tags.DUSTS_GLOWSTONE), true, 1) {
+                .withAuxiliaryIngredient(new InertBasicAuxiliaryIngredient(Ingredient.ofItems(Items.GLOWSTONE_DUST), true, 1) {
                     @Override
                     public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
                         return useInputsForTagBool(output, "twinkle", true) ? super.getInput(output) : ImmutableList.of();
@@ -164,7 +164,7 @@ public final class FairyLightCraftingRecipes {
         return new GenericRecipeBuilder(name, () -> COLOR_CHANGING_LIGHT)
                 .withShape("IG")
                 .withIngredient('I', Tags.DYEABLE_LIGHTS).withOutput('I')
-                .withIngredient('G', Tags.NUGGETS_GOLD)
+                .withIngredient('G', Items.GOLD_NUGGET)
                 .withAuxiliaryIngredient(new BasicAuxiliaryIngredient<NbtList>(LazyTagIngredient.of(Tags.DYES), true, 8) {
                     @Override
                     public NbtList accumulator() {
@@ -194,8 +194,8 @@ public final class FairyLightCraftingRecipes {
     private static GenericRecipe createHangingLights(Identifier name, CraftingRecipeCategory craftingBookCategory) {
         return new GenericRecipeBuilder(name, () -> HANGING_LIGHTS, FairyLightItems.HANGING_LIGHTS)
                 .withShape("I-I")
-                .withIngredient('I', Tags.INGOTS_IRON)
-                .withIngredient('-', Tags.STRING)
+                .withIngredient('I', Items.IRON_INGOT)
+                .withIngredient('-', Items.STRING)
                 .withAuxiliaryIngredient(new LightIngredient(true))
                 .withAuxiliaryIngredient(new InertBasicAuxiliaryIngredient(LazyTagIngredient.of(Tags.DYES_WHITE), false, 1) {
                     @Override
@@ -310,8 +310,8 @@ public final class FairyLightCraftingRecipes {
     private static GenericRecipe createPennantBunting(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
         return new GenericRecipeBuilder(name, () -> PENNANT_BUNTING, FairyLightItems.PENNANT_BUNTING)
                 .withShape("I-I")
-                .withIngredient('I', Tags.INGOTS_IRON)
-                .withIngredient('-', Tags.STRING)
+                .withIngredient('I', Items.IRON_INGOT)
+                .withIngredient('-', Items.STRING)
                 .withAuxiliaryIngredient(new PennantIngredient())
                 .build();
     }
@@ -382,7 +382,7 @@ public final class FairyLightCraftingRecipes {
         return new GenericRecipeBuilder(name, serializer, item)
                 .withShape("- -", "PDP", pattern)
                 .withIngredient('P', Items.PAPER)
-                .withIngredient('-', Tags.STRING)
+                .withIngredient('-', Items.STRING)
                 .withIngredient('D', DYE_SUBTYPE_INGREDIENT)
                 .build();
     }
@@ -398,7 +398,7 @@ public final class FairyLightCraftingRecipes {
     private static GenericRecipe createFairyLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
         return createLight(name, () -> FAIRY_LIGHT, () -> FairyLightItems.FAIRY_LIGHT, b -> b
                 .withShape(" I ", "IDI", " G ")
-                .withIngredient('G', Tags.GLASS_PANES_COLORLESS)
+                .withIngredient('G', Items.GLASS_PANE)
         );
     }
 
@@ -412,7 +412,7 @@ public final class FairyLightCraftingRecipes {
 
     private static GenericRecipe createLight(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Supplier<? extends Item> variant, final UnaryOperator<GenericRecipeBuilder> recipe) {
         return recipe.apply(new GenericRecipeBuilder(name, serializer))
-                .withIngredient('I', Tags.INGOTS_IRON)
+                .withIngredient('I', Items.IRON_INGOT)
                 .withIngredient('D', DYE_SUBTYPE_INGREDIENT)
                 .withOutput(variant.get(), 4)
                 .build();

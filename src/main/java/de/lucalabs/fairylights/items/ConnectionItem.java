@@ -38,6 +38,7 @@ public abstract class ConnectionItem extends Item {
         this.type = type;
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean isFence(final BlockState state) {
         return state.isSolid() && state.isIn(BlockTags.FENCES);
     }

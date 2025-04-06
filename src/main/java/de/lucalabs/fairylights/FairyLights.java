@@ -12,6 +12,7 @@ import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.string.StringTypes;
+import de.lucalabs.fairylights.util.Tags;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import org.apache.logging.log4j.core.jmx.Server;
@@ -26,6 +27,8 @@ public class FairyLights implements ModInitializer {
     @Override
     public void onInitialize() {
         ServerEventHandler.initialize();
+
+        Tags.initialize();
 
         FairyLightSounds.initialize();
         FairyLightEntities.initialize();

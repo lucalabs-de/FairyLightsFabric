@@ -187,6 +187,7 @@ public final class GenericRecipeBuilder {
         final AuxiliaryIngredient<?>[] auxiliaryIngredients = this.auxiliaryIngredients.toArray(
                 new AuxiliaryIngredient<?>[0]
         );
+
         return new GenericRecipe(this.name, this.serializer, this.output, ingredients, auxiliaryIngredients, this.width, this.height, output);
     }
 
