@@ -7,6 +7,7 @@ import de.lucalabs.fairylights.creativetabs.FairyLightItemGroups;
 import de.lucalabs.fairylights.entity.FairyLightEntities;
 import de.lucalabs.fairylights.events.ServerEventHandler;
 import de.lucalabs.fairylights.items.FairyLightItems;
+import de.lucalabs.fairylights.items.crafting.FairyLightCraftingRecipes;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
@@ -32,6 +33,7 @@ public class FairyLights implements ModInitializer {
         FairyLightRegistries.initialize();
         FairyLightItems.initialize();
         FairyLightBlocks.initialize();
+        FairyLightCraftingRecipes.initialize();
         FairyLightItemGroups.initialize();
 
         ConnectionTypes.initialize();

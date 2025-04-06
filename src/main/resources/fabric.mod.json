@@ -1,18 +1,18 @@
 {
 	"schemaVersion": 1,
-	"id": "fairy-lights",
+	"id": "fairylights",
 	"version": "${version}",
 	"name": "Fairy Lights",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Decorative string lights and to light up your world!",
 	"authors": [
 		"lucalabs-de"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/lucalabs-de/fairy-lights-fabric"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/fairy-lights/icon.png",
+	"icon": "assets/fairylights/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -29,9 +29,9 @@
 		]
 	},
 	"mixins": [
-		"fairy-lights.mixins.json",
+		"fairylights.mixins.json",
 		{
-			"config": "fairy-lights.client.mixins.json",
+			"config": "fairylights.client.mixins.json",
 			"environment": "client"
 		}
 	],
