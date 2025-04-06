@@ -3,7 +3,8 @@
   "package": "de.lucalabs.fairylights.mixin.client",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "GameRendererMixin"
+    "GameRendererMixin",
+    "WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

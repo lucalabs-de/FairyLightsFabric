@@ -166,13 +166,6 @@ public abstract class Connection implements NbtSerializable {
         this.updateCatenary = true;
     }
 
-    // TODO
-//    public void processClientAction(final PlayerEntity player, final PlayerAction action, final Intersection intersection) {
-//        ClientPlayNetworking.send(
-//                InteractionConnectionMessage.ID,
-//                new InteractionConnectionMessage(this, action, intersection));
-//    }
-
     public void disconnect(final PlayerEntity player, final Vec3d hit) {
         this.destination.get(this.world).ifPresent(f -> this.disconnect(f, hit));
     }
