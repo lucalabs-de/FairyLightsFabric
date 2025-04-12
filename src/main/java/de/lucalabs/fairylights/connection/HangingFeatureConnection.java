@@ -51,7 +51,7 @@ public abstract class HangingFeatureConnection<F extends HangingFeature> extends
         final F[] prev = this.features;
         final List<F> features = new ArrayList<>();
         this.onBeforeUpdateFeatures();
-        catenary.visitPoints(spacing, true, (index, x, y, z, yaw, pitch) -> {
+        catenary.visitPoints(spacing, true, (index, x, y, z, yaw, pitch) -> { // TODO doing this every tick seems insanely inefficient and unnecessary
             final F feature;
             if (!relocated && prev != null && index < prev.length && this.canReuse(prev[index], index)) {
                 feature = prev[index];

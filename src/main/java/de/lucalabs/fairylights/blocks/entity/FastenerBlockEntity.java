@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.blocks.entity;
 
+import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;

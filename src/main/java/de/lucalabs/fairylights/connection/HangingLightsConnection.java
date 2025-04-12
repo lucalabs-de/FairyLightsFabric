@@ -13,6 +13,7 @@ import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
 import de.lucalabs.fairylights.util.ItemHelper;
 import de.lucalabs.fairylights.util.Tags;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -207,9 +208,11 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
 
     @Override
     public void onRemove() {
-        for (final BlockPos pos : this.litBlocks) {
-            this.removeLight(pos);
-        }
+        // TODO this causes the game to freeze, it cost me 10 hours to track this down
+        // TODO check if removing this breaks anything
+//        for (final BlockPos pos : this.litBlocks) {
+//            this.removeLight(pos);
+//        }
     }
 
     private void removeLight(final BlockPos pos) {
@@ -220,7 +223,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
 
     private void setLight(final BlockPos pos) {
         if (this.world.canSetBlock(pos) && this.world.isAir(pos) && this.world.getLightLevel(LightType.BLOCK, pos) < MAX_LIGHT) {
-            this.world.setBlockState(pos, Blocks.LIGHT.getDefaultState().with(LightBlock.LEVEL_15, LightBlock.field_33722), 2);
+            this.world.setBlockState(pos, Blocks.LIGHT.getDefaultState().with(LightBlock.LEVEL_15, 15), Block.NOTIFY_LISTENERS);
         }
     }
 

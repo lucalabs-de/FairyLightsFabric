@@ -41,7 +41,8 @@ import java.util.List;
 public class LightBlock extends WallMountedBlock implements BlockEntityProvider {
     public static final BooleanProperty LIT = Properties.LIT;
 
-    private static final VoxelShape MIN_ANCHOR_SHAPE = Block.createCuboidShape(7.0D, 0.0D, 7.0D, 9.0D, 16.0D, 9.0D);
+    private static final VoxelShape MIN_ANCHOR_SHAPE
+            = Block.createCuboidShape(7.0D, 0.0D, 7.0D, 9.0D, 16.0D, 9.0D);
 
     private final VoxelShape floorShape, eastWallShape, westWallShape, northWallShape, southWallShape, ceilingShape;
 

@@ -284,9 +284,11 @@ public abstract class Connection implements NbtSerializable {
             }
             return c;
         }).orElse(false);
+
         if (this.destination.isGone(this.world)) {
             this.remove();
         }
+
         return changed;
     }
 

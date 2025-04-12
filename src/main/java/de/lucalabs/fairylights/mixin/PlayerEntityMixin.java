@@ -2,7 +2,6 @@ package de.lucalabs.fairylights.mixin;
 
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.net.FilteredServerPlayNetworking;
-import de.lucalabs.fairylights.net.clientbound.UpdateEntityFastenerMessage;
 import net.minecraft.entity.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

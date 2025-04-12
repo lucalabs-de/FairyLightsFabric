@@ -4,8 +4,6 @@ import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.items.ConnectionItem;
-import de.lucalabs.fairylights.net.FilteredServerPlayNetworking;
-import de.lucalabs.fairylights.net.clientbound.UpdateEntityFastenerMessage;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -198,8 +196,11 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
                 this.dropItem(null);
                 this.remove(RemovalReason.DISCARDED);
             } else if (fastener.update() && !this.getWorld().isClient()) {
-                final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener);
-                FilteredServerPlayNetworking.sendToPlayersWatchingEntity(this, UpdateEntityFastenerMessage.ID, msg);
+                // TODO probably not needed because of auto syncing
+//                final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener);
+//                FilteredServerPlayNetworking.sendToPlayersWatchingEntity(this, UpdateEntityFastenerMessage.ID, msg);
+                // TODO I think this is needed instead though?
+                FairyLightComponents.FASTENER.sync(this);
             }
         });
     }

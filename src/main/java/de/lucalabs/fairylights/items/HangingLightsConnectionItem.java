@@ -1,8 +1,10 @@
 package de.lucalabs.fairylights.items;
 
+import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.connection.ConnectionTypes;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.string.StringType;
+import de.lucalabs.fairylights.string.StringTypes;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;

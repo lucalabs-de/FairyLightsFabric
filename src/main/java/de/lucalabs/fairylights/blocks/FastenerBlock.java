@@ -171,7 +171,6 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
             final Block blockIn,
             final BlockPos fromPos,
             final boolean isMoving) {
-
         if (state.canPlaceAt(world, pos)) {
             final boolean receivingPower = world.isReceivingRedstonePower(pos);
             final boolean isPowered = state.get(TRIGGERED);

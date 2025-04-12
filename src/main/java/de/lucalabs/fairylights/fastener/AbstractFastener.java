@@ -81,6 +81,7 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
         final Iterator<Connection> it = this.outgoing.values().iterator();
         final Vec3d fromOffset = this.getConnectionPoint();
         boolean dirty = this.dirty;
+
         this.dirty = false;
         while (it.hasNext()) {
             final Connection connection = it.next();
@@ -96,12 +97,15 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
                 }
             }
         }
+
         if (this.world != null) {
             this.incoming.values().removeIf(incoming -> incoming.gone(this.world));
         }
+
         if (dirty) {
             this.calculateBoundingBox();
         }
+
         return dirty;
     }
 
