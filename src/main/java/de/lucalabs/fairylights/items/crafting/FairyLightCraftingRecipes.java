@@ -75,6 +75,7 @@ public final class FairyLightCraftingRecipes {
     public static final RecipeSerializer<GenericRecipe> LIGHT_TWINKLE = register(
             "crafting_special_light_twinkle",
             () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createLightTwinkle));
+
     public static final RecipeSerializer<GenericRecipe> COLOR_CHANGING_LIGHT = register(
             "crafting_special_color_changing_light",
             () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createColorChangingLight));

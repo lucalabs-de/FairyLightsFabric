@@ -23,7 +23,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"fairy-lights" {
+		"fairylights" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

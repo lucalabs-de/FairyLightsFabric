@@ -5,8 +5,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
+import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
+import de.lucalabs.fairylights.util.Tags;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -75,6 +77,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
     private DefaultedList<Ingredient> getDisplayIngredients() {
+        // set regular ingredients according to pattern
         final DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(9, Ingredient.EMPTY);
         for (int i = 0; i < this.ingredients.length; i++) {
             final int x = i % this.width;
@@ -82,6 +85,8 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
             final ItemStack[] stacks = this.ingredients[i].getInputs().toArray(new ItemStack[0]);
             ingredients.set(x + y * 3, Ingredient.ofStacks(stacks));
         }
+
+        // fill empty slots with required auxiliary ingredients
         for (int i = 0, slot = 0; slot < ingredients.size(); slot++) {
             final Ingredient ing = ingredients.get(slot);
             if (ing.isEmpty()) {
@@ -135,19 +140,26 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
 
     @Override
     public boolean fits(final int width, final int height) {
-        return this.width <= width && this.height <= height && (this.getRoom() >= 0 || width * height - this.width * this.height + this.getRoom() >= 0);
+        return this.width <= width
+                && this.height <= height
+                && (this.getRoom() >= 0 || width * height - this.width * this.height + this.getRoom() >= 0);
     }
 
     @Override
     public boolean matches(final RecipeInputInventory inventory, @Nullable final World world) {
+
         if (!this.fits(inventory.getWidth(), inventory.getHeight())) {
             return false;
         }
         final int scanWidth = inventory.getWidth() + 1 - this.width;
         final int scanHeight = inventory.getHeight() + 1 - this.height;
+        // iterate over possible origins for recipe (in case it is smaller than the crafting table)
         for (int i = 0, end = scanWidth * scanHeight; i < end; i++) {
             final int x = i % scanWidth;
             final int y = i / scanWidth;
+
+            // recipes should work when mirrored horizontally. The first function is the identity, the other returns the index
+            // counted from the back
             for (final IntUnaryOperator func : this.xFunctions) {
                 final ItemStack result = this.getResult(inventory, x, y, func);
                 if (!result.isEmpty()) {
