@@ -4,11 +4,11 @@ A Fabric port of https://github.com/pau101/Fairy-Lights
 
 ### Known Bugs
 
-- [ ] Saving World hangs
-  - Doesn't happen without hanging strings in the world
+- [x] Saving World hangs
 - [x] Item textures don't get colored
-- [ ] Game crashes when placing pennants
+- [x] Game crashes when placing pennants
 - [ ] Game crashes when attaching lights to fences
+  - No longer crashes when placing the first connection, but crashes on the second
 - [x] Crafting recipes are messed up
 - [ ] Hanging lights get dropped in creative mode
 
