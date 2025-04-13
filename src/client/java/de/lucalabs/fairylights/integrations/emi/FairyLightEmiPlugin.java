@@ -56,8 +56,6 @@ public class FairyLightEmiPlugin implements EmiPlugin {
                                     r.getId().withPath(r.getId().getPath() + "_" + color.getName()),
                                     false
                             ));
-
-                            FairyLights.LOGGER.error(recipes.get(recipes.size() - 1).getId().toString());
                         }
                     } else {
                         recipes.add(new EmiCraftingRecipe(
@@ -74,6 +72,7 @@ public class FairyLightEmiPlugin implements EmiPlugin {
     }
 
     private void simplifyFastenerRecipes(EmiRegistry registry) {
+        // don't show all NBT recipes
         EmiStack hl = EmiStack.of(FairyLightItems.HANGING_LIGHTS).comparison(Comparison.of((i1, i2) -> i1.hasNbt() || i2.hasNbt()));
         registry.removeEmiStacks(hl);
 
@@ -84,5 +83,10 @@ public class FairyLightEmiPlugin implements EmiPlugin {
         registry.addEmiStackAfter(newHl, hl);
         EmiStack newPb = EmiStack.of(FairyLightItems.PENNANT_BUNTING);
         registry.addEmiStackAfter(newPb, pb);
+
+        String[] ignoredRecipes = {"crafting_special_pennant_bunting_augmentation", "crafting_special_hanging_lights_augmentation"};
+
+        // Don't show augmentation recipes
+        registry.removeRecipes(r -> Arrays.stream(ignoredRecipes).anyMatch(i -> i.equals(r.getId().getPath())));
     }
 }
