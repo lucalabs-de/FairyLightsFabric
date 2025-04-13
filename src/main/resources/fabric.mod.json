@@ -29,6 +29,9 @@
 		],
 		"jei_mod_plugin": [
 			"de.lucalabs.fairylights.integrations.jei.FairyLightJeiPlugin"
+		],
+		"emi": [
+			"de.lucalabs.fairylights.integrations.emi.FairyLightEmiPlugin"
 		]
 	},
 	"mixins": [

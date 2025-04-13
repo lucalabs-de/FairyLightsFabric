@@ -11,7 +11,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public final class DyeableItem {
-    private DyeableItem() {}
+    private DyeableItem() {
+    }
 
     public static Text getColorName(final int color) {
         final int r = color >> 16 & 0xFF;
