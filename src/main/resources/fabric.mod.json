@@ -3,13 +3,13 @@
 	"id": "fairylights",
 	"version": "${version}",
 	"name": "Fairy Lights",
-	"description": "Decorative string lights and to light up your world!",
+	"description": "Decorative string lights to light up your world!",
 	"authors": [
 		"lucalabs-de"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/lucalabs-de/fairy-lights-fabric"
+		"sources": "https://github.com/lucalabs-de/FairyLightsFabric"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/fairylights/icon.png",
