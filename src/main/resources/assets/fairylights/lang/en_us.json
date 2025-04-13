@@ -5,6 +5,12 @@
 
     "block.fairylights.fastener": "Connection Fastener",
 
+    "tag.item.fairylights.dyeable": "Dyeable Features",
+    "tag.item.fairylights.dyeable_lights": "Dyable Lights",
+    "tag.item.fairylights.lights": "Lights",
+    "tag.item.fairylights.twinkling_lights": "Twinkling Lights",
+    "tag.item.fairylights.pennants": "Pennants",
+
     "item.fairylights.hanging_lights": "Hanging Lights",
     "item.fairylights.garland": "Vine Garland",
     "item.fairylights.tinsel": "Tinsel Garland",
