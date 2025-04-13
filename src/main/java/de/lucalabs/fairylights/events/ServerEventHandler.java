@@ -3,10 +3,11 @@ package de.lucalabs.fairylights.events;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.items.ConnectionItem;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.block.Blocks;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceBlock;
-import net.minecraft.block.LightBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -71,8 +72,13 @@ public final class ServerEventHandler {
         return shouldFail ? ActionResult.FAIL : ActionResult.PASS;
     }
 
+    public static void onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity e) {
+//        if (e instanceof Faste)
+    }
+
     public static void initialize() {
         FairyLights.LOGGER.info("initializing event listener");
         UseBlockCallback.EVENT.register(ServerEventHandler::onRightClickBlock);
+        PlayerBlockBreakEvents.AFTER.register(ServerEventHandler::onBreakBlock);
     }
 }

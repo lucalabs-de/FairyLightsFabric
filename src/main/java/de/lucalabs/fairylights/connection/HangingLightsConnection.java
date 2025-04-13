@@ -208,11 +208,9 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
 
     @Override
     public void onRemove() {
-        // TODO this causes the game to freeze, it cost me 10 hours to track this down
-        // TODO check if removing this breaks anything
-//        for (final BlockPos pos : this.litBlocks) {
-//            this.removeLight(pos);
-//        }
+        for (final BlockPos pos : this.litBlocks) {
+            this.removeLight(pos);
+        }
     }
 
     private void removeLight(final BlockPos pos) {

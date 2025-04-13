@@ -10,7 +10,7 @@ A Fabric port of https://github.com/pau101/Fairy-Lights
 - [x] Game crashes when attaching lights to fences
 - [x] Crafting recipes are messed up
 - [ ] Hanging lights get dropped in creative mode (this bug exists in the Forge version as well)
-- [ ] Game crashes when interacting with fence fastened entities
+- [x] Game crashes when interacting with fence fastened entities
 
 ### Future Nice-to-Have's
 

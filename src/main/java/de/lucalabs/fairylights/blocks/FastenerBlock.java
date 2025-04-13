@@ -130,7 +130,10 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
         if (!state.isOf(newState.getBlock())) {
             final BlockEntity entity = world.getBlockEntity(pos);
             if (entity instanceof FastenerBlockEntity) {
-                FairyLightComponents.FASTENER.get(entity).get().ifPresent(f -> f.dropItems(world, pos));
+                FairyLightComponents.FASTENER.get(entity).get().ifPresent(f -> {
+                    f.remove();
+                    f.dropItems(world, pos);
+                });
             }
             super.onStateReplaced(state, world, pos, newState, isMoving);
         }

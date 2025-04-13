@@ -70,12 +70,6 @@ public final class FastenerBlockEntity extends BlockEntity {
         this.getFastener().ifPresent(fastener -> fastener.setWorld(world));
     }
 
-    @Override
-    public void markRemoved() {
-        this.getFastener().ifPresent(Fastener::remove);
-        super.markRemoved();
-    }
-
     private Optional<Fastener<?>> getFastener() {
         return FairyLightComponents.FASTENER.get(this).get();
     }

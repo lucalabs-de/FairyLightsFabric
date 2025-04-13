@@ -44,7 +44,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
 
     public FenceFastenerEntity(final World world, final BlockPos pos) {
         this(world);
-        this.setPos(pos.getX(), pos.getY(), pos.getZ());
+        this.setPosition(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public static FenceFastenerEntity create(final World world, final BlockPos fence) {
@@ -193,7 +193,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     public void tick() {
         this.getFastener().ifPresent(fastener -> {
             if (!this.getWorld().isClient() && (fastener.hasNoConnections() || this.checkSurface())) {
-                this.dropItem(null);
+                this.onBreak(null);
                 this.remove(RemovalReason.DISCARDED);
             } else if (fastener.update() && !this.getWorld().isClient()) {
                 // TODO probably not needed because of auto syncing
