@@ -25,7 +25,7 @@ public final class FairyLightBlocks {
                             .sounds(BlockSoundGroup.LANTERN)));
 
     public static final LightBlock FAIRY_LIGHT = register("fairy_light", createLight(SimpleLightVariant.FAIRY_LIGHT));
-    public static final LightBlock PAPER_LANTERN = register("paper_lantern", createLight(SimpleLightVariant.PAPER_LANTERN));
+    public static final LightBlock OIL_LANTERN = register("oil_lantern", createLight(SimpleLightVariant.OIL_LANTERN));
     public static final LightBlock INCANDESCENT_LIGHT = register("incandescent_light", createLight(SimpleLightVariant.INCANDESCENT_LIGHT));
 
     private FairyLightBlocks() {}

@@ -41,8 +41,8 @@ public final class FairyLightItemGroups {
                         entries.addAll(generateCollection(FairyLightItems.SQUARE_PENNANT));
 
                         entries.addAll(generateCollection(FairyLightItems.FAIRY_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.PAPER_LANTERN));
 
+                        entries.add(new ItemStack(FairyLightItems.OIL_LANTERN));
                         entries.add(new ItemStack(FairyLightItems.INCANDESCENT_LIGHT));
                     }));
 

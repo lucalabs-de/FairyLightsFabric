@@ -4,10 +4,7 @@ import de.lucalabs.fairylights.blocks.entity.FairyLightBlockEntities;
 import de.lucalabs.fairylights.entity.FairyLightEntities;
 import de.lucalabs.fairylights.fastener.RegularBlockView;
 import de.lucalabs.fairylights.items.ItemColorManager;
-import de.lucalabs.fairylights.model.light.BowModel;
-import de.lucalabs.fairylights.model.light.FairyLightModel;
-import de.lucalabs.fairylights.model.light.IncandescentLightModel;
-import de.lucalabs.fairylights.model.light.PaperLanternModel;
+import de.lucalabs.fairylights.model.light.*;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.block.entity.FastenerBlockEntityRenderer;
 import de.lucalabs.fairylights.renderer.block.entity.LightBlockEntityRenderer;
@@ -37,7 +34,7 @@ public class FairyLightsClient implements ClientModInitializer {
 
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.BOW, BowModel::createLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.FAIRY_LIGHT, FairyLightModel::createLayer);
-        EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.PAPER_LANTERN, PaperLanternModel::createLayer);
+        EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.OIL_LANTERN, OilLanternModel::createLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.INCANDESCENT_LIGHT, IncandescentLightModel::createLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.PENNANT_WIRE, PennantBuntingRenderer::wireLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.LIGHTS_WIRE, PennantBuntingRenderer::wireLayer);

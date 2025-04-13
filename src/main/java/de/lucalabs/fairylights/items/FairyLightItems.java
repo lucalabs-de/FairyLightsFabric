@@ -19,7 +19,7 @@ public final class FairyLightItems {
     public static final ConnectionItem PENNANT_BUNTING = register("pennant_bunting", () -> new PennantBuntingConnectionItem(defaultProperties()));
 
     public static final LightItem FAIRY_LIGHT = register("fairy_light", createColorLight(FairyLightBlocks.FAIRY_LIGHT));
-    public static final LightItem PAPER_LANTERN = register("paper_lantern", createColorLight(FairyLightBlocks.PAPER_LANTERN));
+    public static final LightItem OIL_LANTERN = register("oil_lantern", createLight(FairyLightBlocks.OIL_LANTERN, LightItem::new));
     public static final LightItem INCANDESCENT_LIGHT = register("incandescent_light", createLight(FairyLightBlocks.INCANDESCENT_LIGHT, LightItem::new));
 
     public static final Item TRIANGLE_PENNANT = register("triangle_pennant", () -> new PennantItem(defaultProperties()));

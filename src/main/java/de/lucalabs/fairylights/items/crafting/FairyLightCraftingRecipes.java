@@ -68,10 +68,6 @@ public final class FairyLightCraftingRecipes {
             "crafting_special_fairy_light",
             () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createFairyLight));
 
-    public static final RecipeSerializer<GenericRecipe> PAPER_LANTERN = register(
-            "crafting_special_paper_lantern",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createPaperLantern));
-
     public static final RecipeSerializer<GenericRecipe> LIGHT_TWINKLE = register(
             "crafting_special_light_twinkle",
             () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createLightTwinkle));
@@ -402,14 +398,6 @@ public final class FairyLightCraftingRecipes {
                 .withIngredient('G', Items.GLASS_PANE)
         );
     }
-
-    private static GenericRecipe createPaperLantern(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return createLight(name, () -> PAPER_LANTERN, () -> FairyLightItems.PAPER_LANTERN, b -> b
-                .withShape(" I ", "PDP", "PPP")
-                .withIngredient('P', Items.PAPER)
-        );
-    }
-
 
     private static GenericRecipe createLight(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Supplier<? extends Item> variant, final UnaryOperator<GenericRecipeBuilder> recipe) {
         return recipe.apply(new GenericRecipeBuilder(name, serializer))

@@ -84,9 +84,8 @@ public class FairyLightEmiPlugin implements EmiPlugin {
         EmiStack newPb = EmiStack.of(FairyLightItems.PENNANT_BUNTING);
         registry.addEmiStackAfter(newPb, pb);
 
-        String[] ignoredRecipes = {"crafting_special_pennant_bunting_augmentation", "crafting_special_hanging_lights_augmentation"};
-
         // Don't show augmentation recipes
+        String[] ignoredRecipes = {"crafting_special_pennant_bunting_augmentation", "crafting_special_hanging_lights_augmentation"};
         registry.removeRecipes(r -> Arrays.stream(ignoredRecipes).anyMatch(i -> i.equals(r.getId().getPath())));
     }
 }

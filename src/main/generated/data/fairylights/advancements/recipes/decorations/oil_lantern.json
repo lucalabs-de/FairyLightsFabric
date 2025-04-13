@@ -1,16 +1,6 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_dye": {
-      "conditions": {
-        "items": [
-          {
-            "tag": "c:dyes"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
     "has_iron": {
       "conditions": {
         "items": [
@@ -25,22 +15,34 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "fairylights:paper_lantern"
+        "recipe": "fairylights:oil_lantern"
       },
       "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_torch": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:torch"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
     }
   },
   "requirements": [
     [
       "has_iron",
-      "has_dye",
+      "has_torch",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "fairylights:paper_lantern"
+      "fairylights:oil_lantern"
     ]
   },
-  "sends_telemetry_event": true
+  "sends_telemetry_event": false
 }

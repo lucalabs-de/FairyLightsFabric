@@ -5,10 +5,7 @@ import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.items.SimpleLightVariant;
-import de.lucalabs.fairylights.model.light.FairyLightModel;
-import de.lucalabs.fairylights.model.light.IncandescentLightModel;
-import de.lucalabs.fairylights.model.light.LightModel;
-import de.lucalabs.fairylights.model.light.PaperLanternModel;
+import de.lucalabs.fairylights.model.light.*;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.RenderConstants;
 import net.minecraft.client.model.ModelPart;
@@ -60,11 +57,12 @@ public class LightRenderer {
                         SimpleLightVariant.FAIRY_LIGHT,
                         LightModelProvider.of(new FairyLightModel(baker.apply(FairyLightModelLayers.FAIRY_LIGHT))))
                 .put(
-                        SimpleLightVariant.PAPER_LANTERN,
-                        LightModelProvider.of(new PaperLanternModel(baker.apply(FairyLightModelLayers.PAPER_LANTERN))))
-                .put(
                         SimpleLightVariant.INCANDESCENT_LIGHT,
                         LightModelProvider.of(new IncandescentLightModel(baker.apply(FairyLightModelLayers.INCANDESCENT_LIGHT))))
+                .put(
+                        SimpleLightVariant.OIL_LANTERN,
+                       LightModelProvider.of(new OilLanternModel(baker.apply(FairyLightModelLayers.OIL_LANTERN)))
+                )
                 .build();
     }
 

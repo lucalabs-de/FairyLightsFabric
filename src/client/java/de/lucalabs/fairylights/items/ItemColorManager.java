@@ -12,7 +12,6 @@ public final class ItemColorManager {
 
     private static final Item[] COLORABLE_LIGHTS = {
             FairyLightItems.FAIRY_LIGHT,
-            FairyLightItems.PAPER_LANTERN
     };
 
     private static final Item[] HANGING_LIGHTS_LINES = {

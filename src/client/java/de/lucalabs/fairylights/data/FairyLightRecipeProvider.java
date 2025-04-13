@@ -33,6 +33,18 @@ public final class FairyLightRecipeProvider extends FabricRecipeProvider {
                 .criterion("has_torch", conditionsFromItem(Items.TORCH))
                 .offerTo(consumer);
 
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, FairyLightItems.OIL_LANTERN, 4)
+                .pattern(" I ")
+                .pattern("STS")
+                .pattern("IGI")
+                .input('I', Items.IRON_INGOT)
+                .input('G', Items.GLASS_PANE)
+                .input('T', Items.TORCH)
+                .input('S', Items.STICK)
+                .criterion("has_iron", conditionsFromItem(Items.IRON_INGOT))
+                .criterion("has_torch", conditionsFromItem(Items.TORCH))
+                .offerTo(consumer);
+
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.HANGING_LIGHTS)
                 .unlockedBy("has_lights", conditionsFromTag(Tags.LIGHTS))
                 .build(consumer, new Identifier(FairyLights.ID, "hanging_lights"));
@@ -61,9 +73,6 @@ public final class FairyLightRecipeProvider extends FabricRecipeProvider {
 
         this.lightRecipe(FairyLightCraftingRecipes.FAIRY_LIGHT)
                 .build(consumer, new Identifier(FairyLights.ID, "fairy_light"));
-
-        this.lightRecipe(FairyLightCraftingRecipes.PAPER_LANTERN)
-                .build(consumer, new Identifier(FairyLights.ID, "paper_lantern"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.LIGHT_TWINKLE)
                 .build(consumer, new Identifier(FairyLights.ID, "light_twinkle"));

@@ -14,12 +14,12 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
             0.044D, SimpleLightVariant::standardBehavior,
             true);
 
-    public static final LightVariant<StandardLightBehavior> PAPER_LANTERN = new SimpleLightVariant<>(
+    public static final LightVariant<BrightnessLightBehavior> OIL_LANTERN = new SimpleLightVariant<>(
             false,
-            1.0F,
-            new Box(-0.250D, -0.906D, -0.250D, 0.250D, 0.091D, 0.250D),
+            1.5F,
+            new Box(-0.219D, -0.656D, -0.188D, 0.219D, 0.091D, 0.188D),
             0.000D,
-            SimpleLightVariant::standardBehavior);
+            stack -> new TorchLightBehavior(0.13D));
 
     public static final LightVariant<BrightnessLightBehavior> INCANDESCENT_LIGHT = new SimpleLightVariant<>(
             true,
