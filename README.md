@@ -7,10 +7,10 @@ A Fabric port of https://github.com/pau101/Fairy-Lights
 - [x] Saving World hangs
 - [x] Item textures don't get colored
 - [x] Game crashes when placing pennants
-- [ ] Game crashes when attaching lights to fences
-  - No longer crashes when placing the first connection, but crashes on the second
+- [x] Game crashes when attaching lights to fences
 - [x] Crafting recipes are messed up
-- [ ] Hanging lights get dropped in creative mode
+- [ ] Hanging lights get dropped in creative mode (this bug exists in the Forge version as well)
+- [ ] Game crashes when interacting with fence fastened entities
 
 ### Future Nice-to-Have's
 

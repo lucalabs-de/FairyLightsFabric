@@ -166,7 +166,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
 
     @Override
     public void setPosition(final double x, final double y, final double z) {
-        super.setPos(MathHelper.floor(x) + 0.5, MathHelper.floor(y) + 0.5, MathHelper.floor(z) + 0.5);
+        super.setPosition(MathHelper.floor(x) + 0.5, MathHelper.floor(y) + 0.5, MathHelper.floor(z) + 0.5);
     }
 
     @Override
