@@ -53,7 +53,7 @@ public class FairyLightEmiPlugin implements EmiPlugin {
                                             })
                                             .map(EmiIngredient::of).toList(),
                                     EmiStack.of(coloredOutput),
-                                    r.getId().withPath(r.getId().getPath() + "_" + color.getName()),
+                                    r.getId().withPath("/" + r.getId().getPath() + "_" + color.getName()),
                                     false
                             ));
                         }
@@ -85,7 +85,11 @@ public class FairyLightEmiPlugin implements EmiPlugin {
         registry.addEmiStackAfter(newPb, pb);
 
         // Don't show augmentation recipes
-        String[] ignoredRecipes = {"crafting_special_pennant_bunting_augmentation", "crafting_special_hanging_lights_augmentation"};
-        registry.removeRecipes(r -> Arrays.stream(ignoredRecipes).anyMatch(i -> i.equals(r.getId().getPath())));
+        String[] ignoredRecipes = {
+                "crafting_special_pennant_bunting_augmentation",
+                "pennant_bunting_augmentation",
+                "crafting_special_hanging_lights_augmentation",
+                "hanging_lights_augmentation"};
+        registry.removeRecipes(r -> Arrays.stream(ignoredRecipes).anyMatch(i -> r.getId() != null && i.equals(r.getId().getPath())));
     }
 }

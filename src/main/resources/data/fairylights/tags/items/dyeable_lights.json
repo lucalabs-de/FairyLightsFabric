@@ -1,7 +1,6 @@
 {
     "replace": false,
     "values": [
-        "fairylights:fairy_light",
-        "fairylights:paper_lantern"
+        "fairylights:fairy_light"
     ]
 }
