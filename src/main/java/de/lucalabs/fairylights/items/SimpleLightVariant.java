@@ -11,7 +11,8 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
             true,
             1.0F,
             new Box(-0.138D, -0.138D, -0.138D, 0.138D, 0.138D, 0.138D),
-            0.044D, SimpleLightVariant::standardBehavior,
+            0.044D,
+            SimpleLightVariant::standardBehavior,
             true);
 
     public static final LightVariant<BrightnessLightBehavior> OIL_LANTERN = new SimpleLightVariant<>(
@@ -45,7 +46,7 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
         this(parallelsCord, spacing, bounds, floorOffset, behaviorFactory, false);
     }
 
-    SimpleLightVariant(final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
+    public SimpleLightVariant(final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
         this.parallelsCord = parallelsCord;
         this.spacing = spacing;
         this.bounds = bounds;
@@ -55,7 +56,7 @@ public class SimpleLightVariant<T extends LightBehavior> implements LightVariant
     }
 
     // TODO check if the commented-out behaviours are necessary for anything
-    private static StandardLightBehavior standardBehavior(final ItemStack stack) {
+    public static StandardLightBehavior standardBehavior(final ItemStack stack) {
         final BrightnessLightBehavior brightness;
         if (TwinkleBehavior.exists(stack)) {
             brightness = new TwinkleBehavior(0.05F, 40);

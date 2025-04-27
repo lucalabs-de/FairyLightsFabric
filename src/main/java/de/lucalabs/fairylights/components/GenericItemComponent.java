@@ -1,19 +1,23 @@
 package de.lucalabs.fairylights.components;
 
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.item.ItemComponent;
+import com.mojang.serialization.Codec;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodec;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.component.DataComponentTypes;
 import org.jetbrains.annotations.Nullable;
+import org.ladysnake.cca.api.v3.component.TransientComponent;
 
 import java.util.Optional;
 
-public abstract class GenericItemComponent<T> extends ItemComponent {
+public abstract class GenericItemComponent<T> implements TransientComponent {
 
     @Nullable
     protected T delegate;
 
-    public GenericItemComponent(ItemStack stack, ComponentKey<?> key) {
-       super(stack, key);
+    public GenericItemComponent(ItemStack stack) {
        this.delegate = null;
     }
 
@@ -29,5 +33,6 @@ public abstract class GenericItemComponent<T> extends ItemComponent {
     public boolean isEmpty() {
         return delegate == null;
     }
+
 
 }
