@@ -1,11 +1,10 @@
 package de.lucalabs.fairylights.items;
 
+import de.lucalabs.fairylights.components.FairyLightComponents;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -51,10 +50,8 @@ public final class DyeableItem {
         if (color == DyeColor.GRAY) {
             return 0x606060;
         }
-        float[] colors = color.getColorComponents();
-        return MathHelper.floor(colors[0] * 255.0F) << 16
-                | MathHelper.floor(colors[1] * 255.0F) << 8
-                | MathHelper.floor(colors[2] * 255.0F);
+
+        return color.getEntityColor();
     }
 
     public static Optional<DyeColor> getDyeColor(final ItemStack stack) {
@@ -67,25 +64,21 @@ public final class DyeableItem {
     }
 
     public static ItemStack setColor(final ItemStack stack, final int color) {
-        setColor(stack.getOrCreateNbt(), color);
+        stack.set(FairyLightComponents.Dyeable.COLOR, color);
         return stack;
     }
 
-    public static NbtCompound setColor(final NbtCompound tag, final DyeColor dye) {
-        return setColor(tag, getColor(dye));
+    public static ComponentMapImpl setColor(final ComponentMapImpl comps, final DyeColor dye) {
+        return setColor(comps, getColor(dye));
     }
 
-    public static NbtCompound setColor(final NbtCompound tag, final int color) {
-        tag.putInt("color", color);
-        return tag;
+    public static ComponentMapImpl setColor(final ComponentMapImpl comps, final int color) {
+        comps.set(FairyLightComponents.Dyeable.COLOR, color);
+        return comps;
     }
 
     public static int getColor(final ItemStack stack) {
-        final NbtCompound tag = stack.getNbt();
-        return tag != null ? getColor(tag) : 0xFFFFFF;
-    }
-
-    public static int getColor(final NbtCompound tag) {
-        return tag.contains("color", NbtElement.INT_TYPE) ? tag.getInt("color") : 0xFFFFFF;
+        final var color = stack.get(FairyLightComponents.Dyeable.COLOR);
+        return color != null ? color : 0xFFFFFF;
     }
 }

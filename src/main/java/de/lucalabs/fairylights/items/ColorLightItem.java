@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.items;
 
 import de.lucalabs.fairylights.blocks.LightBlock;
+import de.lucalabs.fairylights.components.FairyLightComponents;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -14,8 +15,7 @@ public class ColorLightItem extends LightItem {
 
     @Override
     public Text getName(final ItemStack stack) {
-        final NbtCompound tag = stack.getNbt();
-        if (tag != null && tag.contains("colors", NbtElement.LIST_TYPE)) {
+        if (stack.contains(FairyLightComponents.Dyeable.COLORS)) {
             return Text.translatable("format.fairylights.color_changing", super.getName(stack));
         }
         return DyeableItem.getDisplayName(stack, super.getName(stack));

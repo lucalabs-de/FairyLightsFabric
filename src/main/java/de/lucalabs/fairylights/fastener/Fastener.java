@@ -3,7 +3,6 @@ package de.lucalabs.fairylights.fastener;
 import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.ConnectionType;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
-import dev.onyxstudios.cca.api.v3.component.Component;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;

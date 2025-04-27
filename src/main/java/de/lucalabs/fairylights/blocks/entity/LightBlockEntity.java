@@ -9,10 +9,11 @@ import de.lucalabs.fairylights.util.MathHelper;
 import de.lucalabs.fairylights.util.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
@@ -46,7 +47,7 @@ public class LightBlockEntity extends BlockEntity {
         this.markDirty();
     }
 
-    public void interact(final World world, final BlockPos pos, final BlockState state, final PlayerEntity player, final Hand hand, final BlockHitResult hit) {
+    public void interact(final World world, final BlockPos pos, final BlockState state, final PlayerEntity player, final BlockHitResult hit) {
         this.setOn(!this.on);
         world.setBlockState(pos, state.with(LightBlock.LIT, this.on));
         final SoundEvent lightSnd;
@@ -63,22 +64,22 @@ public class LightBlockEntity extends BlockEntity {
 
     public void animateTick() {
         final BlockState state = this.getCachedState();
-        final WallMountLocation face = state.get(LightBlock.FACE);
+        final BlockFace face = state.get(LightBlock.FACE);
         final float rotation = state.get(LightBlock.FACING).asRotation();
         final MatrixStack matrix = new MatrixStack();
         matrix.translate(0.5F, 0.5F, 0.5F);
         matrix.rotate((float) Math.toRadians(180.0F - rotation), 0.0F, 1.0F, 0.0F);
         if (this.light.getVariant().isOrientable()) {
-            if (face == WallMountLocation.WALL) {
+            if (face == BlockFace.WALL) {
                 matrix.rotate(MathHelper.HALF_PI, 1.0F, 0.0F, 0.0F);
-            } else if (face == WallMountLocation.FLOOR) {
+            } else if (face == BlockFace.FLOOR) {
                 matrix.rotate(-MathHelper.PI, 1.0F, 0.0F, 0.0F);
             }
             matrix.translate(0.0F, 0.5F, 0.0F);
         } else {
-            if (face == WallMountLocation.CEILING) {
+            if (face == BlockFace.CEILING) {
                 matrix.translate(0.0F, 0.25F, 0.0F);
-            } else if (face == WallMountLocation.WALL) {
+            } else if (face == BlockFace.WALL) {
                 matrix.translate(0.0F, 3.0F / 16.0F, 0.125F);
             } else {
                 matrix.translate(0.0F, -(float) this.light.getVariant().getBounds().minY - 0.5F, 0.0F);
@@ -88,21 +89,21 @@ public class LightBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
+        return this.createNbt(registryLookup);
     }
 
     @Override
-    protected void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
-        compound.put("item", this.light.getItem().writeNbt(new NbtCompound()));
+    protected void writeNbt(NbtCompound compound, RegistryWrapper.WrapperLookup registryLookup) {
+        super.writeNbt(compound, registryLookup);
+        compound.put("item", this.light.getItem().encode(registryLookup));
         compound.putBoolean("on", this.on);
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
-        this.setItemStack(ItemStack.fromNbt(compound.getCompound("item")));
+    public void readNbt(NbtCompound compound, RegistryWrapper.WrapperLookup registryLookup) {
+        super.readNbt(compound, registryLookup);
+        this.setItemStack(ItemStack.fromNbtOrEmpty(registryLookup, compound.getCompound("item")));
         this.setOn(compound.getBoolean("on"));
     }
 }

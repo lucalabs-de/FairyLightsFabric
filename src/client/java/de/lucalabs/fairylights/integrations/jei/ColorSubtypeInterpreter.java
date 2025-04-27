@@ -1,19 +1,23 @@
 package de.lucalabs.fairylights.integrations.jei;
 
-import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import de.lucalabs.fairylights.components.FairyLightComponents;
+import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.NotNull;
 
-public final class ColorSubtypeInterpreter implements IIngredientSubtypeInterpreter<ItemStack> {
+public final class ColorSubtypeInterpreter implements ISubtypeInterpreter<ItemStack> {
     @Override
-    public @NotNull String apply(final ItemStack stack, final UidContext context) {
-        final NbtCompound compound = stack.getNbt();
-        if (compound != null && compound.contains("color", NbtElement.INT_TYPE)) {
-            return String.format("%06x", compound.getInt("color"));
+    public @NotNull Object getSubtypeData(ItemStack itemStack, UidContext uidContext) {
+        return getLegacyStringSubtypeInfo(itemStack, uidContext);
+    }
+
+    @Override
+    public @NotNull String getLegacyStringSubtypeInfo(ItemStack itemStack, UidContext uidContext) {
+        var color = itemStack.get(FairyLightComponents.Dyeable.COLOR);
+        if (color != null) {
+            return String.format("%06x", color);
         }
-        return NONE;
+        return "";
     }
 }

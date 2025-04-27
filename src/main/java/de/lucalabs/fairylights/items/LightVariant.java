@@ -3,6 +3,7 @@ package de.lucalabs.fairylights.items;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.components.LightVariantComponent;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.Box;
 
@@ -23,6 +24,11 @@ public interface LightVariant<T extends LightBehavior> {
     boolean isOrientable();
 
     static Optional<LightVariant<?>> get(final ItemStack provider) {
-        return LightVariantComponent.get(provider);
+        Item i = provider.getItem();
+        if (i instanceof LightItem lI) {
+           return Optional.ofNullable(lI.getBlock().getVariant());
+        }
+
+        return Optional.empty();
     }
 }

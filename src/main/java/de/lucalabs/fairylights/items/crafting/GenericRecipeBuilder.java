@@ -11,42 +11,56 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
 
 import java.util.*;
 import java.util.function.Supplier;
 
 public final class GenericRecipeBuilder {
     private static final char EMPTY_SPACE = ' ';
-
+    private final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer;
+    private final Map<Character, RegularIngredient> ingredients = new HashMap<>();
+    private final List<AuxiliaryIngredient<?>> auxiliaryIngredients = new ArrayList<>();
     private ItemStack output;
     private char outputChar = 0;
     private char[] shape = new char[0];
     private int width;
     private int height;
 
-    private final Identifier name;
-
-    private final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer;
-    private final Map<Character, RegularIngredient> ingredients = new HashMap<>();
-    private final List<AuxiliaryIngredient<?>> auxiliaryIngredients = new ArrayList<>();
-
-    public GenericRecipeBuilder(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer) {
-        this(name, serializer, ItemStack.EMPTY);
+    public GenericRecipeBuilder(final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer) {
+        this(serializer, ItemStack.EMPTY);
     }
 
-    public GenericRecipeBuilder(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Item item) {
-        this(name, serializer, new ItemStack(item));
+    public GenericRecipeBuilder(final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Item item) {
+        this(serializer, new ItemStack(item));
     }
 
-    public GenericRecipeBuilder(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Block block) {
-        this(name, serializer, new ItemStack(block));
+    public GenericRecipeBuilder(final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Block block) {
+        this(serializer, new ItemStack(block));
     }
 
-    public GenericRecipeBuilder(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output) {
-        this.name = name;
+    public GenericRecipeBuilder(final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output) {
         this.serializer = serializer;
         this.output = Objects.requireNonNull(output, "output");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static RegularIngredient asIngredient(final Object object) {
+        if (object instanceof Item) {
+            return new BasicRegularIngredient(Ingredient.ofItems((Item) object));
+        }
+        if (object instanceof Block) {
+            return new BasicRegularIngredient(Ingredient.ofItems((Block) object));
+        }
+        if (object instanceof ItemStack) {
+            return new BasicRegularIngredient(Ingredient.ofStacks((ItemStack) object));
+        }
+        if (object instanceof TagKey<?>) {
+            return new BasicRegularIngredient(LazyTagIngredient.of((TagKey<Item>) object));
+        }
+        if (object instanceof RegularIngredient) {
+            return (RegularIngredient) object;
+        }
+        throw new IllegalArgumentException("Unknown ingredient object: " + object);
     }
 
     public GenericRecipeBuilder withShape(final String... shape) {
@@ -188,26 +202,6 @@ public final class GenericRecipeBuilder {
                 new AuxiliaryIngredient<?>[0]
         );
 
-        return new GenericRecipe(this.name, this.serializer, this.output, ingredients, auxiliaryIngredients, this.width, this.height, output);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static RegularIngredient asIngredient(final Object object) {
-        if (object instanceof Item) {
-            return new BasicRegularIngredient(Ingredient.ofItems((Item) object));
-        }
-        if (object instanceof Block) {
-            return new BasicRegularIngredient(Ingredient.ofItems((Block) object));
-        }
-        if (object instanceof ItemStack) {
-            return new BasicRegularIngredient(Ingredient.ofStacks((ItemStack) object));
-        }
-        if (object instanceof TagKey<?>) {
-            return new BasicRegularIngredient(LazyTagIngredient.of((TagKey<Item>) object));
-        }
-        if (object instanceof RegularIngredient) {
-            return (RegularIngredient) object;
-        }
-        throw new IllegalArgumentException("Unknown ingredient object: " + object);
+        return new GenericRecipe(this.serializer, this.output, ingredients, auxiliaryIngredients, this.width, this.height, output);
     }
 }

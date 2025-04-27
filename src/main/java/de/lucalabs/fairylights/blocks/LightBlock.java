@@ -1,13 +1,14 @@
 package de.lucalabs.fairylights.blocks;
 
+import com.mojang.serialization.MapCodec;
 import de.lucalabs.fairylights.blocks.entity.LightBlockEntity;
-import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.LightVariant;
+import de.lucalabs.fairylights.items.SimpleLightVariant;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -19,8 +20,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -40,7 +39,7 @@ import java.util.List;
 
 public class LightBlock extends WallMountedBlock implements BlockEntityProvider {
     public static final BooleanProperty LIT = Properties.LIT;
-
+    public static final MapCodec<LightBlock> CODEC = createCodec(LightBlock::new);
     private static final VoxelShape MIN_ANCHOR_SHAPE
             = Block.createCuboidShape(7.0D, 0.0D, 7.0D, 9.0D, 16.0D, 9.0D);
 
@@ -48,11 +47,15 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
 
     private final LightVariant<?> variant;
 
+    LightBlock(final Settings properties) {
+        this(properties, SimpleLightVariant.FAIRY_LIGHT); // TODO verify that this is alright
+    }
+
     public LightBlock(final Settings properties, final LightVariant<?> variant) {
         super(properties);
         this.variant = variant;
         final Box bb = this.variant.getBounds();
-        final double w = Math.max(bb.getXLength(), bb.getZLength());
+        final double w = Math.max(bb.getLengthX(), bb.getLengthZ());
         final double w0 = 0.5D - w * 0.5D;
         final double w1 = 0.5D + w * 0.5D;
         if (variant.isOrientable()) {
@@ -65,7 +68,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         } else {
             final double t = 0.125D;
             final double u = 11.0D / 16.0D;
-            this.floorShape = clampBox(w0, 0.0D, w0, w1, bb.getYLength() - this.variant.getFloorOffset(), w1);
+            this.floorShape = clampBox(w0, 0.0D, w0, w1, bb.getLengthY() - this.variant.getFloorOffset(), w1);
             this.eastWallShape = clampBox(w0 - t, u + bb.minY, w0, w1 - t, u + bb.maxY, w1);
             this.westWallShape = clampBox(w0 + t, u + bb.minY, w0, w1 + t, u + bb.maxY, w1);
             this.southWallShape = clampBox(w0, u + bb.minY, w0 - t, w1, u + bb.maxY, w1 - t);
@@ -76,7 +79,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
                 .getStateManager()
                 .getDefaultState()
                 .with(FACING, Direction.NORTH)
-                .with(FACE, WallMountLocation.WALL)
+                .with(FACE, BlockFace.WALL)
                 .with(LIT, true));
     }
 
@@ -95,9 +98,14 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     }
 
     @Override
+    protected MapCodec<? extends WallMountedBlock> getCodec() {
+        return CODEC;
+    }
+
+    @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        final WallMountLocation value = state.get(FACE);
-        if (value == WallMountLocation.WALL) {
+        final BlockFace value = state.get(FACE);
+        if (value == BlockFace.WALL) {
             final Direction facing = state.get(FACING);
             final BlockPos anchorPos = pos.offset(facing.getOpposite());
             BlockState anchorState = world.getBlockState(anchorPos);
@@ -107,7 +115,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             final VoxelShape shape = anchorState.getSidesShape(world, anchorPos);
             return Block.isFaceFullSquare(shape, facing);
         }
-        final Direction facing = value == WallMountLocation.FLOOR ? Direction.DOWN : Direction.UP;
+        final Direction facing = value == BlockFace.FLOOR ? Direction.DOWN : Direction.UP;
         final BlockPos anchorPos = pos.offset(facing);
         BlockState anchorState = world.getBlockState(anchorPos);
         if (anchorState.isIn(BlockTags.LEAVES)) {
@@ -124,11 +132,11 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             final BlockState state;
             if (dir.getAxis() == Direction.Axis.Y) {
                 state = this.getDefaultState()
-                        .with(FACE, dir == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+                        .with(FACE, dir == Direction.UP ? BlockFace.CEILING : BlockFace.FLOOR)
                         .with(FACING, context.getHorizontalPlayerFacing().getOpposite());
             } else {
                 state = this.getDefaultState()
-                        .with(FACE, WallMountLocation.WALL)
+                        .with(FACE, BlockFace.WALL)
                         .with(FACING, dir.getOpposite());
             }
             if (state.canPlaceAt(context.getWorld(), context.getBlockPos())) {
@@ -149,7 +157,6 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getDroppedStacks(final BlockState state, final LootContextParameterSet.Builder builder) {
         final BlockEntity entity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
@@ -159,21 +166,19 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public ActionResult onUse(
             final BlockState state,
             final World world,
             final BlockPos pos,
             final PlayerEntity player,
-            final Hand hand,
             final BlockHitResult hit) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
-            ((LightBlockEntity) entity).interact(world, pos, state, player, hand, hit);
+            ((LightBlockEntity) entity).interact(world, pos, state, player, hit);
             return ActionResult.SUCCESS;
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player, hit);
     }
 
     @Environment(EnvType.CLIENT)
@@ -199,20 +204,6 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             case CEILING -> this.ceilingShape;
             default -> this.floorShape;
         };
-    }
-
-    @Override
-    public ItemStack getPickStack(
-            final BlockView world,
-            final BlockPos pos,
-            final BlockState state) {
-        final BlockEntity entity = world.getBlockEntity(pos);
-        if (entity instanceof LightBlockEntity) {
-            return ((LightBlockEntity) entity).getLight().getItem().copy();
-        }
-        final ItemStack stack = new ItemStack(this);
-        DyeableItem.setColor(stack, DyeColor.YELLOW);
-        return stack;
     }
 
     @Override

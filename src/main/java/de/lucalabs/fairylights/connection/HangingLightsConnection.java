@@ -12,16 +12,15 @@ import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
 import de.lucalabs.fairylights.util.ItemHelper;
+import de.lucalabs.fairylights.util.NbtUtils;
 import de.lucalabs.fairylights.util.Tags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.*;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
@@ -243,8 +242,8 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         this.isOn = compound.getBoolean("isOn");
         this.litBlocks.clear();
         final NbtList litBlocks = compound.getList("litBlocks", NbtElement.COMPOUND_TYPE);
-        for (int i = 0; i < litBlocks.size(); i++) {
-            this.litBlocks.add(NbtHelper.toBlockPos(litBlocks.getCompound(i)));
+        for (NbtElement litBlock : litBlocks) {
+            this.litBlocks.add(NbtUtils.toBlockPos(litBlock));
         }
     }
 
@@ -254,7 +253,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         HangingLightsConnectionItem.setString(compound, this.string);
         final NbtList tagList = new NbtList();
         for (final ItemStack light : this.pattern) {
-            tagList.add(light.writeNbt(new NbtCompound()));
+            ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, light).result().ifPresent(tagList::add);
         }
         compound.put("pattern", tagList);
         return compound;
@@ -268,7 +267,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         this.pattern = new ArrayList<>();
         for (int i = 0; i < patternList.size(); i++) {
             final NbtCompound lightCompound = patternList.getCompound(i);
-            this.pattern.add(ItemStack.fromNbt(lightCompound));
+            ItemStack.CODEC.parse(NbtOps.INSTANCE, lightCompound).result().ifPresent(this.pattern::add);
         }
     }
 }

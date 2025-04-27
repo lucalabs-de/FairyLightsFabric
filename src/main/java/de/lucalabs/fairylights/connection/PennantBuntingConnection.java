@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -95,7 +96,7 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
         final NbtCompound compound = super.serializeLogic();
         final NbtList patternList = new NbtList();
         for (final ItemStack entry : this.pattern) {
-            patternList.add(entry.writeNbt(new NbtCompound()));
+            ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, entry).result().ifPresent(patternList::add);
         }
         compound.put("pattern", patternList);
         return compound;
@@ -107,7 +108,7 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
         this.pattern = new ArrayList<>();
         final NbtList patternList = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
         for (int i = 0; i < patternList.size(); i++) {
-            this.pattern.add(ItemStack.fromNbt(patternList.getCompound(i)));
+            ItemStack.CODEC.parse(NbtOps.INSTANCE, patternList.getCompound(i)).result().ifPresent(pattern::add);
         }
     }
 }

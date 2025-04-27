@@ -2,6 +2,7 @@ package de.lucalabs.fairylights.items.crafting;
 
 import com.google.common.collect.ImmutableList;
 import de.lucalabs.fairylights.FairyLights;
+import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.items.HangingLightsConnectionItem;
@@ -15,6 +16,7 @@ import de.lucalabs.fairylights.util.OreDictUtils;
 import de.lucalabs.fairylights.util.Tags;
 import de.lucalabs.fairylights.util.Utils;
 import de.lucalabs.fairylights.util.styled.StyledString;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,6 +36,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -96,16 +99,16 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public void matched(final ItemStack ingredient, final NbtCompound nbt) {
-            DyeableItem.setColor(nbt, OreDictUtils.getDyeColor(ingredient));
+        public void matched(final ItemStack ingredient, final ComponentMapImpl comps) {
+            DyeableItem.setColor(comps, OreDictUtils.getDyeColor(ingredient));
         }
     };
 
     private FairyLightCraftingRecipes() {}
 
 
-    private static GenericRecipe createDyeColor(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> EDIT_COLOR)
+    private static GenericRecipe createDyeColor(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> EDIT_COLOR)
                 .withShape("I")
                 .withIngredient('I', Tags.DYEABLE).withOutput('I')
                 .withAuxiliaryIngredient(new BasicAuxiliaryIngredient<Blender>(LazyTagIngredient.of(Tags.DYES), true, 8) {
@@ -120,16 +123,16 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public boolean finish(final Blender data, final NbtCompound nbt) {
-                        DyeableItem.setColor(nbt, data.blend());
+                    public boolean finish(final Blender data, final ComponentMapImpl comps) {
+                        DyeableItem.setColor(comps, data.blend());
                         return false;
                     }
                 })
                 .build();
     }
 
-    private static GenericRecipe createLightTwinkle(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> LIGHT_TWINKLE)
+    private static GenericRecipe createLightTwinkle(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> LIGHT_TWINKLE)
                 .withShape("L")
                 .withIngredient('L', Tags.TWINKLING_LIGHTS).withOutput('L')
                 .withAuxiliaryIngredient(new InertBasicAuxiliaryIngredient(Ingredient.ofItems(Items.GLOWSTONE_DUST), true, 1) {
@@ -139,13 +142,13 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void present(final NbtCompound nbt) {
-                        nbt.putBoolean("twinkle", true);
+                    public void present(final ComponentMapImpl comps) {
+                        comps.set(FairyLightComponents.Lights.TWINKLE, true);
                     }
 
                     @Override
-                    public void absent(final NbtCompound nbt) {
-                        nbt.putBoolean("twinkle", false);
+                    public void absent(final ComponentMapImpl comps) {
+                        comps.set(FairyLightComponents.Lights.TWINKLE, false);
                     }
 
                     @Override
@@ -157,30 +160,30 @@ public final class FairyLightCraftingRecipes {
                 .build();
     }
 
-    private static GenericRecipe createColorChangingLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> COLOR_CHANGING_LIGHT)
+    private static GenericRecipe createColorChangingLight(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> COLOR_CHANGING_LIGHT)
                 .withShape("IG")
                 .withIngredient('I', Tags.DYEABLE_LIGHTS).withOutput('I')
                 .withIngredient('G', Items.GOLD_NUGGET)
-                .withAuxiliaryIngredient(new BasicAuxiliaryIngredient<NbtList>(LazyTagIngredient.of(Tags.DYES), true, 8) {
+                .withAuxiliaryIngredient(new BasicAuxiliaryIngredient<List<Integer>>(LazyTagIngredient.of(Tags.DYES), true, 8) {
                     @Override
-                    public NbtList accumulator() {
-                        return new NbtList();
+                    public List<Integer> accumulator() {
+                        return Collections.emptyList();
                     }
 
                     @Override
-                    public void consume(final NbtList data, final ItemStack ingredient) {
-                        data.add(NbtInt.of(DyeableItem.getColor(OreDictUtils.getDyeColor(ingredient))));
+                    public void consume(final List<Integer> data, final ItemStack ingredient) {
+                        data.add(DyeableItem.getColor(OreDictUtils.getDyeColor(ingredient)));
                     }
 
                     @Override
-                    public boolean finish(final NbtList data, final NbtCompound nbt) {
+                    public boolean finish(final List<Integer> data, final ComponentMapImpl comps) {
                         if (!data.isEmpty()) {
-                            if (nbt.contains("color", NbtElement.INT_TYPE)) {
-                                data.add(0, NbtInt.of(nbt.getInt("color")));
-                                nbt.remove("color");
+                            if (comps.contains(FairyLightComponents.Dyeable.COLOR)) {
+                                data.addFirst(comps.get(FairyLightComponents.Dyeable.COLOR));
+                                comps.remove(FairyLightComponents.Dyeable.COLOR);
                             }
-                            nbt.put("colors", data);
+                            comps.set(FairyLightComponents.Dyeable.COLORS, data);
                         }
                         return false;
                     }
@@ -188,8 +191,8 @@ public final class FairyLightCraftingRecipes {
                 .build();
     }
 
-    private static GenericRecipe createHangingLights(Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> HANGING_LIGHTS, FairyLightItems.HANGING_LIGHTS)
+    private static GenericRecipe createHangingLights(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> HANGING_LIGHTS, FairyLightItems.HANGING_LIGHTS)
                 .withShape("I-I")
                 .withIngredient('I', Items.IRON_INGOT)
                 .withIngredient('-', Items.STRING)
@@ -202,12 +205,12 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void present(final NbtCompound nbt) {
+                    public void present(final ComponentMapImpl comps) {
                         HangingLightsConnectionItem.setString(nbt, StringTypes.WHITE_STRING);
                     }
 
                     @Override
-                    public void absent(final NbtCompound nbt) {
+                    public void absent(final ComponentMapImpl comps) {
                         HangingLightsConnectionItem.setString(nbt, StringTypes.BLACK_STRING);
                     }
 
@@ -230,8 +233,8 @@ public final class FairyLightCraftingRecipes {
      *  different recipe layouts the the input ingredients can be generated for so I could show applying a
      *  new light pattern as well.
      */
-    private static GenericRecipe createHangingLightsAugmentation(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> HANGING_LIGHTS_AUGMENTATION, FairyLightItems.HANGING_LIGHTS)
+    private static GenericRecipe createHangingLightsAugmentation(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> HANGING_LIGHTS_AUGMENTATION, FairyLightItems.HANGING_LIGHTS)
                 .withShape("F")
                 .withIngredient('F', new BasicRegularIngredient(Ingredient.ofItems(FairyLightItems.HANGING_LIGHTS)) {
                     @Override
@@ -256,7 +259,7 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void matched(final ItemStack ingredient, final NbtCompound nbt) {
+                    public void matched(final ItemStack ingredient, final ComponentMapImpl comps) {
                         final NbtCompound compound = ingredient.getNbt();
                         if (compound != null) {
                             nbt.copyFrom(compound);
@@ -304,8 +307,8 @@ public final class FairyLightCraftingRecipes {
     }
 
 
-    private static GenericRecipe createPennantBunting(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> PENNANT_BUNTING, FairyLightItems.PENNANT_BUNTING)
+    private static GenericRecipe createPennantBunting(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> PENNANT_BUNTING, FairyLightItems.PENNANT_BUNTING)
                 .withShape("I-I")
                 .withIngredient('I', Items.IRON_INGOT)
                 .withIngredient('-', Items.STRING)
@@ -313,8 +316,8 @@ public final class FairyLightCraftingRecipes {
                 .build();
     }
 
-    private static GenericRecipe createPennantBuntingAugmentation(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return new GenericRecipeBuilder(name, () -> PENNANT_BUNTING_AUGMENTATION, FairyLightItems.PENNANT_BUNTING)
+    private static GenericRecipe createPennantBuntingAugmentation(CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(() -> PENNANT_BUNTING_AUGMENTATION, FairyLightItems.PENNANT_BUNTING)
                 .withShape("B")
                 .withIngredient('B', new BasicRegularIngredient(Ingredient.ofItems(FairyLightItems.PENNANT_BUNTING)) {
                     @Override
@@ -337,7 +340,7 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void matched(final ItemStack ingredient, final NbtCompound nbt) {
+                    public void matched(final ItemStack ingredient, final ComponentMapImpl comps) {
                         final NbtCompound compound = ingredient.getNbt();
                         if (compound != null) {
                             nbt.copyFrom(compound);
@@ -375,8 +378,8 @@ public final class FairyLightCraftingRecipes {
         return stack;
     }
 
-    private static GenericRecipe createPennant(final Identifier name, final Supplier<RecipeSerializer<GenericRecipe>> serializer, final Item item, final String pattern) {
-        return new GenericRecipeBuilder(name, serializer, item)
+    private static GenericRecipe createPennant(final Supplier<RecipeSerializer<GenericRecipe>> serializer, final Item item, final String pattern) {
+        return new GenericRecipeBuilder(serializer, item)
                 .withShape("- -", "PDP", pattern)
                 .withIngredient('P', Items.PAPER)
                 .withIngredient('-', Items.STRING)
@@ -384,23 +387,23 @@ public final class FairyLightCraftingRecipes {
                 .build();
     }
 
-    private static GenericRecipe createTrianglePennant(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return createPennant(name, () -> TRIANGLE_PENNANT, FairyLightItems.TRIANGLE_PENNANT, " P ");
+    private static GenericRecipe createTrianglePennant(CraftingRecipeCategory craftingBookCategory) {
+        return createPennant(() -> TRIANGLE_PENNANT, FairyLightItems.TRIANGLE_PENNANT, " P ");
     }
 
-    private static GenericRecipe createSquarePennant(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return createPennant(name, () -> SQUARE_PENNANT, FairyLightItems.SQUARE_PENNANT, "PPP");
+    private static GenericRecipe createSquarePennant(CraftingRecipeCategory craftingBookCategory) {
+        return createPennant(() -> SQUARE_PENNANT, FairyLightItems.SQUARE_PENNANT, "PPP");
     }
 
-    private static GenericRecipe createFairyLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
-        return createLight(name, () -> FAIRY_LIGHT, () -> FairyLightItems.FAIRY_LIGHT, b -> b
+    private static GenericRecipe createFairyLight(CraftingRecipeCategory craftingBookCategory) {
+        return createLight(() -> FAIRY_LIGHT, () -> FairyLightItems.FAIRY_LIGHT, b -> b
                 .withShape(" I ", "IDI", " G ")
                 .withIngredient('G', Items.GLASS_PANE)
         );
     }
 
-    private static GenericRecipe createLight(final Identifier name, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Supplier<? extends Item> variant, final UnaryOperator<GenericRecipeBuilder> recipe) {
-        return recipe.apply(new GenericRecipeBuilder(name, serializer))
+    private static GenericRecipe createLight(final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final Supplier<? extends Item> variant, final UnaryOperator<GenericRecipeBuilder> recipe) {
+        return recipe.apply(new GenericRecipeBuilder(serializer))
                 .withIngredient('I', Items.IRON_INGOT)
                 .withIngredient('D', DYE_SUBTYPE_INGREDIENT)
                 .withOutput(variant.get(), 4)
@@ -445,7 +448,7 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public boolean finish(final NbtList pattern, final NbtCompound nbt) {
+        public boolean finish(final NbtList pattern, final ComponentMapImpl comps) {
             if (!pattern.isEmpty()) {
                 nbt.put("pattern", pattern);
             }
@@ -496,7 +499,7 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public boolean finish(final NbtList pattern, final NbtCompound nbt) {
+        public boolean finish(final NbtList pattern, final ComponentMapImpl comps) {
             if (!pattern.isEmpty()) {
                 nbt.put("pattern", pattern);
                 nbt.put("text", StyledString.serialize(new StyledString()));

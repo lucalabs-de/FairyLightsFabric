@@ -4,6 +4,7 @@ import de.lucalabs.fairylights.collision.Collidable;
 import de.lucalabs.fairylights.collision.CollidableList;
 import de.lucalabs.fairylights.collision.FeatureCollisionTree;
 import de.lucalabs.fairylights.collision.Intersection;
+import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.fastener.FenceFastener;
@@ -20,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
@@ -134,7 +136,7 @@ public abstract class Connection implements NbtSerializable {
         final ItemStack stack = new ItemStack(this.getType().getItem());
         final NbtCompound tagCompound = this.serializeLogic();
         if (!tagCompound.isEmpty()) {
-            stack.setNbt(tagCompound);
+            stack.set(FairyLightComponents.RAW_NBT, tagCompound);
         }
         return stack;
     }
@@ -212,7 +214,7 @@ public abstract class Connection implements NbtSerializable {
 
     public boolean matches(final ItemStack stack) {
         if (this.getType().getItem().equals(stack.getItem())) {
-            final NbtCompound tag = stack.getNbt();
+            final NbtCompound tag = stack.get(FairyLightComponents.RAW_NBT);
             return tag == null || Utils.impliesNbt(this.serializeLogic(), tag);
         }
         return false;
@@ -225,7 +227,7 @@ public abstract class Connection implements NbtSerializable {
             if (this.shouldDrop()) {
                 ItemHelper.giveItemToPlayer(player, this.getItemStack());
             }
-            final NbtCompound data = heldStack.getNbt();
+            final NbtCompound data = heldStack.get(FairyLightComponents.RAW_NBT);
             final ConnectionType<? extends Connection> type = ((ConnectionItem) heldStack.getItem()).getConnectionType();
             final Connection conn = this.fastener.connect(this.world, dest, type, data == null ? new NbtCompound() : data, true);
             conn.slack = this.slack;

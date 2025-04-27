@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.items.crafting;
 
 import com.google.common.collect.ImmutableList;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
@@ -36,9 +37,9 @@ public interface GenericIngredient<I extends GenericIngredient<I, M>, M extends 
         return false;
     }
 
-    default void present(final NbtCompound nbt) {}
+    default void present(final ComponentMapImpl nbt) {}
 
-    default void absent(final NbtCompound nbt) {}
+    default void absent(final ComponentMapImpl nbt) {}
 
     default ImmutableList<ItemStack> getMatchingSubtypes(final Ingredient stack) {
         Objects.requireNonNull(stack, "stack");

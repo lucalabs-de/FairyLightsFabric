@@ -33,6 +33,4 @@ public abstract class GenericItemComponent<T> implements TransientComponent {
     public boolean isEmpty() {
         return delegate == null;
     }
-
-
 }

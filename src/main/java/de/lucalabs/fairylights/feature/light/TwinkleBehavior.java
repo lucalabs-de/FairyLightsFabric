@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.feature.light;
 
+import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.util.CubicBezier;
 import de.lucalabs.fairylights.util.MathHelper;
 import net.minecraft.item.ItemStack;
@@ -19,8 +20,7 @@ public class TwinkleBehavior implements BrightnessLightBehavior {
     }
 
     public static boolean exists(final ItemStack stack) {
-        final NbtCompound tag = stack.getNbt();
-        return tag != null && tag.getBoolean("twinkle");
+        return Boolean.TRUE.equals(stack.get(FairyLightComponents.Lights.TWINKLE));
     }
 
     @Override

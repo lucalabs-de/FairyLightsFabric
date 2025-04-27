@@ -14,7 +14,7 @@ public final class FairyLightEntities {
 
     public static final EntityType<FenceFastenerEntity> FASTENER = register("fastener", () ->
             EntityType.Builder.<FenceFastenerEntity>create(FenceFastenerEntity::new, SpawnGroup.MISC)
-                    .setDimensions(1.15F, 2.8F)
+                    .dimensions(1.15F, 2.8F)
                     .maxTrackingRange(10)
                     .trackingTickInterval(Integer.MAX_VALUE)
                     .build(FairyLights.ID + ":fastener")

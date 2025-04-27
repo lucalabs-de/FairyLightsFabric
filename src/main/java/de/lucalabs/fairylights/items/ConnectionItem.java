@@ -91,7 +91,7 @@ public abstract class ConnectionItem extends Item {
         final Fastener<?> attacher = FairyLightComponents.FASTENER.get(user).get().orElseThrow(IllegalStateException::new);
         return attacher.getFirstConnection().filter(connection -> {
             final NbtCompound nbt = connection.serializeLogic();
-            return nbt.isEmpty() ? stack.hasNbt() : !NbtHelper.matches(nbt, stack.getNbt(), true);
+            return nbt.isEmpty() ? stack.contains(FairyLightComponents.RAW_NBT) : !NbtHelper.matches(nbt, stack.get(FairyLightComponents.RAW_NBT), true);
         }).isPresent();
     }
 
@@ -106,7 +106,7 @@ public abstract class ConnectionItem extends Item {
         if (world.setBlockState(pos, state, 3)) {
             state.getBlock().onPlaced(world, pos, state, user, stack);
 //            final BlockSoundGroup sound = state.getBlock().getSoundType(state, world, pos, user);
-            final BlockSoundGroup sound = state.getBlock().getSoundGroup(state); // TODO verify that this does the same as the line above
+            final BlockSoundGroup sound = state.getSoundGroup(); // TODO verify that this does the same as the line above
             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     sound.getPlaceSound(),
                     SoundCategory.BLOCKS,
@@ -138,7 +138,7 @@ public abstract class ConnectionItem extends Item {
                     playSound = false;
                 }
             } else {
-                final NbtCompound data = stack.getNbt();
+                final NbtCompound data = stack.get(FairyLightComponents.RAW_NBT);
                 fastener.connect(world, attacher, this.getConnectionType(), data == null ? new NbtCompound() : data, false);
             }
             if (playSound) {

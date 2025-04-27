@@ -17,7 +17,7 @@ public final class FenceFastener extends EntityFastener<FenceFastenerEntity> {
 
     @Override
     public BlockPos getPos() {
-        return this.entity.getDecorationBlockPos();
+        return this.entity.getAttachedBlockPos();
     }
 
     @Override
