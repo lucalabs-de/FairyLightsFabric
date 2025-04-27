@@ -72,13 +72,8 @@ public final class ServerEventHandler {
         return shouldFail ? ActionResult.FAIL : ActionResult.PASS;
     }
 
-    public static void onBreakBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity e) {
-//        if (e instanceof Faste)
-    }
-
     public static void initialize() {
         FairyLights.LOGGER.info("initializing event listener");
         UseBlockCallback.EVENT.register(ServerEventHandler::onRightClickBlock);
-        PlayerBlockBreakEvents.AFTER.register(ServerEventHandler::onBreakBlock);
     }
 }
