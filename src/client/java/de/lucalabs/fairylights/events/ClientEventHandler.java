@@ -13,7 +13,6 @@ import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.renderer.RenderConstants;
 import de.lucalabs.fairylights.util.Curve;
-import dev.onyxstudios.cca.api.v3.component.ComponentAccess;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -22,12 +21,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
@@ -39,6 +36,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.ladysnake.cca.api.v3.component.ComponentAccess;
 
 import java.util.ConcurrentModificationException;
 import java.util.Set;
@@ -166,7 +164,7 @@ public final class ClientEventHandler {
         }
         final Vec3d origin = viewer.getCameraPosVec(1);
         final Vec3d look = viewer.getRotationVector();
-        final double reach = MinecraftClient.getInstance().interactionManager.getReachDistance();
+        final double reach = 4.5D;
         final Vec3d end = origin.add(look.x * reach, look.y * reach, look.z * reach);
         Connection found = null;
         Intersection rayTrace = null;
@@ -294,12 +292,12 @@ public final class ClientEventHandler {
                 n = this.matrix.peek().getNormalMatrix().transform(n);
                 this.buf.vertex(this.matrix.peek().getPositionMatrix(), this.last.x(), this.last.y(), this.last.z())
                         .color(0.0F, 0.0F, 0.0F, RenderConstants.HIGHLIGHT_ALPHA)
-                        .normal(n.x(), n.y(), n.z())
-                        .next();
+                        .normal(n.x(), n.y(), n.z());
+//                        .next();
                 this.buf.vertex(this.matrix.peek().getPositionMatrix(), pos.x(), pos.y(), pos.z())
                         .color(0.0F, 0.0F, 0.0F, RenderConstants.HIGHLIGHT_ALPHA)
-                        .normal(n.x(), n.y(), n.z())
-                        .next();
+                        .normal(n.x(), n.y(), n.z());
+//                        .next();
                 this.last = null;
             }
         }
@@ -313,6 +311,11 @@ public final class ClientEventHandler {
             this.setId(-1);
             this.result = result;
             this.setPosition(result.intersection.result());
+        }
+
+        @Override
+        protected void initDataTracker(DataTracker.Builder builder) {
+            // stub
         }
 
         @Override
@@ -334,9 +337,7 @@ public final class ClientEventHandler {
         }
 
         private void processAction(final PlayerAction action) {
-            ClientPlayNetworking.send(
-                    InteractionConnectionMessage.ID,
-                    new InteractionConnectionMessage(this.result.connection, action, this.result.intersection));
+            ClientPlayNetworking.send(new InteractionConnectionMessage(this.result.connection, action, this.result.intersection));
         }
 
 //        @Override
@@ -351,30 +352,11 @@ public final class ClientEventHandler {
         }
 
         @Override
-        protected void initDataTracker() {
-        }
-
-        @Override
         protected void writeCustomDataToNbt(final NbtCompound compound) {
         }
 
         @Override
         protected void readCustomDataFromNbt(final NbtCompound compound) {
-        }
-
-        @Override
-        public Packet<ClientPlayPacketListener> createSpawnPacket() {
-            return new Packet<>() {
-                @Override
-                public void write(final PacketByteBuf buf) {
-
-                }
-
-                @Override
-                public void apply(final ClientPlayPacketListener p_131342_) {
-
-                }
-            };
         }
     }
 

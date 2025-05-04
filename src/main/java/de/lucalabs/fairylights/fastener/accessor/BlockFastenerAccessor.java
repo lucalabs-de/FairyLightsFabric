@@ -19,6 +19,10 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
     public BlockFastenerAccessor() {
     }
 
+    public BlockFastenerAccessor(NbtCompound nbt) {
+        this.deserialize(nbt);
+    }
+
     public BlockFastenerAccessor(final BlockFastener fastener) {
         this(fastener.getPos());
     }
