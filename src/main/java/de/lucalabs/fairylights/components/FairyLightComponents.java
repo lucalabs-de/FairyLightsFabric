@@ -37,9 +37,6 @@ public class FairyLightComponents implements EntityComponentInitializer, BlockCo
         public static final ComponentType<Boolean> TWINKLE = fromCodec(Codec.BOOL);
     }
 
-    public static class Pennants {
-    }
-
     public static class Connection {
         public static final ComponentType<String> STRING = fromCodec(Codec.STRING);
         public static final ComponentType<List<ItemStack>> PATTERN = fromCodec(ItemStack.CODEC.listOf());

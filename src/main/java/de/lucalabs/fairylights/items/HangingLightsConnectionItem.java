@@ -4,6 +4,9 @@ import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.connection.ConnectionTypes;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.string.StringType;
+import net.minecraft.component.ComponentHolder;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
@@ -19,16 +22,38 @@ public final class HangingLightsConnectionItem extends ConnectionItem {
         super(properties, ConnectionTypes.HANGING_LIGHTS);
     }
 
-    public static StringType getString(final NbtCompound tag) {
-        return Objects.requireNonNull(FairyLightRegistries.STRING_TYPES.get(Identifier.tryParse(tag.getString("string"))));
+    public static StringType getString(final NbtCompound nbt) {
+        return Objects.requireNonNull(FairyLightRegistries.STRING_TYPES.get(Identifier.tryParse(nbt.getString("string"))));
     }
 
-    public static void setString(final NbtCompound tag, final StringType string) {
+    public static StringType getString(final ComponentMap comps) {
+        return FairyLightRegistries.STRING_TYPES.get(
+                        Identifier.tryParse(
+                                Objects.requireNonNull(comps.get(FairyLightComponents.Connection.STRING))));
+    }
+
+    public static void setString(final ItemStack stack, final StringType string) {
         final Identifier name = FairyLightRegistries.STRING_TYPES.getId(string);
         if (name == null) {
             throw new NullPointerException("Missing registry name: " + string);
         }
-        tag.putString("string", name.toString());
+        stack.set(FairyLightComponents.Connection.STRING, name.toString());
+    }
+
+    public static void setString(final ComponentMapImpl comps, final StringType string) {
+        final Identifier name = FairyLightRegistries.STRING_TYPES.getId(string);
+        if (name == null) {
+            throw new NullPointerException("Missing registry name: " + string);
+        }
+        comps.set(FairyLightComponents.Connection.STRING, name.toString());
+    }
+
+    public static void setString(final NbtCompound nbt, final StringType string) {
+        final Identifier name = FairyLightRegistries.STRING_TYPES.getId(string);
+        if (name == null) {
+            throw new NullPointerException("Missing registry name: " + string);
+        }
+        nbt.putString("string", name.toString());
     }
 
     @Override
