@@ -7,7 +7,6 @@ import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.model.light.LightModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BlockFace;
-import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;

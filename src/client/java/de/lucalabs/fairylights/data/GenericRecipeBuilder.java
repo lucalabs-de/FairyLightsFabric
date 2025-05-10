@@ -3,10 +3,12 @@ package de.lucalabs.fairylights.data;
 import com.google.gson.JsonObject;
 import de.lucalabs.fairylights.FairyLights;
 import net.minecraft.advancement.Advancement;
+import net.minecraft.advancement.AdvancementCriterion;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
+import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.recipe.RecipeSerializer;
@@ -29,24 +31,24 @@ public class GenericRecipeBuilder {
         return new GenericRecipeBuilder(serializer);
     }
 
-    public GenericRecipeBuilder unlockedBy(final String name, final CriterionConditions criterion) {
+    public GenericRecipeBuilder unlockedBy(final String name, final AdvancementCriterion<?> criterion) {
         this.advancementBuilder.criterion(name, criterion);
         return this;
     }
 
-    public void build(final Consumer<RecipeJsonProvider> consumer, final Identifier id) {
+    public void build(final RecipeExporter consumer, final Identifier id) {
         final Supplier<JsonObject> advancementBuilder;
         final Identifier advancementId;
         if (this.advancementBuilder.getCriteria().isEmpty()) {
             advancementBuilder = () -> null;
-            advancementId = new Identifier("");
+            advancementId = Identifier.of("");
         } else {
-            advancementBuilder = this.advancementBuilder.parent(new Identifier("recipes/root"))
+            advancementBuilder = this.advancementBuilder.parent(Identifier.of("recipes/root"))
                     .criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(LootContextPredicate.EMPTY, id))
                     .rewards(AdvancementRewards.Builder.recipe(id))
                     .criteriaMerger(CriterionMerger.OR)
                     ::toJson;
-            advancementId = new Identifier(id.getNamespace(), "recipes/" + FairyLights.ID + "/" + id.getPath());
+            advancementId = Identifier.of(id.getNamespace(), "recipes/" + FairyLights.ID + "/" + id.getPath());
         }
         consumer.accept(new Result(this.serializer, id, advancementBuilder, advancementId));
     }

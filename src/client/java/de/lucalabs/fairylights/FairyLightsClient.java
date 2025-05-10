@@ -11,7 +11,6 @@ import de.lucalabs.fairylights.renderer.block.entity.LightBlockEntityRenderer;
 import de.lucalabs.fairylights.renderer.block.entity.PennantBuntingRenderer;
 import de.lucalabs.fairylights.renderer.entity.FenceFastenerRenderer;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;

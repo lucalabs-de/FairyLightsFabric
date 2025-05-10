@@ -6,22 +6,23 @@ import de.lucalabs.fairylights.items.crafting.FairyLightCraftingRecipes;
 import de.lucalabs.fairylights.util.Tags;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.server.recipe.RecipeJsonProvider;
+import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 public final class FairyLightRecipeProvider extends FabricRecipeProvider {
-    public FairyLightRecipeProvider(FabricDataOutput output) {
-        super(output);
+    public FairyLightRecipeProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> lookup) {
+        super(output, lookup);
     }
 
     @Override
-    public void generate(Consumer<RecipeJsonProvider> consumer) {
+    public void generate(RecipeExporter consumer) {
         ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, FairyLightItems.INCANDESCENT_LIGHT, 4)
                 .pattern(" I ")
                 .pattern("ITI")
@@ -46,39 +47,39 @@ public final class FairyLightRecipeProvider extends FabricRecipeProvider {
                 .offerTo(consumer);
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.HANGING_LIGHTS)
-                .unlockedBy("has_lights", conditionsFromTag(Tags.LIGHTS))
-                .build(consumer, new Identifier(FairyLights.ID, "hanging_lights"));
+                .unlockedBy("has_lights", conditionsFromTag(Tags.LIGHTS).conditions())
+                .build(consumer, Identifier.of(FairyLights.ID, "hanging_lights"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.HANGING_LIGHTS_AUGMENTATION)
-                .build(consumer, new Identifier(FairyLights.ID, "hanging_lights_augmentation"));
+                .build(consumer, Identifier.of(FairyLights.ID, "hanging_lights_augmentation"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.PENNANT_BUNTING)
-                .unlockedBy("has_pennants", conditionsFromTag(Tags.PENNANTS))
-                .build(consumer, new Identifier(FairyLights.ID, "pennant_bunting"));
+                .unlockedBy("has_pennants", conditionsFromTag(Tags.PENNANTS).conditions())
+                .build(consumer, Identifier.of(FairyLights.ID, "pennant_bunting"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.PENNANT_BUNTING_AUGMENTATION)
-                .build(consumer, new Identifier(FairyLights.ID, "pennant_bunting_augmentation"));
+                .build(consumer, Identifier.of(FairyLights.ID, "pennant_bunting_augmentation"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.EDIT_COLOR)
-                .build(consumer, new Identifier(FairyLights.ID, "edit_color"));
+                .build(consumer, Identifier.of(FairyLights.ID, "edit_color"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.COPY_COLOR)
-                .build(consumer, new Identifier(FairyLights.ID, "copy_color"));
+                .build(consumer, Identifier.of(FairyLights.ID, "copy_color"));
 
         this.pennantRecipe(FairyLightCraftingRecipes.TRIANGLE_PENNANT)
-                .build(consumer, new Identifier(FairyLights.ID, "triangle_pennant"));
+                .build(consumer, Identifier.of(FairyLights.ID, "triangle_pennant"));
 
         this.pennantRecipe(FairyLightCraftingRecipes.SQUARE_PENNANT)
-                .build(consumer, new Identifier(FairyLights.ID, "square_pennant"));
+                .build(consumer, Identifier.of(FairyLights.ID, "square_pennant"));
 
         this.lightRecipe(FairyLightCraftingRecipes.FAIRY_LIGHT)
-                .build(consumer, new Identifier(FairyLights.ID, "fairy_light"));
+                .build(consumer, Identifier.of(FairyLights.ID, "fairy_light"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.LIGHT_TWINKLE)
-                .build(consumer, new Identifier(FairyLights.ID, "light_twinkle"));
+                .build(consumer, Identifier.of(FairyLights.ID, "light_twinkle"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.COLOR_CHANGING_LIGHT)
-                .build(consumer, new Identifier(FairyLights.ID, "color_changing_light"));
+                .build(consumer, Identifier.of(FairyLights.ID, "color_changing_light"));
     }
 
     GenericRecipeBuilder lightRecipe(final RecipeSerializer<?> serializer) {
