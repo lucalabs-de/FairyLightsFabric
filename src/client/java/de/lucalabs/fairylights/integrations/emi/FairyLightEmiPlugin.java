@@ -1,6 +1,5 @@
 package de.lucalabs.fairylights.integrations.emi;
 
-import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.items.crafting.GenericRecipe;
@@ -45,7 +44,7 @@ public class FairyLightEmiPlugin implements EmiPlugin {
                             recipes.add(new EmiCraftingRecipe(
                                     r.getIngredients().stream()
                                             .map(i -> {
-                                                if (Arrays.stream(i.getMatchingStacks()).allMatch(it -> it.isIn(Tags.DYES))) {
+                                                if (i.getMatchingStacks().length > 0 && Arrays.stream(i.getMatchingStacks()).allMatch(it -> it.isIn(Tags.DYES))) {
                                                     return Ingredient.ofItems(DyeItem.byColor(color));
                                                 }
 
