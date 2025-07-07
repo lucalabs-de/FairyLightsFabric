@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.fastener.accessor;
 
 import de.lucalabs.fairylights.components.FairyLightComponents;
+import de.lucalabs.fairylights.components.GenericComponent;
 import de.lucalabs.fairylights.fastener.BlockFastener;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
@@ -32,7 +33,7 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
         if (load || world.canSetBlock(this.pos)) {
             final BlockEntity entity = world.getBlockEntity(this.pos);
             if (entity != null) {
-                return FairyLightComponents.FASTENER.get(entity).get();
+                return FairyLightComponents.FASTENER.maybeGet(entity).flatMap(GenericComponent::get);
             }
         }
         return Optional.empty();

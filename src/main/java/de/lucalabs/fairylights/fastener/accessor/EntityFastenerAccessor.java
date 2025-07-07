@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.fastener.accessor;
 
 import de.lucalabs.fairylights.components.FairyLightComponents;
+import de.lucalabs.fairylights.components.GenericComponent;
 import de.lucalabs.fairylights.fastener.EntityFastener;
 import de.lucalabs.fairylights.fastener.Fastener;
 import net.minecraft.entity.Entity;
@@ -69,7 +70,7 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
 
         if (this.entity != null && this.entity.getWorld() == world) {
             this.pos = this.entity.getPos();
-            return FairyLightComponents.FASTENER.get(entity).get();
+            return FairyLightComponents.FASTENER.maybeGet(entity).flatMap(GenericComponent::get);
         }
 
         return Optional.empty();

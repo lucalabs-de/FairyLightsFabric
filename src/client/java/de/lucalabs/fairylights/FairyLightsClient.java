@@ -7,6 +7,7 @@ import de.lucalabs.fairylights.items.ItemColorManager;
 import de.lucalabs.fairylights.model.light.*;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.block.entity.FastenerBlockEntityRenderer;
+import de.lucalabs.fairylights.renderer.block.entity.HangingLightsRenderer;
 import de.lucalabs.fairylights.renderer.block.entity.LightBlockEntityRenderer;
 import de.lucalabs.fairylights.renderer.block.entity.PennantBuntingRenderer;
 import de.lucalabs.fairylights.renderer.entity.FenceFastenerRenderer;
@@ -37,7 +38,7 @@ public class FairyLightsClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.OIL_LANTERN, OilLanternModel::createLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.INCANDESCENT_LIGHT, IncandescentLightModel::createLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.PENNANT_WIRE, PennantBuntingRenderer::wireLayer);
-        EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.LIGHTS_WIRE, PennantBuntingRenderer::wireLayer);
+        EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.LIGHTS_WIRE, HangingLightsRenderer::wireLayer);
 
         ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
             // Tell Fabric to load this model during resource reloading
