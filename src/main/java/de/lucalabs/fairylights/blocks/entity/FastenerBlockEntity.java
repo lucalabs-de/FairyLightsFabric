@@ -32,7 +32,7 @@ public final class FastenerBlockEntity extends BlockEntity {
         be.getFastener().ifPresent(fastener -> {
             if (!world.isClient() && fastener.hasNoConnections()) {
                 world.removeBlock(pos, false);
-            } else if (!world.isClient() && fastener.update()) {
+            } else if (!world.isClient() && updateFastenerSafely(fastener)) {
                 be.markDirty();
                 world.updateListeners(pos, state, state, 3);
             }
@@ -40,12 +40,18 @@ public final class FastenerBlockEntity extends BlockEntity {
     }
 
     public static void tickClient(World level, BlockPos pos, BlockState state, FastenerBlockEntity be) {
+        be.getFastener().ifPresent(FastenerBlockEntity::updateFastenerSafely);
+    }
+
+    private static boolean updateFastenerSafely(Fastener<?> f) {
         try {
-            be.getFastener().ifPresent(Fastener::update);
-        } catch(@SuppressWarnings("UnstableApiUsage") StaticComponentLoadingException ex) {
-            FairyLights.LOGGER.debug("Possible data race caught in tickClient:");
-            FairyLights.LOGGER.debug(ex.getMessage());
+            return f.update();
+        } catch (@SuppressWarnings("UnstableApiUsage") StaticComponentLoadingException ex) {
+            FairyLights.LOGGER.warn("Possible data race caught in tickClient:");
+            FairyLights.LOGGER.warn(ex.getMessage());
         }
+
+        return false;
     }
 
     public Vec3d getOffset() {
