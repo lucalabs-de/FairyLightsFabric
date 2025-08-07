@@ -143,6 +143,8 @@ public abstract class ConnectionItem extends Item {
                 } else {
                     playSound = false;
                 }
+
+                attacher.removeConnection(placing.get());
             } else {
                 final NbtCompound data = stack.getNbt();
                 fastener.connect(world, attacher, this.getConnectionType(), data == null ? new NbtCompound() : data, false);
