@@ -1,9 +1,11 @@
 package de.lucalabs.fairylights.blocks.entity;
 
+import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
+import dev.onyxstudios.cca.internal.base.asm.StaticComponentLoadingException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -38,7 +40,12 @@ public final class FastenerBlockEntity extends BlockEntity {
     }
 
     public static void tickClient(World level, BlockPos pos, BlockState state, FastenerBlockEntity be) {
-        be.getFastener().ifPresent(Fastener::update);
+        try {
+            be.getFastener().ifPresent(Fastener::update);
+        } catch(@SuppressWarnings("UnstableApiUsage") StaticComponentLoadingException ex) {
+            FairyLights.LOGGER.debug("Possible data race caught in tickClient:");
+            FairyLights.LOGGER.debug(ex.getMessage());
+        }
     }
 
     public Vec3d getOffset() {
