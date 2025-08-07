@@ -53,19 +53,25 @@ public abstract class ConnectionItem extends Item {
         if (user == null) {
             return super.useOnBlock(context);
         }
+
         final World world = context.getWorld();
         final Direction side = context.getSide();
         final BlockPos clickPos = context.getBlockPos();
-        final Block fastener = FairyLightBlocks.FASTENER;
         final ItemStack stack = context.getStack();
+
         if (this.isConnectionInOtherHand(world, user, stack)) {
             return ActionResult.PASS;
         }
-        final BlockState fastenerState = fastener.getDefaultState().with(FastenerBlock.FACING, side);
+
+        final BlockState fastenerState = FairyLightBlocks.FASTENER
+                .getDefaultState()
+                .with(FastenerBlock.FACING, side);
+
         final BlockState currentBlockState = world.getBlockState(clickPos);
         final ItemPlacementContext blockContext = new ItemPlacementContext(context);
         final BlockPos placePos = blockContext.getBlockPos();
-        if (currentBlockState.getBlock() == fastener) {
+
+        if (currentBlockState.getBlock() == FairyLightBlocks.FASTENER) {
             if (!world.isClient()) {
                 this.connect(stack, user, world, clickPos);
             }

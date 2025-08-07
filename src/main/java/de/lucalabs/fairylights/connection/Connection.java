@@ -3,7 +3,6 @@ package de.lucalabs.fairylights.connection;
 import de.lucalabs.fairylights.collision.Collidable;
 import de.lucalabs.fairylights.collision.CollidableList;
 import de.lucalabs.fairylights.collision.FeatureCollisionTree;
-import de.lucalabs.fairylights.collision.Intersection;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.fastener.FenceFastener;
