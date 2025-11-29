@@ -1,7 +1,9 @@
 package de.lucalabs.fairylights.items.components;
 
 import de.lucalabs.fairylights.FairyLights;
+import de.lucalabs.fairylights.string.StringType;
 import net.minecraft.component.ComponentType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -20,6 +22,18 @@ public final class FairyLightItemComponents {
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(FairyLights.ID, "color"),
             ComponentType.<Integer>builder().build()
+    );
+
+    public static final ComponentType<StringType> STRING = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(FairyLights.ID, "string"),
+            ComponentType.<StringType>builder().build()
+    );
+
+    public static final ComponentType<List<ItemStack>> PATTERN = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(FairyLights.ID, "string"),
+            ComponentType.<List<ItemStack>>builder().build()
     );
 
     public static final ComponentType<Boolean> TWINKLE = Registry.register(

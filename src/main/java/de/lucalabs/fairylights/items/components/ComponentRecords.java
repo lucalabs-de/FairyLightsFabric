@@ -7,28 +7,57 @@ import de.lucalabs.fairylights.fastener.accessor.BlockFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.FenceFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.PlayerFastenerAccessor;
-import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.IntStream;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.PATTERN;
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.STRING;
 
 public class ComponentRecords {
     public record ConnectionLogic(List<ItemStack> pattern, StringType string) {
         public static final Codec<ConnectionLogic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.listOf().fieldOf("pattern").forGetter(ConnectionLogic::pattern),
-                Identifier.CODEC.fieldOf("string").forGetter(logic -> FairyLightRegistries.STRING_TYPES.getId(logic.string))
-        ).apply(instance, (pattern, string) -> {
-            StringType stringType = Objects.requireNonNull(FairyLightRegistries.STRING_TYPES.get(string));
-            return new ConnectionLogic(pattern, stringType);
-        }));
+                StringType.CODEC.fieldOf("string").forGetter(ConnectionLogic::string)
+        ).apply(instance, ConnectionLogic::new));
+
+        public ComponentMapImpl toComponents() {
+            ComponentMapImpl comps = new ComponentMapImpl(ComponentMap.EMPTY);
+            comps.set(PATTERN, pattern());
+            comps.set(STRING, string());
+            return comps;
+        }
+
+        public boolean matchesItemStack(ItemStack stack) {
+            StringType stackString = stack.get(STRING);
+            List<ItemStack> pattern = Objects.requireNonNullElse(stack.get(PATTERN), Collections.emptyList());
+
+            boolean patternEqual = this.pattern().size() == pattern.size() && IntStream.range(0, pattern.size())
+                    .allMatch(i -> ItemStack.areItemsAndComponentsEqual(pattern.get(i), this.pattern().get(i)));
+
+            return this.string().equals(stackString) && patternEqual;
+        }
+
+        public static ConnectionLogic fromItemStack(ItemStack i) {
+            Builder b = new Builder();
+            if (i.contains(STRING)) {
+                b.stringType(i.get(STRING));
+            }
+            if (i.contains(PATTERN)) {
+                b.pattern(i.get(PATTERN));
+            }
+            return b.build();
+        }
 
         public static class Builder {
             @NotNull

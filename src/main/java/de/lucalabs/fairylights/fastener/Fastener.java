@@ -75,7 +75,7 @@ public interface Fastener<F extends FastenerAccessor> {
             UUID uuid,
             Fastener<?> destination,
             ConnectionType<?> type,
-            NbtCompound compound,
+            ComponentRecords.ConnectionLogic logic,
             final boolean drop);
 
     void createIncomingConnection(World world, UUID uuid, Fastener<?> destination, ConnectionType<?> type);

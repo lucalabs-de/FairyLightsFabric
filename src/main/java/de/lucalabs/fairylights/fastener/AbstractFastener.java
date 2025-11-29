@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.ConnectionType;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.util.BoxBuilder;
 import de.lucalabs.fairylights.util.Constants;
@@ -225,17 +226,17 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
     }
 
     @Override
-    public Connection connect(final World world, final Fastener<?> destination, final ConnectionType<?> type, final NbtCompound compound, final boolean drop) {
+    public Connection connect(final World world, final Fastener<?> destination, final ConnectionType<?> type, final ComponentRecords.ConnectionLogic logic, final boolean drop) {
         final UUID uuid = MathHelper.randomUuid();
-        final Connection connection = this.createOutgoingConnection(world, uuid, destination, type, compound, drop);
+        final Connection connection = this.createOutgoingConnection(world, uuid, destination, type, logic, drop);
         destination.createIncomingConnection(world, uuid, this, type);
         return connection;
     }
 
     @Override
-    public Connection createOutgoingConnection(final World world, final UUID uuid, final Fastener<?> destination, final ConnectionType<?> type, final NbtCompound compound, final boolean drop) {
+    public Connection createOutgoingConnection(final World world, final UUID uuid, final Fastener<?> destination, final ConnectionType<?> type, final ComponentRecords.ConnectionLogic logic, final boolean drop) {
         final Connection c = type.create(world, this, uuid);
-        c.deserialize(destination, compound, drop);
+        c.deserialize(destination, logic, drop);
         this.outgoing.put(uuid, c);
         this.setDirty();
         return c;

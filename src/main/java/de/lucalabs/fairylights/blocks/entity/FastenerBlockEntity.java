@@ -1,11 +1,9 @@
 package de.lucalabs.fairylights.blocks.entity;
 
-import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.FastenerBlock;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
-import dev.onyxstudios.cca.internal.base.asm.StaticComponentLoadingException;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -21,12 +19,6 @@ public final class FastenerBlockEntity extends BlockEntity {
     public FastenerBlockEntity(final BlockPos pos, final BlockState state) {
         super(FairyLightBlockEntities.FASTENER, pos, state);
     }
-
-    // TODO check if this is ever needed
-//    @Override
-//    public Box getRenderBoundingBox() {
-//        return this.getFastener().map(fastener -> fastener.getBounds().expand(1)).orElseGet(() -> ForgeRendering.getRenderBoundingBox(this));
-//    }
 
     public static void tick(World world, BlockPos pos, BlockState state, FastenerBlockEntity be) {
         be.getFastener().ifPresent(fastener -> {

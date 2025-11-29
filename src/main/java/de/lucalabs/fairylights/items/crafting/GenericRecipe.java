@@ -7,6 +7,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
+import net.minecraft.component.ComponentMap;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -178,7 +180,8 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         final Set<GenericIngredient<?, ?>> presentCalled = new HashSet<>();
         final List<MatchResultAuxiliary> auxResults = new ArrayList<>();
         Item item = this.output.getItem();
-        final NbtCompound tag = new NbtCompound();
+
+        final ComponentMapImpl comps = new ComponentMapImpl(ComponentMapImpl.EMPTY);
         for (int i = 0, w = inventory.getWidth(), size = w * inventory.getHeight(); i < size; i++) {
             final int x = i % w;
             final int y = i / w;
@@ -195,16 +198,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
                 match[index] = result;
                 result.forMatch(presentCalled, tag);
                 if (index == this.outputIngredient) {
-                    final NbtCompound inputTag = input.getNbt();
-                    if (inputTag != null) {
-                        if (tag.isEmpty()) {
-                            tag.copyFrom(inputTag);
-                        } else {
-                            final NbtCompound temp = inputTag.copy();
-                            temp.copyFrom(tag);
-                            tag.copyFrom(temp);
-                        }
-                    }
+                    comps.setAll(input.getComponents());
                     item = input.getItem();
                 }
             } else if (!EMPTY.matches(input).doesMatch()) {
@@ -228,21 +222,23 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
             }
         }
         final Set<GenericIngredient<?, ?>> absentCalled = new HashSet<>();
+
         for (final MatchResultRegular result : match) {
             result.notifyAbsence(presentCalled, absentCalled, tag);
         }
+
         for (final MatchResultAuxiliary result : auxResults) {
             result.notifyAbsence(presentCalled, absentCalled, tag);
         }
+
         for (final AuxiliaryIngredient<?> ingredient : this.auxiliaryIngredients) {
             if (ingredient.process(auxMatchResults, tag)) {
                 return ItemStack.EMPTY;
             }
         }
+
         final ItemStack output = this.output.isEmpty() ? new ItemStack(item) : this.output.copy();
-        if (!tag.isEmpty()) {
-            output.setNbt(tag);
-        }
+        output.applyComponentsFrom(comps);
         return output;
     }
 
@@ -263,7 +259,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
 
         boolean doesMatch();
 
-        void forMatch(final Set<GenericIngredient<?, ?>> called, final NbtCompound nbt);
+        void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps);
 
         void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final NbtCompound nbt);
 
@@ -302,21 +298,21 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final NbtCompound nbt) {
-            this.ingredient.matched(this.input, nbt);
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+            this.ingredient.matched(this.input, comps);
             if (called.add(this.ingredient)) {
-                this.ingredient.present(nbt);
+                this.ingredient.present(comps);
             }
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final NbtCompound nbt) {
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
             if (!presentCalled.contains(this.ingredient) && !absentCalled.contains(this.ingredient)) {
-                this.ingredient.absent(nbt);
+                this.ingredient.absent(comps);
                 absentCalled.add(this.ingredient);
             }
             for (final MatchResultRegular result : this.supplementaryResults) {
-                result.notifyAbsence(presentCalled, absentCalled, nbt);
+                result.notifyAbsence(presentCalled, absentCalled, comps);
             }
         }
 

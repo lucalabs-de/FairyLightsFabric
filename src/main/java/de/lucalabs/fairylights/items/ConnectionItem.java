@@ -25,7 +25,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
@@ -95,8 +94,7 @@ public abstract class ConnectionItem extends Item {
 
     private boolean isConnectionInOtherHand(final World world, final PlayerEntity user, final ItemStack stack) {
         final Fastener<?> attacher = FairyLightComponents.FASTENER.get(user).get().orElseThrow(IllegalStateException::new);
-        // TODO verify that this equals check is not too strict
-        return attacher.getFirstConnection().filter(connection -> Objects.equals(stack.get(LOGIC), connection.serializeLogic().build())).isPresent();
+        return attacher.getFirstConnection().filter(connection -> connection.serializeLogic().build().matchesItemStack(stack)).isPresent();
     }
 
     private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos) {

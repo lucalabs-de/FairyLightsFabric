@@ -26,10 +26,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.UUID;
-
-import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
 
 public abstract class Connection {
     public static final int MAX_LENGTH = 32;
@@ -132,7 +129,7 @@ public abstract class Connection {
 
     public ItemStack getItemStack() {
         final ItemStack stack = new ItemStack(this.getType().getItem());
-        stack.set(LOGIC, this.serializeLogic().build());
+        stack.applyComponentsFrom(this.serializeLogic().build().toComponents());
         return stack;
     }
 
@@ -208,7 +205,7 @@ public abstract class Connection {
     }
 
     public boolean matches(final ItemStack stack) {
-        return Objects.equals(stack.get(LOGIC), this.serializeLogic().build()); // TODO verify that the item stack comparison does not use any unique ids or similar
+        return this.serializeLogic().build().matchesItemStack(stack);
     }
 
     private boolean replace(final PlayerEntity player, final Vec3d hit, final ItemStack heldStack) {
@@ -219,7 +216,7 @@ public abstract class Connection {
                 ItemHelper.giveItemToPlayer(player, this.getItemStack());
             }
             final ConnectionType<? extends Connection> type = ((ConnectionItem) heldStack.getItem()).getConnectionType();
-            final Connection conn = this.fastener.connect(this.world, dest, type, heldStack.get(LOGIC), true);
+            final Connection conn = this.fastener.connect(this.world, dest, type, ComponentRecords.ConnectionLogic.fromItemStack(heldStack), true);
             conn.slack = this.slack;
             conn.onConnect(player.getWorld(), player, heldStack);
             heldStack.decrement(1);

@@ -4,24 +4,20 @@ import com.google.common.collect.ImmutableList;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.FairyLightItems;
-import de.lucalabs.fairylights.items.HangingLightsConnectionItem;
 import de.lucalabs.fairylights.items.crafting.ingredient.BasicAuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.BasicRegularIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.InertBasicAuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.LazyTagIngredient;
+import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
 import de.lucalabs.fairylights.util.Blender;
 import de.lucalabs.fairylights.util.OreDictUtils;
 import de.lucalabs.fairylights.util.Tags;
 import de.lucalabs.fairylights.util.Utils;
-import de.lucalabs.fairylights.util.styled.StyledString;
+import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
@@ -33,11 +29,15 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.*;
 
 public final class FairyLightCraftingRecipes {
 
@@ -97,8 +97,8 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public void matched(final ItemStack ingredient, final NbtCompound nbt) {
-            DyeableItem.setColor(nbt, OreDictUtils.getDyeColor(ingredient));
+        public void matched(final ItemStack ingredient, final ComponentMapImpl comps) {
+            comps.set(COLOR, DyeableItem.getColor(OreDictUtils.getDyeColor(ingredient)));
         }
     };
 
@@ -121,8 +121,8 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public boolean finish(final Blender data, final NbtCompound nbt) {
-                        DyeableItem.setColor(nbt, data.blend());
+                    public boolean finish(final Blender data, final ComponentMapImpl comps) {
+                        comps.set(COLOR, data.blend());
                         return false;
                     }
                 })
@@ -136,17 +136,17 @@ public final class FairyLightCraftingRecipes {
                 .withAuxiliaryIngredient(new InertBasicAuxiliaryIngredient(Ingredient.ofItems(Items.GLOWSTONE_DUST), true, 1) {
                     @Override
                     public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
-                        return useInputsForTagBool(output, "twinkle", true) ? super.getInput(output) : ImmutableList.of();
+                        return Boolean.TRUE.equals(output.get(TWINKLE)) ? super.getInput(output) : ImmutableList.of();
                     }
 
                     @Override
-                    public void present(final NbtCompound nbt) {
-                        nbt.putBoolean("twinkle", true);
+                    public void present(final ComponentMapImpl comps) {
+                        comps.set(TWINKLE, true);
                     }
 
                     @Override
-                    public void absent(final NbtCompound nbt) {
-                        nbt.putBoolean("twinkle", false);
+                    public void absent(final ComponentMapImpl comps) {
+                        comps.set(TWINKLE, false);
                     }
 
                     @Override
@@ -163,25 +163,26 @@ public final class FairyLightCraftingRecipes {
                 .withShape("IG")
                 .withIngredient('I', Tags.DYEABLE_LIGHTS).withOutput('I')
                 .withIngredient('G', Items.GOLD_NUGGET)
-                .withAuxiliaryIngredient(new BasicAuxiliaryIngredient<NbtList>(LazyTagIngredient.of(Tags.DYES), true, 8) {
+                .withAuxiliaryIngredient(new BasicAuxiliaryIngredient<List<Integer>>(LazyTagIngredient.of(Tags.DYES), true, 8) {
                     @Override
-                    public NbtList accumulator() {
-                        return new NbtList();
+                    public List<Integer> accumulator() {
+                        return Collections.emptyList();
                     }
 
                     @Override
-                    public void consume(final NbtList data, final ItemStack ingredient) {
-                        data.add(NbtInt.of(DyeableItem.getColor(OreDictUtils.getDyeColor(ingredient))));
+                    public void consume(final List<Integer> data, final ItemStack ingredient) {
+                        data.add(DyeableItem.getColor(OreDictUtils.getDyeColor(ingredient)));
                     }
 
                     @Override
-                    public boolean finish(final NbtList data, final NbtCompound nbt) {
+                    public boolean finish(final List<Integer> data, final ComponentMapImpl comps) {
                         if (!data.isEmpty()) {
-                            if (nbt.contains("color", NbtElement.INT_TYPE)) {
-                                data.add(0, NbtInt.of(nbt.getInt("color")));
-                                nbt.remove("color");
+                            if (comps.contains(COLOR)) {
+                                data.addFirst(comps.get(COLOR));
+                                comps.remove(COLOR);
                             }
-                            nbt.put("colors", data);
+
+                            comps.set(COLORS, data);
                         }
                         return false;
                     }
@@ -198,18 +199,18 @@ public final class FairyLightCraftingRecipes {
                 .withAuxiliaryIngredient(new InertBasicAuxiliaryIngredient(LazyTagIngredient.of(Tags.DYES_WHITE), false, 1) {
                     @Override
                     public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
-                        final NbtCompound tag = output.getNbt();
-                        return tag != null && HangingLightsConnectionItem.getString(tag) == StringTypes.WHITE_STRING ? super.getInput(output) : ImmutableList.of();
+                        StringType string = output.get(STRING);
+                        return string != null && string.equals(StringTypes.WHITE_STRING) ? super.getInput(output) : ImmutableList.of();
                     }
 
                     @Override
-                    public void present(final NbtCompound nbt) {
-                        HangingLightsConnectionItem.setString(nbt, StringTypes.WHITE_STRING);
+                    public void present(final ComponentMapImpl comps) {
+                        comps.set(STRING, StringTypes.WHITE_STRING);
                     }
 
                     @Override
-                    public void absent(final NbtCompound nbt) {
-                        HangingLightsConnectionItem.setString(nbt, StringTypes.BLACK_STRING);
+                    public void absent(final ComponentMapImpl comps) {
+                        comps.set(STRING, StringTypes.BLACK_STRING);
                     }
 
                     @Override
@@ -219,11 +220,6 @@ public final class FairyLightCraftingRecipes {
                     }
                 })
                 .build();
-    }
-
-    private static boolean useInputsForTagBool(final ItemStack output, final String key, final boolean value) {
-        final NbtCompound compound = output.getNbt();
-        return compound != null && compound.getBoolean(key) == value;
     }
 
     /*
@@ -239,17 +235,14 @@ public final class FairyLightCraftingRecipes {
                     public ImmutableList<ItemStack> getInputs() {
                         return Arrays.stream(this.ingredient.getMatchingStacks())
                                 .map(ItemStack::copy)
-                                .flatMap(stack -> {
-                                    stack.setNbt(new NbtCompound());
-                                    return makeHangingLightsExamples(stack).stream();
-                                }).collect(ImmutableList.toImmutableList());
+                                .flatMap(stack -> makeHangingLightsExamples(stack).stream())
+                                .collect(ImmutableList.toImmutableList());
                     }
 
                     @Override
                     public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
                         final ItemStack stack = output.copy();
-                        final NbtCompound compound = stack.getNbt();
-                        if (compound == null) {
+                        if (stack.getComponents().isEmpty()) {
                             return ImmutableList.of();
                         }
                         stack.setCount(1);
@@ -257,11 +250,8 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void matched(final ItemStack ingredient, final NbtCompound nbt) {
-                        final NbtCompound compound = ingredient.getNbt();
-                        if (compound != null) {
-                            nbt.copyFrom(compound);
-                        }
+                    public void matched(final ItemStack ingredient, final ComponentMapImpl comps) {
+                        comps.setAll(ingredient.getComponents());
                     }
                 })
                 .withAuxiliaryIngredient(new LightIngredient(true) {
@@ -289,19 +279,17 @@ public final class FairyLightCraftingRecipes {
     }
 
     public static ItemStack makeHangingLights(final ItemStack base, final DyeColor... colors) {
-        final ItemStack stack = base.copy();
-        NbtCompound compound = stack.getNbt();
-        final NbtList lights = new NbtList();
-        for (final DyeColor color : colors) {
-            lights.add(DyeableItem.setColor(new ItemStack(FairyLightItems.FAIRY_LIGHT), color).writeNbt(new NbtCompound()));
-        }
-        if (compound == null) {
-            compound = new NbtCompound();
-            stack.setNbt(compound);
-        }
-        compound.put("pattern", lights);
-        HangingLightsConnectionItem.setString(compound, StringTypes.BLACK_STRING);
-        return stack;
+       final ItemStack stack = base.copy();
+
+       final List<ItemStack> lights = new ArrayList<>();
+       for (final DyeColor color : colors) {
+           lights.add(DyeableItem.setColor(new ItemStack(FairyLightItems.FAIRY_LIGHT), color));
+       }
+
+       stack.set(PATTERN, lights);
+       stack.set(STRING, StringTypes.BLACK_STRING);
+
+       return stack;
     }
 
 
@@ -322,27 +310,21 @@ public final class FairyLightCraftingRecipes {
                     public ImmutableList<ItemStack> getInputs() {
                         return Arrays.stream(this.ingredient.getMatchingStacks())
                                 .map(ItemStack::copy)
-                                .flatMap(stack -> {
-                                    stack.setNbt(new NbtCompound());
-                                    return makePennantExamples(stack).stream();
-                                }).collect(ImmutableList.toImmutableList());
+                                .flatMap(stack -> makePennantExamples(stack).stream())
+                                .collect(ImmutableList.toImmutableList());
                     }
 
                     @Override
                     public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
-                        final NbtCompound compound = output.getNbt();
-                        if (compound == null) {
+                        if (output.getComponents().isEmpty()) {
                             return ImmutableList.of();
                         }
                         return ImmutableList.of(makePennantExamples(output));
                     }
 
                     @Override
-                    public void matched(final ItemStack ingredient, final NbtCompound nbt) {
-                        final NbtCompound compound = ingredient.getNbt();
-                        if (compound != null) {
-                            nbt.copyFrom(compound);
-                        }
+                    public void matched(final ItemStack ingredient, final ComponentMapImpl comps) {
+                        comps.setAll(ingredient.getComponents());
                     }
                 })
                 .withAuxiliaryIngredient(new PennantIngredient())
@@ -360,19 +342,16 @@ public final class FairyLightCraftingRecipes {
 
     public static ItemStack makePennant(final ItemStack base, final DyeColor... colors) {
         final ItemStack stack = base.copy();
-        NbtCompound compound = stack.getNbt();
-        final NbtList pennants = new NbtList();
+
+        final List<ItemStack> pennants = new ArrayList<>();
         for (final DyeColor color : colors) {
             final ItemStack pennant = new ItemStack(FairyLightItems.TRIANGLE_PENNANT);
             DyeableItem.setColor(pennant, color);
-            pennants.add(pennant.writeNbt(new NbtCompound()));
+            pennants.add(pennant);
         }
-        if (compound == null) {
-            compound = new NbtCompound();
-            stack.setNbt(compound);
-        }
-        compound.put("pattern", pennants);
-        compound.put("text", StyledString.serialize(new StyledString()));
+
+        stack.set(PATTERN, pennants);
+
         return stack;
     }
 
@@ -408,24 +387,20 @@ public final class FairyLightCraftingRecipes {
                 .build();
     }
 
-    private static class LightIngredient extends BasicAuxiliaryIngredient<NbtList> {
+    private static class LightIngredient extends BasicAuxiliaryIngredient<List<ItemStack>> {
         private LightIngredient(final boolean isRequired) {
             super(LazyTagIngredient.of(Tags.LIGHTS), isRequired, 8);
         }
 
         @Override
         public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
-            final NbtCompound compound = output.getNbt();
-            if (compound == null) {
-                return ImmutableList.of();
-            }
-            final NbtList pattern = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
-            if (pattern.isEmpty()) {
+            final List<ItemStack> pattern = output.get(PATTERN);
+            if (pattern == null || pattern.isEmpty()) {
                 return ImmutableList.of();
             }
             final ImmutableList.Builder<ImmutableList<ItemStack>> lights = ImmutableList.builder();
-            for (int i = 0; i < pattern.size(); i++) {
-                lights.add(ImmutableList.of(ItemStack.fromNbt(pattern.getCompound(i))));
+            for (ItemStack itemStack : pattern) {
+                lights.add(ImmutableList.of(itemStack));
             }
             return lights.build();
         }
@@ -436,19 +411,19 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public NbtList accumulator() {
-            return new NbtList();
+        public List<ItemStack> accumulator() {
+            return new ArrayList<>();
         }
 
         @Override
-        public void consume(final NbtList patternList, final ItemStack ingredient) {
-            patternList.add(ingredient.writeNbt(new NbtCompound()));
+        public void consume(final List<ItemStack> patternList, final ItemStack ingredient) {
+            patternList.add(ingredient);
         }
 
         @Override
-        public boolean finish(final NbtList pattern, final NbtCompound nbt) {
+        public boolean finish(final List<ItemStack> pattern, final ComponentMapImpl comps) {
             if (!pattern.isEmpty()) {
-                nbt.put("pattern", pattern);
+                comps.set(PATTERN, pattern);
             }
             return false;
         }
@@ -459,24 +434,20 @@ public final class FairyLightCraftingRecipes {
         }
     }
 
-    private static class PennantIngredient extends BasicAuxiliaryIngredient<NbtList> {
+    private static class PennantIngredient extends BasicAuxiliaryIngredient<List<ItemStack>> {
         private PennantIngredient() {
             super(LazyTagIngredient.of(Tags.PENNANTS), true, 8);
         }
 
         @Override
         public ImmutableList<ImmutableList<ItemStack>> getInput(final ItemStack output) {
-            final NbtCompound compound = output.getNbt();
-            if (compound == null) {
-                return ImmutableList.of();
-            }
-            final NbtList pattern = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
-            if (pattern.isEmpty()) {
+            final List<ItemStack> pattern = output.get(PATTERN);
+            if (pattern == null || pattern.isEmpty()) {
                 return ImmutableList.of();
             }
             final ImmutableList.Builder<ImmutableList<ItemStack>> pennants = ImmutableList.builder();
-            for (int i = 0; i < pattern.size(); i++) {
-                pennants.add(ImmutableList.of(ItemStack.fromNbt(pattern.getCompound(i))));
+            for (ItemStack itemStack : pattern) {
+                pennants.add(ImmutableList.of(itemStack));
             }
             return pennants.build();
         }
@@ -487,20 +458,19 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public NbtList accumulator() {
-            return new NbtList();
+        public List<ItemStack> accumulator() {
+            return new ArrayList<>();
         }
 
         @Override
-        public void consume(final NbtList patternList, final ItemStack ingredient) {
-            patternList.add(ingredient.writeNbt(new NbtCompound()));
+        public void consume(final List<ItemStack> patternList, final ItemStack ingredient) {
+            patternList.add(ingredient);
         }
 
         @Override
-        public boolean finish(final NbtList pattern, final NbtCompound nbt) {
+        public boolean finish(final List<ItemStack> pattern, final ComponentMapImpl comps) {
             if (!pattern.isEmpty()) {
-                nbt.put("pattern", pattern);
-                nbt.put("text", StyledString.serialize(new StyledString()));
+                comps.set(PATTERN, pattern);
             }
             return false;
         }
