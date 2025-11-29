@@ -35,6 +35,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -42,47 +43,47 @@ public final class FairyLightCraftingRecipes {
 
     public static final RecipeSerializer<GenericRecipe> HANGING_LIGHTS = register(
             "crafting_special_hanging_lights",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createHangingLights));
+            id -> new SpecialRecipeSerializer<>(x -> createHangingLights(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> HANGING_LIGHTS_AUGMENTATION = register(
             "crafting_special_hanging_lights_augmentation",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createHangingLightsAugmentation));
+            id -> new SpecialRecipeSerializer<>(x -> createHangingLightsAugmentation(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> PENNANT_BUNTING = register(
             "crafting_special_pennant_bunting",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createPennantBunting));
+            id -> new SpecialRecipeSerializer<>(x -> createPennantBunting(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> PENNANT_BUNTING_AUGMENTATION = register(
             "crafting_special_pennant_bunting_augmentation",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createPennantBuntingAugmentation));
+            id -> new SpecialRecipeSerializer<>(x -> createPennantBuntingAugmentation(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> TRIANGLE_PENNANT = register(
             "crafting_special_triangle_pennant",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createTrianglePennant));
+            id -> new SpecialRecipeSerializer<>(x -> createTrianglePennant(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> SQUARE_PENNANT = register(
             "crafting_special_square_pennant",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createSquarePennant));
+            id -> new SpecialRecipeSerializer<>(x -> createSquarePennant(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> FAIRY_LIGHT = register(
             "crafting_special_fairy_light",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createFairyLight));
+            id -> new SpecialRecipeSerializer<>(x -> createFairyLight(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> LIGHT_TWINKLE = register(
             "crafting_special_light_twinkle",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createLightTwinkle));
+            id -> new SpecialRecipeSerializer<>(x -> createLightTwinkle(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> COLOR_CHANGING_LIGHT = register(
             "crafting_special_color_changing_light",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createColorChangingLight));
+            id -> new SpecialRecipeSerializer<>(x -> createColorChangingLight(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> EDIT_COLOR = register(
             "crafting_special_edit_color",
-            () -> new SpecialRecipeSerializer<>(FairyLightCraftingRecipes::createDyeColor));
+            id -> new SpecialRecipeSerializer<>(x -> createDyeColor(id, x)));
 
     public static final RecipeSerializer<SpecialCraftingRecipe> COPY_COLOR = register(
             "crafting_special_copy_color",
-            () -> new SpecialRecipeSerializer<>(CopyColorRecipe::new));
+            id -> new SpecialRecipeSerializer<>(x -> new CopyColorRecipe(id, x)));
 
     public static final RegularIngredient DYE_SUBTYPE_INGREDIENT = new BasicRegularIngredient(LazyTagIngredient.of(Tags.DYES)) {
         @Override
@@ -510,9 +511,9 @@ public final class FairyLightCraftingRecipes {
         }
     }
 
-    private static <T extends RecipeSerializer<?>> T register(final String name, Supplier<T> supplier) {
+    private static <T extends RecipeSerializer<?>> T register(final String name, Function<Identifier, T> supplier) {
         Identifier identifier = Identifier.of(FairyLights.ID, name);
-        return Registry.register(Registries.RECIPE_SERIALIZER, identifier, supplier.get());
+        return Registry.register(Registries.RECIPE_SERIALIZER, identifier, supplier.apply(identifier));
     }
 
     public static void initialize() {

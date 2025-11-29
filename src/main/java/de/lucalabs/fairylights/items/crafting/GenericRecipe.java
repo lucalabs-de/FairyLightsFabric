@@ -5,11 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
-import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
-import de.lucalabs.fairylights.util.Tags;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -17,7 +14,8 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -45,7 +43,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     private final ImmutableList<IntUnaryOperator> xFunctions = ImmutableList.of(IntUnaryOperator.identity(), i -> this.getWidth() - 1 - i);
 
     GenericRecipe(final Identifier id, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output, final RegularIngredient[] ingredients, final AuxiliaryIngredient<?>[] auxiliaryIngredients, final int width, final int height, final int outputIngredient) {
-        super(id, CraftingRecipeCategory.MISC);
+        super(CraftingRecipeCategory.MISC);
         Preconditions.checkArgument(width > 0, "width must be greater than zero");
         Preconditions.checkArgument(height > 0, "height must be greater than zero");
         this.serializer = Objects.requireNonNull(serializer, "serializer");
@@ -146,7 +144,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean matches(final RecipeInputInventory inventory, @Nullable final World world) {
+    public boolean matches(final CraftingRecipeInput inventory, @Nullable final World world) {
 
         if (!this.fits(inventory.getWidth(), inventory.getHeight())) {
             return false;
@@ -173,7 +171,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
 
-    private ItemStack getResult(final RecipeInputInventory inventory, final int originX, final int originY, final IntUnaryOperator funcX) {
+    private ItemStack getResult(final CraftingRecipeInput inventory, final int originX, final int originY, final IntUnaryOperator funcX) {
         final MatchResultRegular[] match = new MatchResultRegular[this.ingredients.length];
         final Multimap<AuxiliaryIngredient<?>, MatchResultAuxiliary> auxMatchResults = LinkedListMultimap.create();
         final Map<AuxiliaryIngredient<?>, Integer> auxMatchTotals = new HashMap<>();
@@ -186,7 +184,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
             final int y = i / w;
             final int ingX = x - originX;
             final int ingY = y - originY;
-            final ItemStack input = inventory.getStack(i);
+            final ItemStack input = inventory.getStackInSlot(x, y);
             if (this.contains(ingX, ingY)) {
                 final int index = funcX.applyAsInt(ingX) + ingY * this.width;
                 final RegularIngredient ingredient = this.ingredients[index];
@@ -253,15 +251,9 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(final RecipeInputInventory inventory, final DynamicRegistryManager registryAccess) {
+    public ItemStack craft(final CraftingRecipeInput inventory, final RegistryWrapper.WrapperLookup lookup) {
         final ItemStack result = this.result;
         return result.isEmpty() ? result : result.copy();
-    }
-
-    @Override
-    public ItemStack getOutput(final DynamicRegistryManager registryAccess)
-    {
-        return this.output;
     }
 
     public interface MatchResult<I extends GenericIngredient<I, M>, M extends MatchResult<I, M>> {
