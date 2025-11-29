@@ -8,7 +8,6 @@ import de.lucalabs.fairylights.connection.ConnectionType;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -17,8 +16,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -28,7 +25,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Objects;
 import java.util.Optional;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
 
 public abstract class ConnectionItem extends Item {
     private final ConnectionType<?> type;
@@ -95,10 +95,8 @@ public abstract class ConnectionItem extends Item {
 
     private boolean isConnectionInOtherHand(final World world, final PlayerEntity user, final ItemStack stack) {
         final Fastener<?> attacher = FairyLightComponents.FASTENER.get(user).get().orElseThrow(IllegalStateException::new);
-        return attacher.getFirstConnection().filter(connection -> {
-            final NbtCompound nbt = connection.serializeLogic();
-            return nbt.isEmpty() ? stack.hasNbt() : !NbtHelper.matches(nbt, stack.getNbt(), true);
-        }).isPresent();
+        // TODO verify that this equals check is not too strict
+        return attacher.getFirstConnection().filter(connection -> Objects.equals(stack.get(LOGIC), connection.serializeLogic().build())).isPresent();
     }
 
     private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos) {
@@ -111,8 +109,7 @@ public abstract class ConnectionItem extends Item {
     private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos, final BlockState state) {
         if (world.setBlockState(pos, state, 3)) {
             state.getBlock().onPlaced(world, pos, state, user, stack);
-//            final BlockSoundGroup sound = state.getBlock().getSoundType(state, world, pos, user);
-            final BlockSoundGroup sound = state.getBlock().getSoundGroup(state); // TODO verify that this does the same as the line above
+            final BlockSoundGroup sound = state.getSoundGroup();
             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     sound.getPlaceSound(),
                     SoundCategory.BLOCKS,
@@ -146,8 +143,7 @@ public abstract class ConnectionItem extends Item {
 
                 attacher.removeConnection(placing.get());
             } else {
-                final NbtCompound data = stack.getNbt();
-                fastener.connect(world, attacher, this.getConnectionType(), data == null ? new NbtCompound() : data, false);
+                fastener.connect(world, attacher, this.getConnectionType(), stack.get(LOGIC), false);
             }
             if (playSound) {
                 final Vec3d pos = fastener.getConnectionPoint();

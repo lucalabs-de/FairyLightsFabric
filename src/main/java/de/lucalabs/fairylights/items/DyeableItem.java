@@ -5,10 +5,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.MathHelper;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.*;
 
 public final class DyeableItem {
     private DyeableItem() {
@@ -51,10 +53,8 @@ public final class DyeableItem {
         if (color == DyeColor.GRAY) {
             return 0x606060;
         }
-        float[] colors = color.getColorComponents();
-        return MathHelper.floor(colors[0] * 255.0F) << 16
-                | MathHelper.floor(colors[1] * 255.0F) << 8
-                | MathHelper.floor(colors[2] * 255.0F);
+
+        return color.getEntityColor();
     }
 
     public static Optional<DyeColor> getDyeColor(final ItemStack stack) {
@@ -63,26 +63,17 @@ public final class DyeableItem {
     }
 
     public static ItemStack setColor(final ItemStack stack, final DyeColor dye) {
-        return setColor(stack, getColor(dye));
-    }
-
-    public static ItemStack setColor(final ItemStack stack, final int color) {
-        setColor(stack.getOrCreateNbt(), color);
+        stack.set(COLOR, getColor(dye));
         return stack;
     }
 
-    public static NbtCompound setColor(final NbtCompound tag, final DyeColor dye) {
-        return setColor(tag, getColor(dye));
-    }
-
-    public static NbtCompound setColor(final NbtCompound tag, final int color) {
-        tag.putInt("color", color);
-        return tag;
+    public static ItemStack setColor(final ItemStack stack, final int color) {
+        stack.set(COLOR, color);
+        return stack;
     }
 
     public static int getColor(final ItemStack stack) {
-        final NbtCompound tag = stack.getNbt();
-        return tag != null ? getColor(tag) : 0xFFFFFF;
+       return Objects.requireNonNullElse(stack.get(COLOR), 0xFFFFFF);
     }
 
     public static int getColor(final NbtCompound tag) {

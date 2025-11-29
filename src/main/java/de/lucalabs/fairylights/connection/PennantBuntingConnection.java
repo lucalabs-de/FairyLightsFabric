@@ -4,14 +4,13 @@ import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.feature.Pennant;
 import de.lucalabs.fairylights.items.DyeableItem;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.util.ItemHelper;
 import de.lucalabs.fairylights.util.OreDictUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -91,23 +90,20 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     }
 
     @Override
-    public NbtCompound serializeLogic() {
-        final NbtCompound compound = super.serializeLogic();
-        final NbtList patternList = new NbtList();
-        for (final ItemStack entry : this.pattern) {
-            patternList.add(entry.writeNbt(new NbtCompound()));
-        }
-        compound.put("pattern", patternList);
-        return compound;
+    public ComponentRecords.ConnectionLogic.Builder serializeLogic() {
+        final ComponentRecords.ConnectionLogic.Builder logic = super.serializeLogic();
+        logic.pattern(this.pattern);
+        return logic;
     }
 
     @Override
-    public void deserializeLogic(final NbtCompound compound) {
-        super.deserializeLogic(compound);
-        this.pattern = new ArrayList<>();
-        final NbtList patternList = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
-        for (int i = 0; i < patternList.size(); i++) {
-            this.pattern.add(ItemStack.fromNbt(patternList.getCompound(i)));
-        }
+    public void deserializeLogic(final ComponentRecords.ConnectionLogic logic) {
+        super.deserializeLogic(logic);
+        this.pattern = logic.pattern();
+    }
+
+    @Override
+    public void deserialize(NbtCompound compound) {
+
     }
 }

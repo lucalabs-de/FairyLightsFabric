@@ -326,14 +326,6 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
         this.setDirty();
     }
 
-    // TODO check if this is ever needed
-//    private final LazyOptional<Fastener<?>> lazyOptional = LazyOptional.of(() -> this);
-
-//    @Override
-//    public <T> LazyOptional<T> getCapability(final Capability<T> capability, final Direction facing) {
-//        return capability == CapabilityHandler.FASTENER_CAP ? this.lazyOptional.cast() : LazyOptional.empty();
-//    }
-
     record Incoming(FastenerAccessor fastener, UUID id) {
 
         boolean gone(final World world) {

@@ -4,12 +4,12 @@ import de.lucalabs.fairylights.collision.Collidable;
 import de.lucalabs.fairylights.collision.CollidableList;
 import de.lucalabs.fairylights.collision.FeatureCollisionTree;
 import de.lucalabs.fairylights.fastener.Fastener;
-import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.fastener.FenceFastener;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.feature.Feature;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.items.ConnectionItem;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.util.*;
 import net.minecraft.entity.ItemEntity;
@@ -17,8 +17,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
@@ -28,9 +26,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
 import java.util.UUID;
 
-public abstract class Connection implements NbtSerializable {
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
+
+public abstract class Connection {
     public static final int MAX_LENGTH = 32;
     public static final double PULL_RANGE = 5;
     public static final float MAX_SLACK = 3;
@@ -131,10 +132,7 @@ public abstract class Connection implements NbtSerializable {
 
     public ItemStack getItemStack() {
         final ItemStack stack = new ItemStack(this.getType().getItem());
-        final NbtCompound tagCompound = this.serializeLogic();
-        if (!tagCompound.isEmpty()) {
-            stack.setNbt(tagCompound);
-        }
+        stack.set(LOGIC, this.serializeLogic().build());
         return stack;
     }
 
@@ -210,11 +208,7 @@ public abstract class Connection implements NbtSerializable {
     }
 
     public boolean matches(final ItemStack stack) {
-        if (this.getType().getItem().equals(stack.getItem())) {
-            final NbtCompound tag = stack.getNbt();
-            return tag == null || Utils.impliesNbt(this.serializeLogic(), tag);
-        }
-        return false;
+        return Objects.equals(stack.get(LOGIC), this.serializeLogic().build()); // TODO verify that the item stack comparison does not use any unique ids or similar
     }
 
     private boolean replace(final PlayerEntity player, final Vec3d hit, final ItemStack heldStack) {
@@ -224,9 +218,8 @@ public abstract class Connection implements NbtSerializable {
             if (this.shouldDrop()) {
                 ItemHelper.giveItemToPlayer(player, this.getItemStack());
             }
-            final NbtCompound data = heldStack.getNbt();
             final ConnectionType<? extends Connection> type = ((ConnectionItem) heldStack.getItem()).getConnectionType();
-            final Connection conn = this.fastener.connect(this.world, dest, type, data == null ? new NbtCompound() : data, true);
+            final Connection conn = this.fastener.connect(this.world, dest, type, heldStack.get(LOGIC), true);
             conn.slack = this.slack;
             conn.onConnect(player.getWorld(), player, heldStack);
             heldStack.decrement(1);
@@ -373,36 +366,34 @@ public abstract class Connection implements NbtSerializable {
         collision.add(FeatureCollisionTree.build(CORD_FEATURE, i -> Segment.INSTANCE, i -> bounds[i], 1, bounds.length - 2));
     }
 
-    public void deserialize(final Fastener<?> destination, final NbtCompound compound, final boolean drop) {
+    public void deserialize(final Fastener<?> destination, final ComponentRecords.ConnectionLogic logic, final boolean drop) {
         this.destination = destination.createAccessor();
         this.drop = drop;
-        this.deserializeLogic(compound);
+        this.deserializeLogic(logic);
     }
 
-    @Override
-    public NbtCompound serialize() {
-        final NbtCompound compound = new NbtCompound();
-        compound.put("destination", FastenerType.serialize(this.destination));
-        compound.put("logic", this.serializeLogic());
-        compound.putFloat("slack", this.slack);
-        if (!this.drop) compound.putBoolean("drop", false);
-        return compound;
+    public ComponentRecords.ConnectionStatus.Builder serialize() {
+        ComponentRecords.ConnectionStatus.Builder status = new ComponentRecords.ConnectionStatus.Builder();
+        return status
+                .destination(this.destination)
+                .logic(this.serializeLogic().build())
+                .slack(this.slack)
+                .drop(this.drop);
     }
 
-    @Override
-    public void deserialize(final NbtCompound compound) {
-        this.destination = FastenerType.deserialize(compound.getCompound("destination"));
-        this.deserializeLogic(compound.getCompound("logic"));
-        this.slack = compound.contains("slack", NbtElement.NUMBER_TYPE) ? compound.getFloat("slack") : 1;
-        this.drop = !compound.contains("drop", NbtElement.NUMBER_TYPE) || compound.getBoolean("drop");
+    public void deserialize(final ComponentRecords.ConnectionStatus status) {
+        this.destination = status.destination().accessor();
+        this.deserializeLogic(status.logic());
+        this.slack = status.slack();
+        this.drop = status.drop();
         this.updateCatenary = true;
     }
 
-    public NbtCompound serializeLogic() {
-        return new NbtCompound();
+    public ComponentRecords.ConnectionLogic.Builder serializeLogic() {
+        return new ComponentRecords.ConnectionLogic.Builder();
     }
 
-    public void deserializeLogic(final NbtCompound compound) {
+    public void deserializeLogic(final ComponentRecords.ConnectionLogic logic) {
     }
 
     static class Segment implements Feature {

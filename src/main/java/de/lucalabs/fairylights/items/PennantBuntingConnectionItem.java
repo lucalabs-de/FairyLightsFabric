@@ -1,18 +1,15 @@
 package de.lucalabs.fairylights.items;
 
 import de.lucalabs.fairylights.connection.ConnectionTypes;
-import de.lucalabs.fairylights.util.styled.StyledString;
-import net.minecraft.client.item.TooltipContext;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
 
 import java.util.List;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
 
 public class PennantBuntingConnectionItem extends ConnectionItem {
     public PennantBuntingConnectionItem(final Item.Settings properties) {
@@ -20,28 +17,18 @@ public class PennantBuntingConnectionItem extends ConnectionItem {
     }
 
     @Override
-    public void appendTooltip(final ItemStack stack, final World world, final List<Text> tooltip, final TooltipContext flag) {
-        final NbtCompound compound = stack.getNbt();
-        if (compound == null) {
+    public void appendTooltip(final ItemStack stack, final TooltipContext context, final List<Text> tooltip, final TooltipType type) {
+        ComponentRecords.ConnectionLogic logic = stack.get(LOGIC);
+        if (logic == null) {
             return;
         }
-        if (compound.contains("text", NbtElement.COMPOUND_TYPE)) {
-            final NbtCompound text = compound.getCompound("text");
-            final StyledString s = StyledString.deserialize(text);
-            if (!s.isEmpty()) {
-                tooltip.add(Text.translatable("format.fairylights.text", s.toTextText()).formatted(Formatting.GRAY));
-            }
+
+        if (!logic.pattern().isEmpty()) {
+            tooltip.add(Text.empty());
         }
-        if (compound.contains("pattern", NbtElement.LIST_TYPE)) {
-            final NbtList tagList = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
-            final int tagCount = tagList.size();
-            if (tagCount > 0) {
-                tooltip.add(Text.empty());
-            }
-            for (int i = 0; i < tagCount; i++) {
-                final ItemStack item = ItemStack.fromNbt(tagList.getCompound(i));
-                tooltip.add(item.getName());
-            }
+
+        for (ItemStack item : logic.pattern()) {
+            tooltip.add(item.getName());
         }
     }
 }

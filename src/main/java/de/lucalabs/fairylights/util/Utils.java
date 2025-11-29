@@ -24,18 +24,4 @@ public final class Utils {
         return Text.translatable("recipe.ingredient.tooltip", value);
     }
 
-    public static boolean impliesNbt(@Nullable NbtElement antecedent, @Nullable NbtElement consequent) {
-        if (antecedent == consequent) return true;
-        if ((antecedent == null) != (consequent == null)) return false;
-        if (!antecedent.getClass().equals(consequent.getClass())) return false;
-        if (antecedent instanceof NbtCompound) {
-            for (String key : ((NbtCompound) antecedent).getKeys()) {
-                if (!impliesNbt(((NbtCompound) antecedent).get(key), ((NbtCompound) consequent).get(key))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return antecedent.equals(consequent);
-    }
 }

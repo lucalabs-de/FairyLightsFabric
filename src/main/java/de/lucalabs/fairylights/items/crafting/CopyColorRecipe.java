@@ -2,26 +2,25 @@ package de.lucalabs.fairylights.items.crafting;
 
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.util.Tags;
-import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.recipe.input.CraftingRecipeInput;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class CopyColorRecipe extends SpecialCraftingRecipe {
-    public CopyColorRecipe(final Identifier id, CraftingRecipeCategory category) {
-        super(id, category);
+    public CopyColorRecipe(CraftingRecipeCategory category) {
+        super(category);
     }
 
     @Override
-    public boolean matches(final RecipeInputInventory inv, final World world) {
+    public boolean matches(final CraftingRecipeInput inv, final World world) {
         int count = 0;
-        for (int i = 0; i < inv.size(); i++) {
-            final ItemStack stack = inv.getStack(i);
+        for (int i = 0; i < inv.getSize(); i++) {
+            final ItemStack stack = inv.getStacks().get(i);
             if (!stack.isEmpty() && (!stack.isIn(Tags.DYEABLE) || count++ >= 2)) {
                 return false;
             }
@@ -30,10 +29,10 @@ public class CopyColorRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(final RecipeInputInventory inv, final DynamicRegistryManager registryAccess) {
+    public ItemStack craft(final CraftingRecipeInput inv, final RegistryWrapper.WrapperLookup lookup) {
         ItemStack original = ItemStack.EMPTY;
-        for (int i = 0; i < inv.size(); i++) {
-            final ItemStack stack = inv.getStack(i);
+        for (int i = 0; i < inv.getSize(); i++) {
+            final ItemStack stack = inv.getStacks().get(i);
             if (!stack.isEmpty()) {
                 if (stack.isIn(Tags.DYEABLE)) {
                     if (original.isEmpty()) {
@@ -53,11 +52,11 @@ public class CopyColorRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(final RecipeInputInventory inv) {
+    public DefaultedList<ItemStack> getRemainder(final CraftingRecipeInput inv) {
         ItemStack original = ItemStack.EMPTY;
-        final DefaultedList<ItemStack> remaining = DefaultedList.ofSize(inv.size(), ItemStack.EMPTY);
+        final DefaultedList<ItemStack> remaining = DefaultedList.ofSize(inv.getSize(), ItemStack.EMPTY);
         for (int i = 0; i < remaining.size(); i++) {
-            final ItemStack stack = inv.getStack(i);
+            final ItemStack stack = inv.getStacks().get(i);
             if (stack.getItem().hasRecipeRemainder()) {
                 remaining.set(i, stack.getItem().getRecipeRemainder(stack));
             } else if (original.isEmpty() && !stack.isEmpty() && stack.isIn(Tags.DYEABLE)) {

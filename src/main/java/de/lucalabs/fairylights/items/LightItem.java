@@ -1,19 +1,19 @@
 package de.lucalabs.fairylights.items;
 
 import de.lucalabs.fairylights.blocks.LightBlock;
-import de.lucalabs.fairylights.components.FairyLightComponents;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.COLORS;
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.TWINKLE;
 
 public class LightItem extends BlockItem {
     private final LightBlock light;
@@ -29,18 +29,16 @@ public class LightItem extends BlockItem {
     }
 
     @Override
-    public void appendTooltip(final ItemStack stack, @Nullable final World world, final List<Text> tooltip, final TooltipContext flag) {
-        super.appendTooltip(stack, world, tooltip, flag);
-        final NbtCompound tag = stack.getNbt();
-        if (tag != null) {
-            if (tag.getBoolean("twinkle")) {
-                tooltip.add(Text.translatable("item.fairyLights.twinkle").formatted(Formatting.GRAY, Formatting.ITALIC));
-            }
-            if (tag.contains("colors", NbtElement.LIST_TYPE)) {
-                final NbtList colors = tag.getList("colors", NbtElement.INT_TYPE);
-                for (int i = 0; i < colors.size(); i++) {
-                    tooltip.add(DyeableItem.getColorName(colors.getInt(i)).copy().formatted(Formatting.GRAY));
-                }
+    public void appendTooltip(final ItemStack stack, TooltipContext context, final List<Text> tooltip, TooltipType type) {
+        super.appendTooltip(stack, context, tooltip, type);
+
+        if (Objects.requireNonNullElse(stack.get(TWINKLE), false)) {
+            tooltip.add(Text.translatable("item.fairyLights.twinkle").formatted(Formatting.GRAY, Formatting.ITALIC));
+        }
+
+        if (stack.contains(COLORS)) {
+            for (int color : Objects.requireNonNull(stack.get(COLORS))) {
+                tooltip.add(DyeableItem.getColorName(color).copy().formatted(Formatting.GRAY));
             }
         }
     }

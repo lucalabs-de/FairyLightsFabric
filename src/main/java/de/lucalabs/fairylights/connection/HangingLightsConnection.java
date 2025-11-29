@@ -8,6 +8,7 @@ import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.items.HangingLightsConnectionItem;
 import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.items.SimpleLightVariant;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
@@ -249,26 +250,14 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     }
 
     @Override
-    public NbtCompound serializeLogic() {
-        final NbtCompound compound = super.serializeLogic();
-        HangingLightsConnectionItem.setString(compound, this.string);
-        final NbtList tagList = new NbtList();
-        for (final ItemStack light : this.pattern) {
-            tagList.add(light.writeNbt(new NbtCompound()));
-        }
-        compound.put("pattern", tagList);
-        return compound;
+    public ComponentRecords.ConnectionLogic.Builder serializeLogic() {
+        return super.serializeLogic().stringType(this.string).pattern(this.pattern);
     }
 
     @Override
-    public void deserializeLogic(final NbtCompound compound) {
-        super.deserializeLogic(compound);
-        this.string = HangingLightsConnectionItem.getString(compound);
-        final NbtList patternList = compound.getList("pattern", NbtElement.COMPOUND_TYPE);
-        this.pattern = new ArrayList<>();
-        for (int i = 0; i < patternList.size(); i++) {
-            final NbtCompound lightCompound = patternList.getCompound(i);
-            this.pattern.add(ItemStack.fromNbt(lightCompound));
-        }
+    public void deserializeLogic(final ComponentRecords.ConnectionLogic logic) {
+        super.deserializeLogic(logic);
+        this.string = logic.string();
+        this.pattern = logic.pattern();
     }
 }

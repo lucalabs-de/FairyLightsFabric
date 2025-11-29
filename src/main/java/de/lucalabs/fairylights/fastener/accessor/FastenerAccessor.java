@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.fastener.accessor;
 
+import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
 import net.minecraft.nbt.NbtCompound;

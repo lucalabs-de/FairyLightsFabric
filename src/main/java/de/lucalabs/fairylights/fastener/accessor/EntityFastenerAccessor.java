@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.fastener.accessor;
 
+import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.components.GenericComponent;
 import de.lucalabs.fairylights.fastener.EntityFastener;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public abstract class EntityFastenerAccessor<E extends Entity> implements FastenerAccessor {
+
     private final Class<? extends E> entityClass;
 
     private UUID uuid;

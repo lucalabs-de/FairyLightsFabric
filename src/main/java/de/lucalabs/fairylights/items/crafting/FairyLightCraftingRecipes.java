@@ -83,7 +83,7 @@ public final class FairyLightCraftingRecipes {
 
     public static final RecipeSerializer<SpecialCraftingRecipe> COPY_COLOR = register(
             "crafting_special_copy_color",
-            id -> new SpecialRecipeSerializer<>(x -> new CopyColorRecipe(id, x)));
+            id -> new SpecialRecipeSerializer<>(CopyColorRecipe::new));
 
     public static final RegularIngredient DYE_SUBTYPE_INGREDIENT = new BasicRegularIngredient(LazyTagIngredient.of(Tags.DYES)) {
         @Override

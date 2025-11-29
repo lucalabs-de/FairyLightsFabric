@@ -3,7 +3,7 @@ package de.lucalabs.fairylights.fastener;
 import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.ConnectionType;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
-import dev.onyxstudios.cca.api.v3.component.Component;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -68,7 +68,7 @@ public interface Fastener<F extends FastenerAccessor> {
 
     boolean reconnect(final World world, Connection connection, Fastener<?> newDestination);
 
-    Connection connect(World world, Fastener<?> destination, ConnectionType<?> type, NbtCompound compound, final boolean drop);
+    Connection connect(World world, Fastener<?> destination, ConnectionType<?> type, ComponentRecords.ConnectionLogic compound, final boolean drop);
 
     Connection createOutgoingConnection(
             World world,
