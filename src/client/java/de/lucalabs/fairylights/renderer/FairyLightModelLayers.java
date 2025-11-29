@@ -20,6 +20,6 @@ public final class FairyLightModelLayers {
     }
 
     private static EntityModelLayer layer(String name) {
-        return new EntityModelLayer(new Identifier(FairyLights.ID, name), "main");
+        return new EntityModelLayer(Identifier.of(FairyLights.ID, name), "main");
     }
 }

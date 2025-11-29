@@ -9,7 +9,7 @@ import de.lucalabs.fairylights.util.MathHelper;
 import de.lucalabs.fairylights.util.matrix.MatrixStack;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -63,22 +63,22 @@ public class LightBlockEntity extends BlockEntity {
 
     public void animateTick() {
         final BlockState state = this.getCachedState();
-        final WallMountLocation face = state.get(LightBlock.FACE);
+        final BlockFace face = state.get(LightBlock.FACE);
         final float rotation = state.get(LightBlock.FACING).asRotation();
         final MatrixStack matrix = new MatrixStack();
         matrix.translate(0.5F, 0.5F, 0.5F);
         matrix.rotate((float) Math.toRadians(180.0F - rotation), 0.0F, 1.0F, 0.0F);
         if (this.light.getVariant().isOrientable()) {
-            if (face == WallMountLocation.WALL) {
+            if (face == BlockFace.WALL) {
                 matrix.rotate(MathHelper.HALF_PI, 1.0F, 0.0F, 0.0F);
-            } else if (face == WallMountLocation.FLOOR) {
+            } else if (face == BlockFace.FLOOR) {
                 matrix.rotate(-MathHelper.PI, 1.0F, 0.0F, 0.0F);
             }
             matrix.translate(0.0F, 0.5F, 0.0F);
         } else {
-            if (face == WallMountLocation.CEILING) {
+            if (face == BlockFace.CEILING) {
                 matrix.translate(0.0F, 0.25F, 0.0F);
-            } else if (face == WallMountLocation.WALL) {
+            } else if (face == BlockFace.WALL) {
                 matrix.translate(0.0F, 3.0F / 16.0F, 0.125F);
             } else {
                 matrix.translate(0.0F, -(float) this.light.getVariant().getBounds().minY - 0.5F, 0.0F);

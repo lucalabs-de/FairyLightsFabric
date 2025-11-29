@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -76,7 +76,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
                 .getStateManager()
                 .getDefaultState()
                 .with(FACING, Direction.NORTH)
-                .with(FACE, WallMountLocation.WALL)
+                .with(FACE, BlockFace.WALL)
                 .with(LIT, true));
     }
 
@@ -96,8 +96,8 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-        final WallMountLocation value = state.get(FACE);
-        if (value == WallMountLocation.WALL) {
+        final BlockFace value = state.get(FACE);
+        if (value == BlockFace.WALL) {
             final Direction facing = state.get(FACING);
             final BlockPos anchorPos = pos.offset(facing.getOpposite());
             BlockState anchorState = world.getBlockState(anchorPos);
@@ -107,7 +107,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             final VoxelShape shape = anchorState.getSidesShape(world, anchorPos);
             return Block.isFaceFullSquare(shape, facing);
         }
-        final Direction facing = value == WallMountLocation.FLOOR ? Direction.DOWN : Direction.UP;
+        final Direction facing = value == BlockFace.FLOOR ? Direction.DOWN : Direction.UP;
         final BlockPos anchorPos = pos.offset(facing);
         BlockState anchorState = world.getBlockState(anchorPos);
         if (anchorState.isIn(BlockTags.LEAVES)) {
@@ -124,11 +124,11 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             final BlockState state;
             if (dir.getAxis() == Direction.Axis.Y) {
                 state = this.getDefaultState()
-                        .with(FACE, dir == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
+                        .with(FACE, dir == Direction.UP ? BlockFace.CEILING : BlockFace.FLOOR)
                         .with(FACING, context.getHorizontalPlayerFacing().getOpposite());
             } else {
                 state = this.getDefaultState()
-                        .with(FACE, WallMountLocation.WALL)
+                        .with(FACE, BlockFace.WALL)
                         .with(FACING, dir.getOpposite());
             }
             if (state.canPlaceAt(context.getWorld(), context.getBlockPos())) {

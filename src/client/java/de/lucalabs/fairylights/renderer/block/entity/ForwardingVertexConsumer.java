@@ -6,7 +6,7 @@ public abstract class ForwardingVertexConsumer implements VertexConsumer {
     protected abstract VertexConsumer delegate();
 
     @Override
-    public VertexConsumer vertex(double x, double y, double z) {
+    public VertexConsumer vertex(float x, float y, float z) {
         return this.delegate().vertex(x, y, z);
     }
 
@@ -33,20 +33,5 @@ public abstract class ForwardingVertexConsumer implements VertexConsumer {
     @Override
     public VertexConsumer normal(float x, float y, float z) {
         return this.delegate().normal(x, y, z);
-    }
-
-    @Override
-    public void next() {
-        this.delegate().next();
-    }
-
-    @Override
-    public void fixedColor(int r, int g, int b, int a) {
-        this.delegate().fixedColor(r, g, b, a);
-    }
-
-    @Override
-    public void unfixColor() {
-        this.delegate().unfixColor();
     }
 }

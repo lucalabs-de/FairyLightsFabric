@@ -29,8 +29,8 @@ import org.joml.Vector3f;
 import java.util.function.Function;
 
 public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingConnection> {
-    private static final Identifier TRIANGLE_MODEL = new Identifier(FairyLights.ID, "entity/triangle_pennant");
-    private static final Identifier SQUARE_MODEL = new Identifier(FairyLights.ID, "entity/square_pennant");
+    private static final Identifier TRIANGLE_MODEL = Identifier.of(FairyLights.ID, "entity/triangle_pennant");
+    private static final Identifier SQUARE_MODEL = Identifier.of(FairyLights.ID, "entity/square_pennant");
 
     public static final ImmutableSet<Identifier> MODELS = ImmutableSet.of(TRIANGLE_MODEL, SQUARE_MODEL);
 

@@ -12,11 +12,11 @@ public class RenderConstants {
     @SuppressWarnings("deprecation")
     public static final SpriteIdentifier SOLID_TEXTURE = new SpriteIdentifier(
             SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
-            new Identifier(FairyLights.ID, "entity/connections"));
+            Identifier.of(FairyLights.ID, "entity/connections"));
 
     @SuppressWarnings("deprecation")
     public static final SpriteIdentifier TRANSLUCENT_TEXTURE = new SpriteIdentifier(
             SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
-            new Identifier(FairyLights.ID, "entity/connections"));
+            Identifier.of(FairyLights.ID, "entity/connections"));
 
 }

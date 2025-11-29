@@ -5,9 +5,13 @@ import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.items.SimpleLightVariant;
-import de.lucalabs.fairylights.model.light.*;
+import de.lucalabs.fairylights.model.light.FairyLightModel;
+import de.lucalabs.fairylights.model.light.IncandescentLightModel;
+import de.lucalabs.fairylights.model.light.LightModel;
+import de.lucalabs.fairylights.model.light.OilLanternModel;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.RenderConstants;
+import de.lucalabs.fairylights.util.ColorUtils;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,33 +26,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class LightRenderer {
-    static class DefaultModel extends LightModel<LightBehavior> {
-        private static final ModelPart EMPTY = new ModelPart(List.of(), Map.of());
-
-        public DefaultModel() {
-            super(new ModelPart(List.of(), Map.of(
-                    "lit", EMPTY,
-                    "lit_tint", EMPTY,
-                    "lit_tint_glow", EMPTY,
-                    "unlit", EMPTY
-            )));
-        }
-
-        @Override
-        public void render(
-                final MatrixStack matrix,
-                final VertexConsumer builder,
-                final int light,
-                final int overlay,
-                final float r,
-                final float g,
-                final float b,
-                final float a) {
-        }
-    }
-
     private final LightModelProvider<LightBehavior> defaultLight = LightModelProvider.of(new DefaultModel());
-
     private final Map<LightVariant<?>, LightModelProvider<?>> lights;
 
     public LightRenderer(final Function<EntityModelLayer, ModelPart> baker) {
@@ -61,7 +39,7 @@ public class LightRenderer {
                         LightModelProvider.of(new IncandescentLightModel(baker.apply(FairyLightModelLayers.INCANDESCENT_LIGHT))))
                 .put(
                         SimpleLightVariant.OIL_LANTERN,
-                       LightModelProvider.of(new OilLanternModel(baker.apply(FairyLightModelLayers.OIL_LANTERN)))
+                        LightModelProvider.of(new OilLanternModel(baker.apply(FairyLightModelLayers.OIL_LANTERN)))
                 )
                 .build();
     }
@@ -102,13 +80,11 @@ public class LightRenderer {
 
     public <T extends LightBehavior> void render(final MatrixStack matrix, final Data data, final Light<T> light, final LightModel<T> model, final float delta, final int packedLight, final int packedOverlay) {
         model.animate(light, light.getBehavior(), delta);
-        model.render(matrix, data.solid, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
-        model.renderTranslucent(matrix, data.translucent, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        model.render(matrix, data.solid, packedLight, packedOverlay, ColorUtils.WHITE);
+        model.renderTranslucent(matrix, data.translucent, packedLight, packedOverlay, ColorUtils.WHITE);
     }
 
     interface LightModelProvider<T extends LightBehavior> {
-        LightModel<T> get(final int index);
-
         static <T extends LightBehavior> LightModelProvider<T> of(final LightModel<T> model) {
             return i -> model;
         }
@@ -119,6 +95,30 @@ public class LightRenderer {
 
         static <T extends LightBehavior, D> LightModelProvider<T> of(final D data, final BiFunction<? super D, Integer, LightModel<T>> function) {
             return i -> function.apply(data, i);
+        }
+
+        LightModel<T> get(final int index);
+    }
+
+    static class DefaultModel extends LightModel<LightBehavior> {
+        private static final ModelPart EMPTY = new ModelPart(List.of(), Map.of());
+
+        public DefaultModel() {
+            super(new ModelPart(List.of(), Map.of(
+                    "lit", EMPTY,
+                    "lit_tint", EMPTY,
+                    "lit_tint_glow", EMPTY,
+                    "unlit", EMPTY
+            )));
+        }
+
+        @Override
+        public void render(
+                final MatrixStack matrix,
+                final VertexConsumer builder,
+                final int light,
+                final int overlay,
+                final int color) {
         }
     }
 

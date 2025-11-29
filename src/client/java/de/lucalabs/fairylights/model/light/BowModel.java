@@ -39,11 +39,8 @@ public class BowModel extends Model {
             final VertexConsumer builder,
             final int light,
             final int overlay,
-            final float r,
-            final float g,
-            final float b,
-            final float a) {
+            final int color) {
 
-        this.root.render(matrix, builder, light, overlay, r, g, b, a);
+        this.root.render(matrix, builder, light, overlay, color);
     }
 }

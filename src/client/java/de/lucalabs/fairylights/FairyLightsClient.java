@@ -4,7 +4,10 @@ import de.lucalabs.fairylights.blocks.entity.FairyLightBlockEntities;
 import de.lucalabs.fairylights.entity.FairyLightEntities;
 import de.lucalabs.fairylights.fastener.RegularBlockView;
 import de.lucalabs.fairylights.items.ItemColorManager;
-import de.lucalabs.fairylights.model.light.*;
+import de.lucalabs.fairylights.model.light.BowModel;
+import de.lucalabs.fairylights.model.light.FairyLightModel;
+import de.lucalabs.fairylights.model.light.IncandescentLightModel;
+import de.lucalabs.fairylights.model.light.OilLanternModel;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.block.entity.FastenerBlockEntityRenderer;
 import de.lucalabs.fairylights.renderer.block.entity.HangingLightsRenderer;
@@ -12,11 +15,10 @@ import de.lucalabs.fairylights.renderer.block.entity.LightBlockEntityRenderer;
 import de.lucalabs.fairylights.renderer.block.entity.PennantBuntingRenderer;
 import de.lucalabs.fairylights.renderer.entity.FenceFastenerRenderer;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
-import net.minecraft.util.Identifier;
 
 public class FairyLightsClient implements ClientModInitializer {
 
@@ -40,12 +42,10 @@ public class FairyLightsClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.PENNANT_WIRE, PennantBuntingRenderer::wireLayer);
         EntityModelLayerRegistry.registerModelLayer(FairyLightModelLayers.LIGHTS_WIRE, HangingLightsRenderer::wireLayer);
 
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> {
-            // Tell Fabric to load this model during resource reloading
-            out.accept(FenceFastenerRenderer.MODEL);
-            PennantBuntingRenderer.MODELS.forEach(out);
+        ModelLoadingPlugin.register(context -> {
+            context.addModels(FenceFastenerRenderer.MODEL);
+            context.addModels(PennantBuntingRenderer.MODELS);
         });
-
 
         ItemColorManager.setupColors();
     }

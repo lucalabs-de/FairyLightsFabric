@@ -8,6 +8,7 @@ import de.lucalabs.fairylights.fastener.FenceFastener;
 import de.lucalabs.fairylights.model.light.BowModel;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.RenderConstants;
+import de.lucalabs.fairylights.util.ColorUtils;
 import de.lucalabs.fairylights.util.Tags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceBlock;
@@ -115,7 +116,7 @@ public class FastenerRenderer {
         if (offset != 0.0F) {
             matrix.translate(0.0D, 0.0D, offset);
         }
-        this.bow.render(matrix, buf, packedLight, packedOverlay, 1.0F, 1.0F, 1.0F, 1.0F);
+        this.bow.render(matrix, buf, packedLight, packedOverlay, ColorUtils.WHITE);
         matrix.pop();
     }
 
@@ -155,13 +156,13 @@ public class FastenerRenderer {
         for (final Direction side : Direction.values()) {
             randSource.setSeed(42L);
             for (final BakedQuad quad : model.getQuads(null, side, randSource)) {
-                buf.quad(lastStack, quad, r, g, b, packedLight, packedOverlay);
+                buf.quad(lastStack, quad, r, g, b, 1.0F, packedLight, packedOverlay);
             }
         }
 
         randSource.setSeed(42L);
         for (final BakedQuad quad : model.getQuads(null, null, randSource)) {
-            buf.quad(lastStack, quad, r, g, b, packedLight, packedOverlay);
+            buf.quad(lastStack, quad, r, g, b, 1.0F, packedLight, packedOverlay);
         }
     }
 }

@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public final class FeatureType {
     private static final DefaultedRegistry<FeatureType> REGISTRY = new SimpleDefaultedRegistry<>(
             "default",
-            RegistryKey.ofRegistry(new Identifier(FairyLights.ID, "feature")),
+            RegistryKey.ofRegistry(Identifier.of(FairyLights.ID, "feature")),
             Lifecycle.experimental(),
             false
     );
@@ -25,7 +25,7 @@ public final class FeatureType {
     }
 
     public static FeatureType register(final String name) {
-        return Registry.register(REGISTRY, new Identifier(name), new FeatureType());
+        return Registry.register(REGISTRY, Identifier.of(name), new FeatureType());
     }
 
     public static FeatureType fromId(final int id) {

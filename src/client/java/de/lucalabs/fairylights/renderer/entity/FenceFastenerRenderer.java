@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.LightType;
 
 public final class FenceFastenerRenderer extends EntityRenderer<FenceFastenerEntity> {
-    public static final Identifier MODEL = new Identifier(FairyLights.ID, "block/fence_fastener");
+    public static final Identifier MODEL = Identifier.of(FairyLights.ID, "block/fence_fastener");
 
     private final FastenerRenderer renderer;
 

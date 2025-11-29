@@ -1,9 +1,7 @@
 package de.lucalabs.fairylights.components;
 
-import de.lucalabs.fairylights.fastener.Fastener;
-import dev.onyxstudios.cca.api.v3.component.Component;
-import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.jetbrains.annotations.Nullable;
+import org.ladysnake.cca.api.v3.component.Component;
 
 import java.util.Optional;
 

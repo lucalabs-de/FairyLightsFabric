@@ -13,7 +13,6 @@ import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
 import de.lucalabs.fairylights.renderer.RenderConstants;
 import de.lucalabs.fairylights.util.Curve;
-import dev.onyxstudios.cca.api.v3.component.ComponentAccess;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -22,6 +21,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -39,6 +39,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import org.ladysnake.cca.api.v3.component.ComponentAccess;
 
 import java.util.ConcurrentModificationException;
 import java.util.Set;
@@ -351,7 +352,7 @@ public final class ClientEventHandler {
         }
 
         @Override
-        protected void initDataTracker() {
+        protected void initDataTracker(DataTracker.Builder builder) {
         }
 
         @Override
@@ -360,21 +361,6 @@ public final class ClientEventHandler {
 
         @Override
         protected void readCustomDataFromNbt(final NbtCompound compound) {
-        }
-
-        @Override
-        public Packet<ClientPlayPacketListener> createSpawnPacket() {
-            return new Packet<>() {
-                @Override
-                public void write(final PacketByteBuf buf) {
-
-                }
-
-                @Override
-                public void apply(final ClientPlayPacketListener p_131342_) {
-
-                }
-            };
         }
     }
 

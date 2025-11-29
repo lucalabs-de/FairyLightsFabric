@@ -6,7 +6,7 @@ import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.model.light.LightModel;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.enums.WallMountLocation;
+import net.minecraft.block.enums.BlockFace;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -45,22 +45,22 @@ public class LightBlockEntityRenderer implements BlockEntityRenderer<LightBlockE
         final LightModel<T> model = this.lights.getModel(light, -1);
         final Box box = model.getBounds();
         final BlockState state = entity.getCachedState();
-        final WallMountLocation face = state.get(LightBlock.FACE);
+        final BlockFace face = state.get(LightBlock.FACE);
         final float rotation = state.get(LightBlock.FACING).asRotation();
         matrix.push();
         matrix.translate(0.5D, 0.5D, 0.5D);
         matrix.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - rotation));
         if (light.getVariant().isOrientable()) {
-            if (face == WallMountLocation.WALL) {
+            if (face == BlockFace.WALL) {
                 matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
-            } else if (face == WallMountLocation.FLOOR) {
+            } else if (face == BlockFace.FLOOR) {
                 matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-180.0F));
             }
             matrix.translate(0.0D, 0.5D, 0.0D);
         } else {
-            if (face == WallMountLocation.CEILING) {
+            if (face == BlockFace.CEILING) {
                 matrix.translate(0.0D, 0.25D, 0.0D);
-            } else if (face == WallMountLocation.WALL) {
+            } else if (face == BlockFace.WALL) {
                 matrix.translate(0.0D, 3.0D / 16.0D, 0.125D);
             } else {
                 matrix.translate(0.0D, -box.minY - model.getFloorOffset() - 0.5D, 0.0D);

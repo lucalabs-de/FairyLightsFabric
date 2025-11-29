@@ -20,7 +20,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class InteractionConnectionMessage extends ConnectionMessage {
 
-    public static final Identifier ID = new Identifier(FairyLights.ID, "interaction_connection");
+    public static final Identifier ID = Identifier.of(FairyLights.ID, "interaction_connection");
 
     private static final float RANGE = (Connection.MAX_LENGTH + 1) * (Connection.MAX_LENGTH + 1);
     private static final float REACH = 6 * 6;
