@@ -7,11 +7,9 @@ import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
-import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
@@ -196,7 +194,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
                     return ItemStack.EMPTY;
                 }
                 match[index] = result;
-                result.forMatch(presentCalled, tag);
+                result.forMatch(presentCalled, comps);
                 if (index == this.outputIngredient) {
                     comps.setAll(input.getComponents());
                     item = input.getItem();
@@ -209,7 +207,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
                         if (result.isAtLimit(auxMatchTotals.getOrDefault(result.ingredient, 0))) {
                             return ItemStack.EMPTY;
                         }
-                        result.forMatch(presentCalled, tag);
+                        result.forMatch(presentCalled, comps);
                         auxMatchTotals.merge(result.ingredient, 1, IntMath::checkedAdd);
                         nonAuxiliary = false;
                         result.propagate(auxMatchResults);
@@ -224,15 +222,15 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         final Set<GenericIngredient<?, ?>> absentCalled = new HashSet<>();
 
         for (final MatchResultRegular result : match) {
-            result.notifyAbsence(presentCalled, absentCalled, tag);
+            result.notifyAbsence(presentCalled, absentCalled, comps);
         }
 
         for (final MatchResultAuxiliary result : auxResults) {
-            result.notifyAbsence(presentCalled, absentCalled, tag);
+            result.notifyAbsence(presentCalled, absentCalled, comps);
         }
 
         for (final AuxiliaryIngredient<?> ingredient : this.auxiliaryIngredients) {
-            if (ingredient.process(auxMatchResults, tag)) {
+            if (ingredient.process(auxMatchResults, comps)) {
                 return ItemStack.EMPTY;
             }
         }
@@ -261,7 +259,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
 
         void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps);
 
-        void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final NbtCompound nbt);
+        void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps);
 
         M withParent(final M parent);
     }
@@ -331,15 +329,15 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final NbtCompound nbt) {
-            super.forMatch(called, nbt);
-            this.parent.forMatch(called, nbt);
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+            super.forMatch(called, comps);
+            this.parent.forMatch(called, comps);
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final NbtCompound nbt) {
-            super.notifyAbsence(presentCalled, absentCalled, nbt);
-            this.parent.notifyAbsence(presentCalled, absentCalled, nbt);
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
+            super.notifyAbsence(presentCalled, absentCalled, comps);
+            this.parent.notifyAbsence(presentCalled, absentCalled, comps);
         }
 
         @Override
@@ -380,21 +378,21 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final NbtCompound nbt) {
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
             if (!called.contains(this.ingredient)) {
-                this.ingredient.present(nbt);
+                this.ingredient.present(comps);
                 called.add(this.ingredient);
             }
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final NbtCompound nbt) {
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
             if (!presentCalled.contains(this.ingredient) && !absentCalled.contains(this.ingredient)) {
-                this.ingredient.absent(nbt);
+                this.ingredient.absent(comps);
                 absentCalled.add(this.ingredient);
             }
             for (final MatchResultAuxiliary result : this.supplementaryResults) {
-                result.notifyAbsence(presentCalled, absentCalled, nbt);
+                result.notifyAbsence(presentCalled, absentCalled, comps);
             }
         }
 
@@ -421,15 +419,15 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final NbtCompound nbt) {
-            super.forMatch(called, nbt);
-            this.parent.forMatch(called, nbt);
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+            super.forMatch(called, comps);
+            this.parent.forMatch(called, comps);
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final NbtCompound nbt) {
-            super.notifyAbsence(presentCalled, absentCalled, nbt);
-            this.parent.notifyAbsence(presentCalled, absentCalled, nbt);
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
+            super.notifyAbsence(presentCalled, absentCalled, comps);
+            this.parent.notifyAbsence(presentCalled, absentCalled, comps);
         }
 
         @Override
