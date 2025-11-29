@@ -6,7 +6,7 @@ import net.minecraft.util.math.Box;
 
 import java.util.function.Function;
 
-public class SimpleLightVariant<T extends LightBehavior> implements LightVariant<T> {
+public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T> {
     public static final LightVariant<StandardLightBehavior> FAIRY_LIGHT = new SimpleLightVariant<>(
             true,
             1.0F,

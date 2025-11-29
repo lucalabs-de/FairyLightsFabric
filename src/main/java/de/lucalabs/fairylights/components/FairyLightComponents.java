@@ -8,6 +8,7 @@ import de.lucalabs.fairylights.fastener.FenceFastener;
 import de.lucalabs.fairylights.fastener.PlayerFastener;
 import de.lucalabs.fairylights.fastener.RegularBlockView;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import org.ladysnake.cca.api.v3.block.BlockComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.block.BlockComponentInitializer;
