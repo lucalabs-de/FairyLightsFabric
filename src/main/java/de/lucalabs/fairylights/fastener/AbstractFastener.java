@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -256,7 +257,11 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
             final Connection connection = connectionEntry.getValue();
             final NbtCompound connectionCompound = new NbtCompound();
 
-            connectionCompound.put("connection", connection.serialize());
+            NbtElement connectionNbt = ComponentRecords.ConnectionStatus.CODEC
+                    .encodeStart(NbtOps.INSTANCE, connection.serialize().build())
+                    .getOrThrow();
+
+            connectionCompound.put("connection", connectionNbt);
             Optional<Identifier> connectionTypeId = FairyLightRegistries.CONNECTION_TYPES
                     .getKey(connection.getType())
                     .map(RegistryKey::getValue);
@@ -275,14 +280,19 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
         for (final Map.Entry<UUID, Incoming> e : this.incoming.entrySet()) {
             final NbtCompound tag = new NbtCompound();
             tag.putUuid("uuid", e.getKey());
-            tag.put("fastener", FastenerType.serialize(e.getValue().fastener));
+
+            NbtElement fastenerNbt = ComponentRecords.FastenerAccessorData.CODEC
+                    .encodeStart(NbtOps.INSTANCE, ComponentRecords.FastenerAccessorData.from(e.getValue().fastener()))
+                    .getOrThrow();
+
+            tag.put("fastener", fastenerNbt);
             incoming.add(tag);
         }
         compound.put("incoming", incoming);
     }
 
     @Override
-    public void readFromNbt (final NbtCompound compound) {
+    public void readFromNbt(final NbtCompound compound) {
         final NbtList listConnections = compound.getList("outgoing", NbtElement.COMPOUND_TYPE);
         final List<UUID> nbtUuids = new ArrayList<>();
         for (int i = 0; i < listConnections.size(); i++) {
@@ -296,14 +306,24 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
             nbtUuids.add(uuid);
             if (this.outgoing.containsKey(uuid)) {
                 final Connection connection = this.outgoing.get(uuid);
-                connection.deserialize(connectionCompound.getCompound("connection"));
+
+                var status = ComponentRecords.ConnectionStatus.CODEC
+                        .parse(NbtOps.INSTANCE, connectionCompound.getCompound("connection"))
+                        .getOrThrow();
+
+                connection.deserialize(status);
             } else {
                 final ConnectionType<?> type = FairyLightRegistries.CONNECTION_TYPES
                         .get(Identifier.tryParse(connectionCompound.getString("type")));
 
                 if (type != null) {
                     final Connection connection = type.create(this.world, this, uuid);
-                    connection.deserialize(connectionCompound.getCompound("connection"));
+
+                    var status = ComponentRecords.ConnectionStatus.CODEC
+                            .parse(NbtOps.INSTANCE, connectionCompound.getCompound("connection"))
+                            .getOrThrow();
+
+                    connection.deserialize(status);
                     this.outgoing.put(uuid, connection);
                 }
             }
@@ -321,7 +341,12 @@ public abstract class AbstractFastener<F extends FastenerAccessor> implements Fa
         for (int i = 0; i < incoming.size(); i++) {
             final NbtCompound incomingNbt = incoming.getCompound(i);
             final UUID uuid = incomingNbt.getUuid("uuid");
-            final FastenerAccessor fastener = FastenerType.deserialize(incomingNbt.getCompound("fastener"));
+
+            final FastenerAccessor fastener = ComponentRecords.FastenerAccessorData.CODEC
+                    .parse(NbtOps.INSTANCE, incomingNbt.getCompound("fastener"))
+                    .getOrThrow()
+                    .accessor();
+
             this.incoming.put(uuid, new Incoming(fastener, uuid));
         }
         this.setDirty();

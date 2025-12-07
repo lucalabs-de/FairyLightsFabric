@@ -18,10 +18,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.LightBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
@@ -37,7 +33,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     private static final int LIGHT_UPDATE_WAIT = 400;
     private static final int LIGHT_UPDATE_RATE = 10;
 
-    private final Set<BlockPos> litBlocks = new HashSet<>();
+    private Set<BlockPos> litBlocks = new HashSet<>();
     private final Set<BlockPos> oldLitBlocks = new HashSet<>();
 
     private StringType string;
@@ -227,26 +223,17 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     }
 
     @Override
-    public NbtCompound serialize() {
-        final NbtCompound compound = super.serialize();
-        compound.putBoolean("isOn", this.isOn);
-        final NbtList litBlocks = new NbtList();
-        for (final BlockPos litBlock : this.litBlocks) {
-            litBlocks.add(NbtHelper.fromBlockPos(litBlock));
-        }
-        compound.put("litBlocks", litBlocks);
-        return compound;
+    public ComponentRecords.ConnectionStatus.Builder serialize() {
+        return super.serialize()
+                .isOn(this.isOn)
+                .litBlocks(this.litBlocks);
     }
 
     @Override
-    public void deserialize(final NbtCompound compound) {
-        super.deserialize(compound);
-        this.isOn = compound.getBoolean("isOn");
-        this.litBlocks.clear();
-        final NbtList litBlocks = compound.getList("litBlocks", NbtElement.COMPOUND_TYPE);
-        for (int i = 0; i < litBlocks.size(); i++) {
-            this.litBlocks.add(NbtHelper.toBlockPos(litBlocks.getCompound(i)));
-        }
+    public void deserialize(ComponentRecords.ConnectionStatus status) {
+        super.deserialize(status);
+        this.isOn = status.isOn();
+        this.litBlocks = status.litBlocks();
     }
 
     @Override

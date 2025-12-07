@@ -13,13 +13,10 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.PATTERN;
@@ -99,30 +96,34 @@ public class ComponentRecords {
 
             return new FastenerAccessorData(type, accessor);
         }));
+
+        public static FastenerAccessorData from(FastenerAccessor accessor) {
+            return new FastenerAccessorData(accessor.getType(), accessor);
+        }
     }
 
     public record ConnectionStatus(
             boolean isOn,
             boolean drop,
             float slack,
-            List<BlockPos> litBlocks,
+            Set<BlockPos> litBlocks,
             FastenerAccessorData destination,
             ConnectionLogic logic) {
         public static final Codec<ConnectionStatus> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.BOOL.fieldOf("isOn").forGetter(ConnectionStatus::isOn),
                 Codec.BOOL.fieldOf("drop").forGetter(ConnectionStatus::drop),
                 Codec.FLOAT.fieldOf("slack").forGetter(ConnectionStatus::slack),
-                BlockPos.CODEC.listOf().fieldOf("litBlocks").forGetter(ConnectionStatus::litBlocks),
+                BlockPos.CODEC.listOf().fieldOf("litBlocks").forGetter(x -> x.litBlocks.stream().toList()), // TODO verify that the performance of this is okay. I guess it's just a factor 2 in the O(n) serialization
                 FastenerAccessorData.CODEC.fieldOf("destination").forGetter(ConnectionStatus::destination),
                 ConnectionLogic.CODEC.fieldOf("logic").forGetter(ConnectionStatus::logic)
-        ).apply(i, ConnectionStatus::new));
+        ).apply(i, (o, d, s, l, ds, lo) -> new ConnectionStatus(o, d, s, new HashSet<>(l), ds, lo)));
 
         public static class Builder {
             private boolean isOn = false;
             private boolean drop = false;
             private float slack = 0.0F;
             @NotNull
-            private List<BlockPos> litBlocks = Collections.emptyList();
+            private Set<BlockPos> litBlocks = Collections.emptySet();
             @NotNull
             private ConnectionLogic logic = new ConnectionLogic.Builder().build();
             @NotNull
@@ -150,6 +151,11 @@ public class ComponentRecords {
 
             public Builder destination(FastenerAccessor accessor) {
                 this.accessorData = new FastenerAccessorData(accessor.getType(), accessor);
+                return this;
+            }
+
+            public Builder litBlocks(Set<BlockPos> litBlocks) {
+                this.litBlocks = litBlocks;
                 return this;
             }
 
