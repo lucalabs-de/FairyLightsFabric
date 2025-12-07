@@ -23,7 +23,7 @@ public final class HangingLightsConnectionItem extends ConnectionItem {
             return;
         }
 
-        final Identifier name = FairyLightRegistries.STRING_TYPES.getId(logic.string());
+        final Identifier name = FairyLightRegistries.STRING_TYPES.getId(logic.string().orElseThrow());
         tooltip.add(Text.translatable("item." + name.getNamespace() + "." + name.getPath()).formatted(Formatting.GRAY));
 
         if (!logic.pattern().isEmpty()) {

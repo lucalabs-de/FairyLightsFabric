@@ -8,7 +8,6 @@ import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.FenceFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.PlayerFastenerAccessor;
 import de.lucalabs.fairylights.string.StringType;
-import de.lucalabs.fairylights.string.StringTypes;
 import de.lucalabs.fairylights.util.Utils;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
@@ -25,21 +24,21 @@ import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.
 
 public class ComponentRecords {
 
-    public record ConnectionLogic(List<ItemStack> pattern, StringType string) {
+    public record ConnectionLogic(List<ItemStack> pattern, Optional<StringType> string) {
         public static final Codec<ConnectionLogic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.listOf().fieldOf("pattern").forGetter(ConnectionLogic::pattern),
-                StringType.CODEC.fieldOf("string").forGetter(ConnectionLogic::string)
+                StringType.CODEC.optionalFieldOf("string").forGetter(ConnectionLogic::string)
         ).apply(instance, ConnectionLogic::new));
 
         public ComponentMapImpl toComponents() {
             ComponentMapImpl comps = new ComponentMapImpl(ComponentMap.EMPTY);
             comps.set(PATTERN, pattern());
-            comps.set(STRING, string());
+            string.ifPresent(string -> comps.set(STRING, string));
             return comps;
         }
 
         public boolean matchesItemStack(ItemStack stack) {
-            StringType stackString = stack.get(STRING);
+            Optional<StringType> stackString = Optional.ofNullable(stack.get(STRING));
             List<ItemStack> pattern = Objects.requireNonNullElse(stack.get(PATTERN), Collections.emptyList());
 
             boolean patternEqual = this.pattern().size() == pattern.size() && IntStream.range(0, pattern.size())
@@ -63,7 +62,7 @@ public class ComponentRecords {
             @NotNull
             private List<ItemStack> pattern = Collections.emptyList();
             @NotNull
-            private StringType string = StringTypes.BLACK_STRING;
+            private Optional<StringType> string = Optional.empty();
 
             public Builder pattern(List<ItemStack> pattern) {
                 this.pattern = pattern;
@@ -71,7 +70,7 @@ public class ComponentRecords {
             }
 
             public Builder stringType(StringType string) {
-                this.string = string;
+                this.string = Optional.of(string);
                 return this;
             }
 

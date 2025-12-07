@@ -93,7 +93,7 @@ public abstract class ConnectionItem extends Item {
 
     private boolean isConnectionInOtherHand(final World world, final PlayerEntity user, final ItemStack stack) {
         final Fastener<?> attacher = FairyLightComponents.FASTENER.get(user).get().orElseThrow(IllegalStateException::new);
-        return attacher.getFirstConnection().filter(connection -> connection.serializeLogic().build().matchesItemStack(stack)).isPresent();
+        return attacher.getFirstConnection().filter(connection -> !connection.serializeLogic().build().matchesItemStack(stack)).isPresent();
     }
 
     private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos) {
