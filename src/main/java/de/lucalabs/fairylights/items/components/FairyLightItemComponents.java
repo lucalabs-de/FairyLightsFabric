@@ -49,10 +49,10 @@ public final class FairyLightItemComponents {
             ComponentType.<ComponentRecords.ConnectionLogic>builder().build()
     );
 
-    public static final ComponentType<ComponentRecords.LightVariantWrapper> LIGHT_VARIANT = Registry.register(
+    public static final ComponentType<Identifier> LIGHT_VARIANT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(FairyLights.ID, "variant"),
-            ComponentType.<ComponentRecords.LightVariantWrapper>builder().build()
+            ComponentType.<Identifier>builder().build()
     );
 
     private FairyLightItemComponents() {
