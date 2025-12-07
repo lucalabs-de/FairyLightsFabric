@@ -9,6 +9,7 @@ import de.lucalabs.fairylights.fastener.accessor.FenceFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.PlayerFastenerAccessor;
 import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.string.StringTypes;
+import de.lucalabs.fairylights.util.Utils;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
@@ -83,9 +84,9 @@ public class ComponentRecords {
     public record FastenerAccessorData(FastenerType type, FastenerAccessor accessor) {
         public static final Codec<FastenerAccessorData> CODEC = RecordCodecBuilder.create(i -> i.group(
                 NbtCompound.CODEC.fieldOf("accessor").forGetter(data -> data.accessor().serialize()),
-                Codec.STRING.fieldOf("type").forGetter(data -> data.type.name())
+                Codec.INT.fieldOf("type").forGetter(data -> data.type.ordinal())
         ).apply(i, (data, t) -> {
-            FastenerType type = FastenerType.fromName(t);
+            FastenerType type = Utils.getEnumValue(FastenerType.class, t);
             FastenerAccessor accessor = switch (type) {
                 case BLOCK -> new BlockFastenerAccessor();
                 case FENCE -> new FenceFastenerAccessor();

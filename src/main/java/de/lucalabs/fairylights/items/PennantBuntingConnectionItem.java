@@ -9,8 +9,6 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
-
 public class PennantBuntingConnectionItem extends ConnectionItem {
     public PennantBuntingConnectionItem(final Item.Settings properties) {
         super(properties, ConnectionTypes.PENNANT_BUNTING);
@@ -18,7 +16,7 @@ public class PennantBuntingConnectionItem extends ConnectionItem {
 
     @Override
     public void appendTooltip(final ItemStack stack, final TooltipContext context, final List<Text> tooltip, final TooltipType type) {
-        ComponentRecords.ConnectionLogic logic = stack.get(LOGIC);
+        ComponentRecords.ConnectionLogic logic = ComponentRecords.ConnectionLogic.fromItemStack(stack);
         if (logic == null) {
             return;
         }

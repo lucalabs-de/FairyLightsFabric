@@ -7,6 +7,7 @@ import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.ConnectionType;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.fastener.Fastener;
+import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -26,8 +27,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.Optional;
-
-import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
 
 public abstract class ConnectionItem extends Item {
     private final ConnectionType<?> type;
@@ -141,7 +140,7 @@ public abstract class ConnectionItem extends Item {
 
                 attacher.removeConnection(placing.get());
             } else {
-                fastener.connect(world, attacher, this.getConnectionType(), stack.get(LOGIC), false);
+                fastener.connect(world, attacher, this.getConnectionType(), ComponentRecords.ConnectionLogic.fromItemStack(stack), false);
             }
             if (playSound) {
                 final Vec3d pos = fastener.getConnectionPoint();

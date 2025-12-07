@@ -2,7 +2,6 @@ package de.lucalabs.fairylights.items.components;
 
 import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.FairyLights;
-import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.string.StringType;
 import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
@@ -34,7 +33,7 @@ public final class FairyLightItemComponents {
 
     public static final ComponentType<List<ItemStack>> PATTERN = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "string"),
+            Identifier.of(FairyLights.ID, "pattern"),
             ComponentType.<List<ItemStack>>builder().codec(ItemStack.CODEC.listOf()).build()
     );
 
@@ -42,12 +41,6 @@ public final class FairyLightItemComponents {
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(FairyLights.ID, "twinkle"),
             ComponentType.<Boolean>builder().codec(Codec.BOOL).build()
-    );
-
-    public static final ComponentType<ComponentRecords.ConnectionLogic> LOGIC = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "logic"),
-            ComponentType.<ComponentRecords.ConnectionLogic>builder().codec(ComponentRecords.ConnectionLogic.CODEC).build()
     );
 
     public static final ComponentType<Identifier> LIGHT_VARIANT = Registry.register(

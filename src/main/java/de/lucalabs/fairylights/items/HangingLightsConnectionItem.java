@@ -11,8 +11,6 @@ import net.minecraft.util.Identifier;
 
 import java.util.List;
 
-import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LOGIC;
-
 public final class HangingLightsConnectionItem extends ConnectionItem {
     public HangingLightsConnectionItem(final Settings properties) {
         super(properties, ConnectionTypes.HANGING_LIGHTS);
@@ -20,7 +18,7 @@ public final class HangingLightsConnectionItem extends ConnectionItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        final ComponentRecords.ConnectionLogic logic = stack.get(LOGIC);
+        final ComponentRecords.ConnectionLogic logic = ComponentRecords.ConnectionLogic.fromItemStack(stack);
         if (logic == null) {
             return;
         }

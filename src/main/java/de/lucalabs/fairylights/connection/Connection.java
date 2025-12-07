@@ -24,6 +24,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -363,7 +364,7 @@ public abstract class Connection {
         collision.add(FeatureCollisionTree.build(CORD_FEATURE, i -> Segment.INSTANCE, i -> bounds[i], 1, bounds.length - 2));
     }
 
-    public void deserialize(final Fastener<?> destination, final ComponentRecords.ConnectionLogic logic, final boolean drop) {
+    public void deserialize(final Fastener<?> destination, @NotNull final ComponentRecords.ConnectionLogic logic, final boolean drop) {
         this.destination = destination.createAccessor();
         this.drop = drop;
         this.deserializeLogic(logic);
