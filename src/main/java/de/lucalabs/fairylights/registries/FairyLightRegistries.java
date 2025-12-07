@@ -1,9 +1,7 @@
 package de.lucalabs.fairylights.registries;
 
-import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.connection.ConnectionType;
-import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.string.StringType;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;

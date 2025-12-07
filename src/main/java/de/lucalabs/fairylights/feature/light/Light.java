@@ -14,7 +14,7 @@ public final class Light<T extends LightBehavior> extends HangingFeature {
 
     private final ItemStack item;
     private final LightVariant<T> variant;
-    private final LightBehavior behavior;
+    private final T behavior;
 
     private int sway;
     private boolean swaying;
@@ -30,7 +30,7 @@ public final class Light<T extends LightBehavior> extends HangingFeature {
         this.behavior = variant.createBehavior(item);
     }
 
-    public LightBehavior getBehavior() {
+    public T getBehavior() {
         return this.behavior;
     }
 

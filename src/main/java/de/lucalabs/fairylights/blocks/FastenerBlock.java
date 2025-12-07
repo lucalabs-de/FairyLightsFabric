@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.blocks;
 
+import com.mojang.serialization.MapCodec;
 import de.lucalabs.fairylights.blocks.entity.FairyLightBlockEntities;
 import de.lucalabs.fairylights.blocks.entity.FastenerBlockEntity;
 import de.lucalabs.fairylights.components.FairyLightComponents;
@@ -24,6 +25,7 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public final class FastenerBlock extends FacingBlock implements BlockEntityProvider {
+    public static final MapCodec<FastenerBlock> CODEC = createCodec(FastenerBlock::new);
     public static final BooleanProperty TRIGGERED = Properties.TRIGGERED;
 
     private static final VoxelShape NORTH_BOX = Block.createCuboidShape(6.0D, 6.0D, 12.0D, 10.0D, 10.0D, 16.0D);
@@ -39,6 +41,11 @@ public final class FastenerBlock extends FacingBlock implements BlockEntityProvi
                 .with(FACING, Direction.NORTH)
                 .with(TRIGGERED, false)
         );
+    }
+
+    @Override
+    protected MapCodec<FastenerBlock> getCodec() {
+        return CODEC;
     }
 
     @SuppressWarnings("unchecked")

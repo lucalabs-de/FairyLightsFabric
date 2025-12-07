@@ -1,5 +1,7 @@
 package de.lucalabs.fairylights.blocks;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.lucalabs.fairylights.blocks.entity.LightBlockEntity;
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.LightVariant;
@@ -21,6 +23,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -92,6 +95,14 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
     @Override
     public BlockEntity createBlockEntity(final BlockPos pos, final BlockState state) {
         return new LightBlockEntity(pos, state);
+    }
+
+    @Override
+    protected MapCodec<? extends WallMountedBlock> getCodec() {
+        // TODO check if this is valid
+        return RecordCodecBuilder.<LightBlock>mapCodec(i -> i.group(
+                Identifier.CODEC.fieldOf("variant").forGetter(x -> this.variant.getId())
+        ).apply(i, c -> new LightBlock(Settings.create(), LightVariant.getLightVariant(c))));
     }
 
     @Override
