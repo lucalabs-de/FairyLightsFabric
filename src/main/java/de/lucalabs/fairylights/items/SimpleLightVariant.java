@@ -2,12 +2,14 @@ package de.lucalabs.fairylights.items;
 
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.feature.light.*;
+import de.lucalabs.fairylights.items.components.FairyLightItemComponents;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T> {
@@ -78,6 +80,11 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
         this.floorOffset = floorOffset;
         this.behaviorFactory = behaviorFactory;
         this.orientable = orientable;
+    }
+
+    public static LightVariant<?> getLightVariantOrDefault(ItemStack i) {
+        LightVariant<?> variant = LightVariant.getLightVariant(i.get(FairyLightItemComponents.LIGHT_VARIANT));
+        return Objects.requireNonNullElse(variant, FAIRY_LIGHT);
     }
 
     // TODO check if the commented-out behaviours are necessary for anything

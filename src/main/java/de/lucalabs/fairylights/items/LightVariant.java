@@ -5,16 +5,17 @@ import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class LightVariant<T extends LightBehavior> {
 
     // TODO | this is not great, but something like this is inevitable when serializing generic types. The best approach
     // TODO | would be to eliminate generics from the class hierarchy, but this leads to problems in other places.
-    // TODO | The whole architecture should be refactored. There is no reason to store such a large object
-    // TODO | as LightVariant + associated LightBehavior in an item component. Ideally, one would store an enum value
-    // TODO | that specifies a specific type of light, and corresponding data.
+    // TODO | The whole architecture should be refactored at some point.
     @SuppressWarnings("unchecked")
-    public static <R extends LightBehavior> LightVariant<R> getLightVariant(Identifier id) {
+    @Contract(value = "null -> null; !null -> !null")
+    public static <R extends LightBehavior> LightVariant<R> getLightVariant(@Nullable Identifier id) {
         return (LightVariant<R>) FairyLightRegistries.LIGHT_VARIANTS.get(id);
     }
 

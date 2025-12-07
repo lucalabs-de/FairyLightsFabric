@@ -5,7 +5,6 @@ import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
-import de.lucalabs.fairylights.items.HangingLightsConnectionItem;
 import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.items.SimpleLightVariant;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
@@ -150,7 +149,8 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     @Override
     protected Light<?> createFeature(final int index, final Vec3d point, final float yaw, final float pitch) {
         final ItemStack lightData = this.getPatternStack(index);
-        return this.createLight(index, point, yaw, pitch, lightData, LightVariant.get(lightData).orElse(SimpleLightVariant.FAIRY_LIGHT));
+//        return this.createLight(index, point, yaw, pitch, lightData, LightVariant.get(lightData).orElse(SimpleLightVariant.FAIRY_LIGHT));
+        return this.createLight(index, point, yaw, pitch, lightData, SimpleLightVariant.getLightVariantOrDefault(lightData));
     }
 
     private ItemStack getPatternStack(final int index) {
@@ -178,7 +178,7 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
         }
         float spacing = 0;
         for (final ItemStack patternLightData : this.pattern) {
-            final float lightSpacing = LightVariant.get(patternLightData).orElse(SimpleLightVariant.FAIRY_LIGHT).getSpacing();
+            final float lightSpacing = SimpleLightVariant.getLightVariantOrDefault(patternLightData).getSpacing();
             if (lightSpacing > spacing) {
                 spacing = lightSpacing;
             }

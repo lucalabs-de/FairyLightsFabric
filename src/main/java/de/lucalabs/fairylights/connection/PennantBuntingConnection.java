@@ -10,7 +10,6 @@ import de.lucalabs.fairylights.util.ItemHelper;
 import de.lucalabs.fairylights.util.OreDictUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
@@ -100,10 +99,5 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     public void deserializeLogic(final ComponentRecords.ConnectionLogic logic) {
         super.deserializeLogic(logic);
         this.pattern = logic.pattern();
-    }
-
-    @Override
-    public void deserialize(NbtCompound compound) {
-
     }
 }
