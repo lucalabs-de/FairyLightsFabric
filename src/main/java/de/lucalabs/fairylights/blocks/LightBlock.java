@@ -52,7 +52,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         super(properties);
         this.variant = variant;
         final Box bb = this.variant.getBounds();
-        final double w = Math.max(bb.getXLength(), bb.getZLength());
+        final double w = Math.max(bb.getLengthX(), bb.getLengthZ());
         final double w0 = 0.5D - w * 0.5D;
         final double w1 = 0.5D + w * 0.5D;
         if (variant.isOrientable()) {
@@ -65,7 +65,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         } else {
             final double t = 0.125D;
             final double u = 11.0D / 16.0D;
-            this.floorShape = clampBox(w0, 0.0D, w0, w1, bb.getYLength() - this.variant.getFloorOffset(), w1);
+            this.floorShape = clampBox(w0, 0.0D, w0, w1, bb.getLengthY() - this.variant.getFloorOffset(), w1);
             this.eastWallShape = clampBox(w0 - t, u + bb.minY, w0, w1 - t, u + bb.maxY, w1);
             this.westWallShape = clampBox(w0 + t, u + bb.minY, w0, w1 + t, u + bb.maxY, w1);
             this.southWallShape = clampBox(w0, u + bb.minY, w0 - t, w1, u + bb.maxY, w1 - t);
@@ -149,7 +149,6 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public List<ItemStack> getDroppedStacks(final BlockState state, final LootContextParameterSet.Builder builder) {
         final BlockEntity entity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
@@ -159,7 +158,6 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public ActionResult onUse(
             final BlockState state,
@@ -186,7 +184,6 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public VoxelShape getOutlineShape(final BlockState state, final BlockView world, final BlockPos pos, final ShapeContext context) {
         return switch (state.get(FACE)) {

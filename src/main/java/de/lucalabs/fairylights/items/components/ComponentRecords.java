@@ -13,6 +13,7 @@ import net.minecraft.component.ComponentMap;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +26,7 @@ import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.
 import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.STRING;
 
 public class ComponentRecords {
+
     public record ConnectionLogic(List<ItemStack> pattern, StringType string) {
         public static final Codec<ConnectionLogic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.listOf().fieldOf("pattern").forGetter(ConnectionLogic::pattern),

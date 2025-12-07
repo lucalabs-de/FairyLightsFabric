@@ -6,7 +6,6 @@ import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -50,11 +49,6 @@ public final class FastenerBlockEntity extends BlockEntity {
     @Override
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
         return BlockEntityUpdateS2CPacket.create(this);
-    }
-
-    @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.items.components;
 
 import de.lucalabs.fairylights.FairyLights;
+import de.lucalabs.fairylights.items.LightVariant;
 import de.lucalabs.fairylights.string.StringType;
 import net.minecraft.component.ComponentType;
 import net.minecraft.item.ItemStack;
@@ -46,6 +47,12 @@ public final class FairyLightItemComponents {
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(FairyLights.ID, "logic"),
             ComponentType.<ComponentRecords.ConnectionLogic>builder().build()
+    );
+
+    public static final ComponentType<ComponentRecords.LightVariantWrapper> LIGHT_VARIANT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(FairyLights.ID, "variant"),
+            ComponentType.<ComponentRecords.LightVariantWrapper>builder().build()
     );
 
     private FairyLightItemComponents() {

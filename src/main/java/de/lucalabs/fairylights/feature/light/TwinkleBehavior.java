@@ -7,6 +7,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.TWINKLE;
+
 public class TwinkleBehavior implements BrightnessLightBehavior {
     private static final CubicBezier EASE_IN_OUT = new CubicBezier(0.4F, 0, 0.6F, 1);
 
@@ -19,8 +21,7 @@ public class TwinkleBehavior implements BrightnessLightBehavior {
     }
 
     public static boolean exists(final ItemStack stack) {
-        final NbtCompound tag = stack.getNbt();
-        return tag != null && tag.getBoolean("twinkle");
+        return Boolean.TRUE.equals(stack.get(TWINKLE));
     }
 
     @Override

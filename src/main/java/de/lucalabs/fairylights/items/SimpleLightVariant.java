@@ -11,7 +11,8 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             true,
             1.0F,
             new Box(-0.138D, -0.138D, -0.138D, 0.138D, 0.138D, 0.138D),
-            0.044D, SimpleLightVariant::standardBehavior,
+            0.044D,
+            SimpleLightVariant::standardBehavior,
             true);
 
     public static final LightVariant<BrightnessLightBehavior> OIL_LANTERN = new SimpleLightVariant<>(

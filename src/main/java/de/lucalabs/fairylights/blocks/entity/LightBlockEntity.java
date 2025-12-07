@@ -13,6 +13,7 @@ import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
@@ -20,6 +21,10 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+
+import java.util.Objects;
+
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LIGHT_VARIANT;
 
 public class LightBlockEntity extends BlockEntity {
     private Light<?> light;
@@ -36,7 +41,7 @@ public class LightBlockEntity extends BlockEntity {
     }
 
     public void setItemStack(final ItemStack stack) {
-        this.light = new Light<>(0, Vec3d.ZERO, 0.0F, 0.0F, stack, LightVariant.get(stack).orElse(SimpleLightVariant.FAIRY_LIGHT), 0.0F);
+        this.light = new Light<>(0, Vec3d.ZERO, 0.0F, 0.0F, stack, Objects.requireNonNullElse(LightVariant.getLightVariant(stack.get(LIGHT_VARIANT)), SimpleLightVariant.FAIRY_LIGHT), 0.0F);
         this.markDirty();
     }
 
@@ -88,21 +93,16 @@ public class LightBlockEntity extends BlockEntity {
     }
 
     @Override
-    public NbtCompound toInitialChunkDataNbt() {
-        return this.createNbt();
-    }
-
-    @Override
-    protected void writeNbt(NbtCompound compound) {
-        super.writeNbt(compound);
-        compound.put("item", this.light.getItem().writeNbt(new NbtCompound()));
+    protected void writeNbt(NbtCompound compound, RegistryWrapper.WrapperLookup wrapper) {
+        super.writeNbt(compound, wrapper);
+        compound.put("item", this.light.getItem().encode(wrapper));
         compound.putBoolean("on", this.on);
     }
 
     @Override
-    public void readNbt(NbtCompound compound) {
-        super.readNbt(compound);
-        this.setItemStack(ItemStack.fromNbt(compound.getCompound("item")));
+    public void readNbt(NbtCompound compound, RegistryWrapper.WrapperLookup wrapper) {
+        super.readNbt(compound, wrapper);
+        ItemStack.fromNbt(wrapper, compound.getCompound("item")).ifPresent(this::setItemStack);
         this.setOn(compound.getBoolean("on"));
     }
 }
