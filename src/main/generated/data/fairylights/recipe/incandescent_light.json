@@ -8,21 +8,17 @@
     "I": {
       "item": "minecraft:iron_ingot"
     },
-    "S": {
-      "item": "minecraft:stick"
-    },
     "T": {
       "item": "minecraft:torch"
     }
   },
   "pattern": [
     " I ",
-    "STS",
-    "IGI"
+    "ITI",
+    " G "
   ],
   "result": {
     "count": 4,
-    "item": "fairylights:oil_lantern"
-  },
-  "show_notification": true
+    "id": "fairylights:incandescent_light"
+  }
 }

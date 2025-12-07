@@ -3,13 +3,9 @@ package de.lucalabs.fairylights.events;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.items.ConnectionItem;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.FenceBlock;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -25,6 +21,7 @@ public final class ServerEventHandler {
     private ServerEventHandler() {
     }
 
+    // TODO no fucking idea what this function does
     public static ActionResult onRightClickBlock(PlayerEntity player, World world, Hand hand, HitResult hitResult) {
         boolean shouldFail = false;
 
@@ -54,7 +51,7 @@ public final class ServerEventHandler {
             final int z = pos.getZ();
             final Box area = new Box(x - range, y - range, z - range, x + range, y + range, z + range);
             for (final MobEntity entity : world.getNonSpectatingEntities(MobEntity.class, area)) {
-                if (entity.isLeashed() && entity.getHoldingEntity() == player) {
+                if (entity.isLeashed() && entity.getLeashHolder() == player) {
                     checkHanging = true;
                     break;
                 }
@@ -63,7 +60,7 @@ public final class ServerEventHandler {
 
         if (checkHanging) {
             final AbstractDecorationEntity entity = FenceFastenerEntity.findHanging(world, pos);
-            if (entity != null && !(entity instanceof LeashKnotEntity)) {
+            if (entity != null) {
                 return shouldFail ? ActionResult.FAIL : ActionResult.SUCCESS;
 //                event.setCanceled(true);
             }

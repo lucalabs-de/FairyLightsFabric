@@ -64,11 +64,13 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
 
     @Override
     public NbtCompound serialize() {
-        return NbtHelper.fromBlockPos(this.pos);
+        NbtCompound compound = new NbtCompound();
+        compound.put("pos", NbtHelper.fromBlockPos(this.pos));
+        return compound;
     }
 
     @Override
     public void deserialize(final NbtCompound nbt) {
-        this.pos = NbtHelper.toBlockPos(nbt);
+        this.pos = NbtHelper.toBlockPos(nbt, "pos").orElseThrow();
     }
 }

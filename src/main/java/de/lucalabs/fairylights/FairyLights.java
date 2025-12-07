@@ -10,11 +10,13 @@ import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.items.components.FairyLightItemComponents;
 import de.lucalabs.fairylights.items.crafting.FairyLightCraftingRecipes;
 import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
+import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessagePayload;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.string.StringTypes;
 import de.lucalabs.fairylights.util.Tags;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +45,7 @@ public class FairyLights implements ModInitializer {
         ConnectionTypes.initialize();
         StringTypes.initialize();
 
-        ServerPlayNetworking.registerGlobalReceiver(InteractionConnectionMessage.ID, InteractionConnectionMessage::apply);
+        PayloadTypeRegistry.playC2S().register(InteractionConnectionMessagePayload.ID, InteractionConnectionMessagePayload.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(InteractionConnectionMessagePayload.ID, InteractionConnectionMessage::apply);
     }
 }

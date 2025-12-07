@@ -10,7 +10,7 @@ import de.lucalabs.fairylights.connection.PlayerAction;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
-import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessage;
+import de.lucalabs.fairylights.net.serverbound.InteractionConnectionMessagePayload;
 import de.lucalabs.fairylights.renderer.RenderConstants;
 import de.lucalabs.fairylights.util.Curve;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -25,9 +25,6 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
@@ -167,7 +164,7 @@ public final class ClientEventHandler {
         }
         final Vec3d origin = viewer.getCameraPosVec(1);
         final Vec3d look = viewer.getRotationVector();
-        final double reach = MinecraftClient.getInstance().interactionManager.getReachDistance();
+        final double reach = MinecraftClient.getInstance().interactionManager.getCurrentGameMode().isCreative() ? 5.0F : 4.5F;
         final Vec3d end = origin.add(look.x * reach, look.y * reach, look.z * reach);
         Connection found = null;
         Intersection rayTrace = null;
@@ -293,14 +290,15 @@ public final class ClientEventHandler {
                 n.sub(this.last);
                 n.normalize();
                 n = this.matrix.peek().getNormalMatrix().transform(n);
+                // TODO verify that I can just remove the next calls here
                 this.buf.vertex(this.matrix.peek().getPositionMatrix(), this.last.x(), this.last.y(), this.last.z())
                         .color(0.0F, 0.0F, 0.0F, RenderConstants.HIGHLIGHT_ALPHA)
-                        .normal(n.x(), n.y(), n.z())
-                        .next();
+                        .normal(n.x(), n.y(), n.z());
+//                        .next();
                 this.buf.vertex(this.matrix.peek().getPositionMatrix(), pos.x(), pos.y(), pos.z())
                         .color(0.0F, 0.0F, 0.0F, RenderConstants.HIGHLIGHT_ALPHA)
-                        .normal(n.x(), n.y(), n.z())
-                        .next();
+                        .normal(n.x(), n.y(), n.z());
+//                        .next();
                 this.last = null;
             }
         }
@@ -335,9 +333,7 @@ public final class ClientEventHandler {
         }
 
         private void processAction(final PlayerAction action) {
-            ClientPlayNetworking.send(
-                    InteractionConnectionMessage.ID,
-                    new InteractionConnectionMessage(this.result.connection, action, this.result.intersection));
+            ClientPlayNetworking.send(new InteractionConnectionMessagePayload(this.result.connection, action, this.result.intersection));
         }
 
 //        @Override

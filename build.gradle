@@ -105,7 +105,7 @@ modrinth {
 	token = '<PAT>';
 	projectId = 'OuLVx5LM' // The ID of your Modrinth project. Slugs will not work.
 	uploadFile = remapJar // Tells Minotaur to use the remapped jar
-	gameVersions = ['1.20.1'] // An array of game versions the version supports
+	gameVersions = ['1.21.1'] // An array of game versions the version supports
 	loaders = ['fabric'] // Self-explanatory.
 	dependencies = [
 			new ModDependency('P7dR8mSH', 'required') // Creates a new required dependency on Fabric API
