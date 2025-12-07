@@ -22,7 +22,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
@@ -175,14 +174,13 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
             final World world,
             final BlockPos pos,
             final PlayerEntity player,
-            final Hand hand,
             final BlockHitResult hit) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity instanceof LightBlockEntity) {
-            ((LightBlockEntity) entity).interact(world, pos, state, player, hand, hit);
+            ((LightBlockEntity) entity).interact(world, pos, state, player, hit);
             return ActionResult.SUCCESS;
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player, hit);
     }
 
     @Environment(EnvType.CLIENT)
@@ -211,7 +209,7 @@ public class LightBlock extends WallMountedBlock implements BlockEntityProvider 
 
     @Override
     public ItemStack getPickStack(
-            final BlockView world,
+            final WorldView world,
             final BlockPos pos,
             final BlockState state) {
         final BlockEntity entity = world.getBlockEntity(pos);

@@ -6,18 +6,12 @@ import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.items.ConnectionItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.ActionResult;
@@ -27,6 +21,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -67,42 +62,22 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     @Nullable
     public static AbstractDecorationEntity findHanging(final World world, final BlockPos pos) {
         for (final AbstractDecorationEntity e : world.getNonSpectatingEntities(AbstractDecorationEntity.class, new Box(pos).expand(2))) {
-            if (e.getDecorationBlockPos().equals(pos)) {
+            if (e.getAttachedBlockPos().equals(pos)) {
                 return e;
             }
         }
         return null;
     }
 
-    @Override
-    public int getWidthPixels() {
-        return 9;
-    }
-
-    @Override
-    public int getHeightPixels() {
-        return 9;
-    }
-
-    @Override
-    public float getEyeHeight(final EntityPose pose, final EntityDimensions size) {
-        /*
-         * Because this entity is inside of a block when
-         * EntityLivingBase#canEntityBeSeen performs its
-         * raytracing it will always return false during
-         * NetHandlerPlayServer#processUseEntity, making
-         * the player reach distance be limited at three
-         * blocks as opposed to the standard six blocks.
-         * EntityLivingBase#canEntityBeSeen will add the
-         * value given by getEyeHeight to the y position
-         * of the entity to calculate the end point from
-         * which to raytrace to. Returning one lets most
-         * interactions with a player succeed, typically
-         * for breaking the connection or creating a new
-         * connection. I hope you enjoy my line lengths.
-         */
-        return 1;
-    }
+//    @Override
+//    public int getWidthPixels() {
+//        return 9;
+//    }
+//
+//    @Override
+//    public int getHeightPixels() {
+//        return 9;
+//    }
 
     @Override
     public boolean shouldRender(final double distance) {
@@ -110,13 +85,23 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean isImmuneToExplosion() {
+    public boolean canUsePortals(boolean allowVehicles) {
+        return false;
+    }
+
+    @Override
+    public boolean isImmuneToExplosion(Explosion exp) {
         return true;
     }
 
     @Override
     public boolean canStayAttached() {
-        return !this.getWorld().canSetBlock(this.attachmentPos) || ConnectionItem.isFence(this.getWorld().getBlockState(this.attachmentPos));
+        return !this.getWorld().canSetBlock(this.attachedBlockPos) || ConnectionItem.isFence(this.getWorld().getBlockState(this.attachedBlockPos));
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+
     }
 
     @Override
@@ -140,22 +125,16 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     }
 
     @Override
-    public boolean canUsePortals() {
-        return false;
-    }
-
-    @Override
     public void onBreak(@Nullable final Entity breaker) {
-        this.getFastener().ifPresent(fastener -> fastener.dropItems(this.getWorld(), this.attachmentPos));
+        this.getFastener().ifPresent(fastener -> fastener.dropItems(this.getWorld(), this.attachedBlockPos));
         if (breaker != null) {
-            this.getWorld().syncWorldEvent(2001, this.attachmentPos, Block.getRawIdFromState(FairyLightBlocks.FASTENER.getDefaultState()));
+            this.getWorld().syncWorldEvent(2001, this.attachedBlockPos, Block.getRawIdFromState(FairyLightBlocks.FASTENER.getDefaultState()));
         }
     }
 
     @Override
     public void onPlace() {
-        final BlockSoundGroup sound = FairyLightBlocks.FASTENER
-                .getSoundGroup(FairyLightBlocks.FASTENER.getDefaultState()); //, this.getWorld(), this.getPos(), null);
+        final BlockSoundGroup sound = FairyLightBlocks.FASTENER.getDefaultState().getSoundGroup();
         this.playSound(sound.getPlaceSound(), (sound.getVolume() + 1) / 2, sound.getPitch() * 0.8F);
     }
 
@@ -173,15 +152,27 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     public void setFacing(final Direction facing) {
     }
 
+//    @Override
+//    protected void updateAttachmentPosition() {
+//        final double posX = this.attachedBlockPos.getX() + 0.5;
+//        final double posY = this.attachedBlockPos.getY() + 0.5;
+//        final double posZ = this.attachedBlockPos.getZ() + 0.5;
+//        this.setPos(posX, posY, posZ);
+//        final float w = 3 / 16F;
+//        final float h = 3 / 16F;
+//        this.setBoundingBox(new Box(posX - w, posY - h, posZ - w, posX + w, posY + h, posZ + w));
+//    }
+
+    // TODO verify that this is fine
     @Override
-    protected void updateAttachmentPosition() {
-        final double posX = this.attachmentPos.getX() + 0.5;
-        final double posY = this.attachmentPos.getY() + 0.5;
-        final double posZ = this.attachmentPos.getZ() + 0.5;
+    protected Box calculateBoundingBox(BlockPos pos, Direction side) {
+        final double posX = this.attachedBlockPos.getX() + 0.5;
+        final double posY = this.attachedBlockPos.getY() + 0.5;
+        final double posZ = this.attachedBlockPos.getZ() + 0.5;
         this.setPos(posX, posY, posZ);
         final float w = 3 / 16F;
         final float h = 3 / 16F;
-        this.setBoundingBox(new Box(posX - w, posY - h, posZ - w, posX + w, posY + h, posZ + w));
+        return new Box(posX - w, posY - h, posZ - w, posX + w, posY + h, posZ + w);
     }
 
     @Override
@@ -227,20 +218,22 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
         return super.interact(player, hand);
     }
 
-    @Override
-    public void writeCustomDataToNbt(final NbtCompound compound) {
-        compound.put("pos", NbtHelper.fromBlockPos(this.attachmentPos));
-    }
+    // TODO seems to be implemented in superclass now, verify that everything still works as desired.
+//    @Override
+//    public void writeCustomDataToNbt(final NbtCompound compound) {
+//        compound.put("pos", NbtHelper.fromBlockPos(this.attachedBlockPos));
+//    }
+//
+//    @Override
+//    public void readCustomDataFromNbt(final NbtCompound compound) {
+//        this.attachedBlockPos = NbtHelper.toBlockPos(compound.getCompound("pos"));
+//    }
 
-    @Override
-    public void readCustomDataFromNbt(final NbtCompound compound) {
-        this.attachmentPos = NbtHelper.toBlockPos(compound.getCompound("pos"));
-    }
-
-    @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
-    }
+    // TODO probably also no longer needed? Verify.
+//    @Override
+//    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+//        return new EntitySpawnS2CPacket(this);
+//    }
 
     // TODO check if this breaks something. It is supposed to replace the setShouldReceiveVelocityUpdates(false) in EntityType registration
     @Override

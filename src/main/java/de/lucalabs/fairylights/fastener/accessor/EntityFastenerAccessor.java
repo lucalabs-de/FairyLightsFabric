@@ -1,6 +1,5 @@
 package de.lucalabs.fairylights.fastener.accessor;
 
-import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.components.GenericComponent;
 import de.lucalabs.fairylights.fastener.EntityFastener;

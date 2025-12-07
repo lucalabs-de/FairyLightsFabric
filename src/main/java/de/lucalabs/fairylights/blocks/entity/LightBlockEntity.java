@@ -16,7 +16,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -51,7 +50,7 @@ public class LightBlockEntity extends BlockEntity {
         this.markDirty();
     }
 
-    public void interact(final World world, final BlockPos pos, final BlockState state, final PlayerEntity player, final Hand hand, final BlockHitResult hit) {
+    public void interact(final World world, final BlockPos pos, final BlockState state, final PlayerEntity player, final BlockHitResult hit) {
         this.setOn(!this.on);
         world.setBlockState(pos, state.with(LightBlock.LIT, this.on));
         final SoundEvent lightSnd;
