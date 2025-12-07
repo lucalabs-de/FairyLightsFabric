@@ -9,8 +9,8 @@ import java.util.function.Supplier;
 
 public class StringTypes {
 
-    public static final StringType BLACK_STRING = register("black_string", () -> new StringType(0x323232));
-    public static final StringType WHITE_STRING = register("white_string", () -> new StringType(0xF0F0F0));
+    public static final StringType BLACK_STRING = register("black_string", () -> new StringType(0xFF323232));
+    public static final StringType WHITE_STRING = register("white_string", () -> new StringType(0xFFF0F0F0));
 
     private static StringType register(final String name, Supplier<? extends StringType> supplier) {
         Identifier identifier = Identifier.of(FairyLights.ID, name);

@@ -39,7 +39,7 @@ public final class ItemColorManager {
                 return DyeableItem.getColor(stack);
             }
 
-            return 0xFFFFFF;
+            return 0xFFFFFFFF;
         }, COLORABLE_LIGHTS);
 
         ColorProviderRegistry.ITEM.register((stack, index) -> {
@@ -56,7 +56,7 @@ public final class ItemColorManager {
                 return DyeableItem.getColor(stack2);
             }
 
-            return 0xFFD584;
+            return 0xFFFFD584;
         }, HANGING_LIGHTS_LINES);
 
         ColorProviderRegistry.ITEM.register((stack, index) -> {

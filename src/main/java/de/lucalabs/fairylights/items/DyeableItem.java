@@ -48,10 +48,10 @@ public final class DyeableItem {
 
     public static int getColor(final DyeColor color) {
         if (color == DyeColor.BLACK) {
-            return 0x323232;
+            return 0xFF323232;
         }
         if (color == DyeColor.GRAY) {
-            return 0x606060;
+            return 0xFF606060;
         }
 
         return color.getEntityColor();
@@ -73,10 +73,10 @@ public final class DyeableItem {
     }
 
     public static int getColor(final ItemStack stack) {
-       return Objects.requireNonNullElse(stack.get(COLOR), 0xFFFFFF);
+       return Objects.requireNonNullElse(stack.get(COLOR), 0xFFFFFFFF);
     }
 
     public static int getColor(final NbtCompound tag) {
-        return tag.contains("color", NbtElement.INT_TYPE) ? tag.getInt("color") : 0xFFFFFF;
+        return tag.contains("color", NbtElement.INT_TYPE) ? tag.getInt("color") : 0xFFFFFFFF;
     }
 }
