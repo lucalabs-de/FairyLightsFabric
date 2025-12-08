@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 public final class Tags {
     public static final TagKey<Item> DYES = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "dyes"));
-    public static final TagKey<Item> DYES_WHITE = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "white_dyes"));
+    public static final TagKey<Item> DYES_WHITE = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "dyes/white"));
     public static final TagKey<Item> DYES_ORANGE = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "orange_dyes"));
     public static final TagKey<Item> DYES_MAGENTA = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "magenta_dyes"));
     public static final TagKey<Item> DYES_LIGHT_BLUE = TagKey.of(RegistryKeys.ITEM, Identifier.of("c", "light_blue_dyes"));

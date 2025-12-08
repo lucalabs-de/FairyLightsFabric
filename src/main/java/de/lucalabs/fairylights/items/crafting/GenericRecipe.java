@@ -5,10 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
-import de.lucalabs.fairylights.items.components.FairyLightItemComponents;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
-import de.lucalabs.fairylights.string.StringTypes;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -26,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 public final class GenericRecipe extends SpecialCraftingRecipe {
     public static final EmptyRegularIngredient EMPTY = new EmptyRegularIngredient();
@@ -39,16 +36,15 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     private final int width;
     private final int height;
     private final int outputIngredient;
-    private final Identifier id;
-    private final ImmutableList<IntUnaryOperator> xFunctions = ImmutableList.of(IntUnaryOperator.identity(), i -> this.getWidth() - 1 - i);
     private ItemStack result = ItemStack.EMPTY;
     private int room;
+
+    private final ImmutableList<IntUnaryOperator> xFunctions = ImmutableList.of(IntUnaryOperator.identity(), i -> this.getWidth() - 1 - i);
 
     GenericRecipe(final Identifier id, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output, final RegularIngredient[] ingredients, final AuxiliaryIngredient<?>[] auxiliaryIngredients, final int width, final int height, final int outputIngredient) {
         super(CraftingRecipeCategory.MISC);
         Preconditions.checkArgument(width > 0, "width must be greater than zero");
         Preconditions.checkArgument(height > 0, "height must be greater than zero");
-        this.id = id;
         this.serializer = Objects.requireNonNull(serializer, "serializer");
         this.output = Objects.requireNonNull(output, "output");
         this.ingredients = Objects.requireNonNull(ingredients, "ingredients");

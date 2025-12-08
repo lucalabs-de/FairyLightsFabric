@@ -13,6 +13,8 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LIGHT_VARIANT;
+
 public final class FairyLightItems {
 
     public static final ConnectionItem HANGING_LIGHTS = register("hanging_lights", () -> new HangingLightsConnectionItem(defaultProperties()));
@@ -35,7 +37,7 @@ public final class FairyLightItems {
     private static Supplier<LightItem> createLight(
             final LightBlock block,
             final BiFunction<LightBlock, Item.Settings, LightItem> factory) {
-        return () -> factory.apply(block, defaultProperties().maxCount(16));
+        return () -> factory.apply(block, defaultProperties().maxCount(16).component(LIGHT_VARIANT, block.getVariant().getId()));
     }
 
     private static Supplier<LightItem> createColorLight(final LightBlock block) {
