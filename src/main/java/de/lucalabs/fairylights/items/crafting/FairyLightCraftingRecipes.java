@@ -182,7 +182,7 @@ public final class FairyLightCraftingRecipes {
                                 comps.remove(COLOR);
                             }
 
-                            comps.set(COLORS, data);
+                            comps.set(COLORS, Utils.deepCopyList(data, Function.identity()));
                         }
                         return false;
                     }
@@ -423,7 +423,7 @@ public final class FairyLightCraftingRecipes {
         @Override
         public boolean finish(final List<ItemStack> pattern, final ComponentMapImpl comps) {
             if (!pattern.isEmpty()) {
-                comps.set(PATTERN, pattern);
+                comps.set(PATTERN, Utils.deepCopyList(pattern, ItemStack::copy));
             }
             return false;
         }
@@ -470,7 +470,7 @@ public final class FairyLightCraftingRecipes {
         @Override
         public boolean finish(final List<ItemStack> pattern, final ComponentMapImpl comps) {
             if (!pattern.isEmpty()) {
-                comps.set(PATTERN, pattern);
+                comps.set(PATTERN, Utils.deepCopyList(pattern, ItemStack::copy));
             }
             return false;
         }

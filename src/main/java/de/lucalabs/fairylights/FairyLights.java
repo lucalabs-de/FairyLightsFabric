@@ -34,9 +34,9 @@ public class FairyLights implements ModInitializer {
 
         FairyLightSounds.initialize();
         FairyLightEntities.initialize();
+        FairyLightItems.initialize();
         FairyLightBlockEntities.initialize();
         FairyLightRegistries.initialize();
-        FairyLightItems.initialize();
         FairyLightBlocks.initialize();
         FairyLightCraftingRecipes.initialize();
         FairyLightItemGroups.initialize();

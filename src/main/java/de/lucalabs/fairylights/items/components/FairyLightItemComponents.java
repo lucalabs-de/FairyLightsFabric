@@ -34,7 +34,7 @@ public final class FairyLightItemComponents {
     public static final ComponentType<List<ItemStack>> PATTERN = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(FairyLights.ID, "pattern"),
-            ComponentType.<List<ItemStack>>builder().codec(ItemStack.CODEC.listOf()).build()
+            ComponentType.<List<ItemStack>>builder().codec(ItemStack.OPTIONAL_CODEC.listOf()).build()
     );
 
     public static final ComponentType<Boolean> TWINKLE = Registry.register(
