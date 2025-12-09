@@ -27,9 +27,6 @@
 		"cardinal-components": [
 			"de.lucalabs.fairylights.components.FairyLightComponents"
 		],
-		"jei_mod_plugin": [
-			"de.lucalabs.fairylights.integrations.jei.FairyLightJeiPlugin"
-		],
 		"emi": [
 			"de.lucalabs.fairylights.integrations.emi.FairyLightEmiPlugin"
 		]
@@ -49,7 +46,7 @@
 	},
 	"accessWidener": "fairylights.accesswidener",
 	"depends": {
-		"fabricloader": ">=0.18.1",
+		"fabricloader": ">=0.17.3",
 		"fabric": "*",
 		"fabric-api": "*",
 		"minecraft": "~1.21.1",
