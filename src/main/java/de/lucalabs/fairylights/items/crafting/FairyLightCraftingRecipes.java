@@ -25,7 +25,7 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 
@@ -150,9 +150,10 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void addTooltip(final List<Text> tooltip) {
-                        super.addTooltip(tooltip);
-                        tooltip.add(Utils.formatRecipeTooltip("recipe.fairylights.twinkling_lights.glowstone"));
+                    public List<StringVisitable> getTooltip() {
+                        var tooltips = super.getTooltip();
+                        tooltips.add(Utils.formatRecipeTooltip("recipe.fairylights.twinkling_lights.glowstone"));
+                        return tooltips;
                     }
                 })
                 .build();
@@ -214,9 +215,10 @@ public final class FairyLightCraftingRecipes {
                     }
 
                     @Override
-                    public void addTooltip(final List<Text> tooltip) {
-                        super.addTooltip(tooltip);
+                    public List<StringVisitable> getTooltip() {
+                        var tooltip = super.getTooltip();
                         tooltip.add(Utils.formatRecipeTooltip("recipe.fairylights.hangingLights.string"));
+                        return tooltip;
                     }
                 })
                 .build();
@@ -429,8 +431,8 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public void addTooltip(final List<Text> tooltip) {
-            tooltip.add(Utils.formatRecipeTooltip("recipe.fairylights.hangingLights.light"));
+        public List<StringVisitable> getTooltip() {
+            return Collections.singletonList(Utils.formatRecipeTooltip("recipe.fairylights.hangingLights.light"));
         }
     }
 
@@ -476,8 +478,8 @@ public final class FairyLightCraftingRecipes {
         }
 
         @Override
-        public void addTooltip(final List<Text> tooltip) {
-            tooltip.add(Utils.formatRecipeTooltip("recipe.fairylights.pennantBunting.pennant"));
+        public List<StringVisitable> getTooltip() {
+            return Collections.singletonList(Utils.formatRecipeTooltip("recipe.fairylights.pennantBunting.pennant"));
         }
     }
 

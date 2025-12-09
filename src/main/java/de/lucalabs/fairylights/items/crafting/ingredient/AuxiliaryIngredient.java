@@ -6,12 +6,13 @@ import de.lucalabs.fairylights.items.crafting.GenericRecipe;
 import de.lucalabs.fairylights.util.Utils;
 import net.minecraft.component.ComponentMapImpl;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
+import net.minecraft.text.StringVisitable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public interface AuxiliaryIngredient<A> extends GenericIngredient<AuxiliaryIngredient<?>, GenericRecipe.MatchResultAuxiliary> {
     boolean isRequired();
@@ -38,9 +39,10 @@ public interface AuxiliaryIngredient<A> extends GenericIngredient<AuxiliaryIngre
     }
 
     @Override
-    default void addTooltip(final List<Text> tooltip) {
+    default List<StringVisitable> getTooltip() {
         if (!this.isRequired()) {
-            tooltip.add(Utils.formatRecipeTooltip("recipe.fairylights.ingredient.auxiliary.optional"));
+            return Collections.singletonList(Utils.formatRecipeTooltip("recipe.fairylights.ingredient.auxiliary.optional"));
         }
+        return Collections.emptyList();
     }
 }
