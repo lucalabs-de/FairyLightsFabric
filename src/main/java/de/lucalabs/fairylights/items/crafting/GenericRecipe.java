@@ -28,6 +28,8 @@ import java.util.function.Supplier;
 public final class GenericRecipe extends SpecialCraftingRecipe {
     public static final EmptyRegularIngredient EMPTY = new EmptyRegularIngredient();
 
+    private final Identifier id;
+
     private final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer;
     private final ItemStack output;
     private final RegularIngredient[] ingredients;
@@ -36,15 +38,15 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     private final int width;
     private final int height;
     private final int outputIngredient;
+    private final ImmutableList<IntUnaryOperator> xFunctions = ImmutableList.of(IntUnaryOperator.identity(), i -> this.getWidth() - 1 - i);
     private ItemStack result = ItemStack.EMPTY;
     private int room;
-
-    private final ImmutableList<IntUnaryOperator> xFunctions = ImmutableList.of(IntUnaryOperator.identity(), i -> this.getWidth() - 1 - i);
 
     GenericRecipe(final Identifier id, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output, final RegularIngredient[] ingredients, final AuxiliaryIngredient<?>[] auxiliaryIngredients, final int width, final int height, final int outputIngredient) {
         super(CraftingRecipeCategory.MISC);
         Preconditions.checkArgument(width > 0, "width must be greater than zero");
         Preconditions.checkArgument(height > 0, "height must be greater than zero");
+        this.id = id;
         this.serializer = Objects.requireNonNull(serializer, "serializer");
         this.output = Objects.requireNonNull(output, "output");
         this.ingredients = Objects.requireNonNull(ingredients, "ingredients");
@@ -81,6 +83,10 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
             }
         }
         return foundDictator;
+    }
+
+    public Identifier getId() {
+        return this.id;
     }
 
     private int getRoom() {

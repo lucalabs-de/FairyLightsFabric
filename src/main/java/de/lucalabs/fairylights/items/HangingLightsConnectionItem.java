@@ -3,6 +3,8 @@ package de.lucalabs.fairylights.items;
 import de.lucalabs.fairylights.connection.ConnectionTypes;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
+import de.lucalabs.fairylights.string.StringType;
+import de.lucalabs.fairylights.string.StringTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
@@ -23,7 +25,7 @@ public final class HangingLightsConnectionItem extends ConnectionItem {
             return;
         }
 
-        final Identifier name = FairyLightRegistries.STRING_TYPES.getId(logic.string().orElseThrow());
+        final Identifier name = FairyLightRegistries.STRING_TYPES.getId(logic.string().orElse(StringTypes.BLACK_STRING));
         tooltip.add(Text.translatable("item." + name.getNamespace() + "." + name.getPath()).formatted(Formatting.GRAY));
 
         if (!logic.pattern().isEmpty()) {
