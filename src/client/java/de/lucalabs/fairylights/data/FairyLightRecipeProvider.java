@@ -45,6 +45,25 @@ public final class FairyLightRecipeProvider extends FabricRecipeProvider {
                 .criterion("has_torch", conditionsFromItem(Items.TORCH))
                 .offerTo(consumer);
 
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, FairyLightItems.CANDLE_LANTERN, 4)
+                .pattern(" I ")
+                .pattern("GTG")
+                .pattern("IGI")
+                .input('I', Items.IRON_INGOT)
+                .input('G', Items.GOLD_NUGGET)
+                .input('T', Items.TORCH)
+                .criterion("has_iron", conditionsFromItem(Items.IRON_INGOT))
+                .criterion("has_torch", conditionsFromItem(Items.TORCH))
+                .offerTo(consumer);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, FairyLightItems.GARLAND, 2)
+                .pattern("I-I")
+                .input('I', Items.IRON_INGOT)
+                .input('-', Items.VINE)
+                .criterion("has_iron", conditionsFromItem(Items.IRON_INGOT))
+                .criterion("has_vine", conditionsFromItem(Items.VINE))
+                .offerTo(consumer);
+
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.HANGING_LIGHTS)
                 .unlockedBy("has_lights", conditionsFromTag(Tags.LIGHTS))
                 .build(consumer, new Identifier(FairyLights.ID, "hanging_lights"));

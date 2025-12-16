@@ -18,6 +18,14 @@ public final class ConnectionTypes {
             () -> ConnectionType.Builder.create(PennantBuntingConnection::new).item(() -> FairyLightItems.PENNANT_BUNTING).build()
     );
 
+    public static final ConnectionType<GarlandTinselConnection> TINSEL_GARLAND = register("tinsel_garland",
+            () -> ConnectionType.Builder.create(GarlandTinselConnection::new).item(() -> FairyLightItems.TINSEL).build()
+    );
+
+    public static final ConnectionType<GarlandVineConnection> VINE_GARLAND = register("vine_garland",
+            () -> ConnectionType.Builder.create(GarlandVineConnection::new).item(() -> FairyLightItems.GARLAND).build()
+    );
+
     private ConnectionTypes() {
     }
 

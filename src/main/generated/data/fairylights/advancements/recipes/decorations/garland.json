@@ -1,0 +1,48 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_iron": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:iron_ingot"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "fairylights:garland"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_vine": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "minecraft:vine"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_iron",
+      "has_vine",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "fairylights:garland"
+    ]
+  },
+  "sends_telemetry_event": false
+}

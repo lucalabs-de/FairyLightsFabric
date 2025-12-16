@@ -37,12 +37,31 @@ public final class FairyLightItemGroups {
                             entries.add(FairyLightCraftingRecipes.makePennant(stack, color));
                         }
 
+                        entries.add(new ItemStack(FairyLightItems.GARLAND));
+                        entries.add(new ItemStack(FairyLightItems.TINSEL));
+
                         entries.addAll(generateCollection(FairyLightItems.TRIANGLE_PENNANT));
                         entries.addAll(generateCollection(FairyLightItems.SQUARE_PENNANT));
 
                         entries.addAll(generateCollection(FairyLightItems.FAIRY_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.PAPER_LANTERN));
+                        entries.addAll(generateCollection(FairyLightItems.ORB_LANTERN));
+                        entries.addAll(generateCollection(FairyLightItems.FLOWER_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.CANDLE_LANTERN_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.JACK_O_LANTERN));
+                        entries.addAll(generateCollection(FairyLightItems.SKULL_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.GHOST_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.SPIDER_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.WITCH_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.SNOWFLAKE_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.HEART_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.MOON_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.STAR_LIGHT));
+                        entries.addAll(generateCollection(FairyLightItems.ICICLE_LIGHTS));
+                        entries.addAll(generateCollection(FairyLightItems.METEOR_LIGHT));
 
                         entries.add(new ItemStack(FairyLightItems.OIL_LANTERN));
+                        entries.add(new ItemStack(FairyLightItems.CANDLE_LANTERN));
                         entries.add(new ItemStack(FairyLightItems.INCANDESCENT_LIGHT));
                     }));
 

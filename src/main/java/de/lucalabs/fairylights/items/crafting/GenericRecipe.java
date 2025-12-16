@@ -5,10 +5,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
-import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
-import de.lucalabs.fairylights.util.Tags;
 import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -256,12 +254,6 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     public ItemStack craft(final RecipeInputInventory inventory, final DynamicRegistryManager registryAccess) {
         final ItemStack result = this.result;
         return result.isEmpty() ? result : result.copy();
-    }
-
-    @Override
-    public ItemStack getOutput(final DynamicRegistryManager registryAccess)
-    {
-        return this.output;
     }
 
     public interface MatchResult<I extends GenericIngredient<I, M>, M extends MatchResult<I, M>> {
