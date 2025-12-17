@@ -92,6 +92,36 @@ public final class FairyLightRecipeProvider extends FabricRecipeProvider {
 
         this.lightRecipe(FairyLightCraftingRecipes.FAIRY_LIGHT)
                 .build(consumer, new Identifier(FairyLights.ID, "fairy_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.PAPER_LANTERN)
+                .build(consumer, new Identifier(FairyLights.ID, "paper_lantern"));
+        this.lightRecipe(FairyLightCraftingRecipes.ORB_LANTERN)
+                .build(consumer, new Identifier(FairyLights.ID, "orb_lantern"));
+        this.lightRecipe(FairyLightCraftingRecipes.FLOWER_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "flower_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.CANDLE_LANTERN_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "candle_lantern_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.JACK_O_LANTERN)
+                .build(consumer, new Identifier(FairyLights.ID, "jack_o_lantern"));
+        this.lightRecipe(FairyLightCraftingRecipes.SKULL_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "skull_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.GHOST_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "ghost_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.SPIDER_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "spider_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.WITCH_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "witch_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.SNOWFLAKE_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "snowflake_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.HEART_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "heart_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.MOON_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "moon_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.STAR_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "star_light"));
+        this.lightRecipe(FairyLightCraftingRecipes.ICICLE_LIGHTS)
+                .build(consumer, new Identifier(FairyLights.ID, "icicle_lights"));
+        this.lightRecipe(FairyLightCraftingRecipes.METEOR_LIGHT)
+                .build(consumer, new Identifier(FairyLights.ID, "meteor_light"));
 
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.LIGHT_TWINKLE)
                 .build(consumer, new Identifier(FairyLights.ID, "light_twinkle"));

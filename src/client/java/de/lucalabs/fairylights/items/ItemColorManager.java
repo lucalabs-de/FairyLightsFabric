@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights.items;
 
+import de.lucalabs.fairylights.feature.light.ColorChangingBehavior;
 import de.lucalabs.fairylights.string.StringTypes;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.minecraft.item.Item;
@@ -48,6 +49,9 @@ public final class ItemColorManager {
     public static void setupColors() {
         ColorProviderRegistry.ITEM.register((stack, index) -> {
             if (index == 1) {
+                if (ColorChangingBehavior.exists(stack)) {
+                    return ColorChangingBehavior.animate(stack);
+                }
                 return DyeableItem.getColor(stack);
             }
 
@@ -66,7 +70,9 @@ public final class ItemColorManager {
                 final NbtList tagList = tag.getList("pattern", NbtElement.COMPOUND_TYPE);
                 if (!tagList.isEmpty()) {
                     final ItemStack stack2 = ItemStack.fromNbt(tagList.getCompound((index - 1) % tagList.size()));
-
+                    if (ColorChangingBehavior.exists(stack2)) {
+                        return ColorChangingBehavior.animate(stack2);
+                    }
                     return DyeableItem.getColor(stack2);
                 }
             }
