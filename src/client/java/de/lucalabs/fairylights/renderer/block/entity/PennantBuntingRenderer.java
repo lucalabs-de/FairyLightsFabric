@@ -1,6 +1,5 @@
 package de.lucalabs.fairylights.renderer.block.entity;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import de.lucalabs.fairylights.FairyLights;
@@ -9,7 +8,6 @@ import de.lucalabs.fairylights.feature.Pennant;
 import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.util.Curve;
-import de.lucalabs.fairylights.util.styled.StyledString;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
@@ -23,8 +21,6 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import org.joml.Matrix3f;
-import org.joml.Vector3f;
 
 import java.util.function.Function;
 

@@ -12,6 +12,21 @@ public final class ItemColorManager {
 
     private static final Item[] COLORABLE_LIGHTS = {
             FairyLightItems.FAIRY_LIGHT,
+            FairyLightItems.PAPER_LANTERN,
+            FairyLightItems.ORB_LANTERN,
+            FairyLightItems.FLOWER_LIGHT,
+            FairyLightItems.CANDLE_LANTERN_LIGHT,
+            FairyLightItems.JACK_O_LANTERN,
+            FairyLightItems.SKULL_LIGHT,
+            FairyLightItems.GHOST_LIGHT,
+            FairyLightItems.SPIDER_LIGHT,
+            FairyLightItems.WITCH_LIGHT,
+            FairyLightItems.SNOWFLAKE_LIGHT,
+            FairyLightItems.HEART_LIGHT,
+            FairyLightItems.MOON_LIGHT,
+            FairyLightItems.STAR_LIGHT,
+            FairyLightItems.ICICLE_LIGHTS,
+            FairyLightItems.METEOR_LIGHT
     };
 
     private static final Item[] HANGING_LIGHTS_LINES = {

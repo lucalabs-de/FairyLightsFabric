@@ -8,6 +8,7 @@ import de.lucalabs.fairylights.items.SimpleLightVariant;
 import de.lucalabs.fairylights.model.light.*;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.RenderConstants;
+import de.lucalabs.fairylights.util.MathHelper;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -22,33 +23,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class LightRenderer {
-    static class DefaultModel extends LightModel<LightBehavior> {
-        private static final ModelPart EMPTY = new ModelPart(List.of(), Map.of());
-
-        public DefaultModel() {
-            super(new ModelPart(List.of(), Map.of(
-                    "lit", EMPTY,
-                    "lit_tint", EMPTY,
-                    "lit_tint_glow", EMPTY,
-                    "unlit", EMPTY
-            )));
-        }
-
-        @Override
-        public void render(
-                final MatrixStack matrix,
-                final VertexConsumer builder,
-                final int light,
-                final int overlay,
-                final float r,
-                final float g,
-                final float b,
-                final float a) {
-        }
-    }
-
     private final LightModelProvider<LightBehavior> defaultLight = LightModelProvider.of(new DefaultModel());
-
     private final Map<LightVariant<?>, LightModelProvider<?>> lights;
 
     public LightRenderer(final Function<EntityModelLayer, ModelPart> baker) {
@@ -60,15 +35,72 @@ public class LightRenderer {
                         SimpleLightVariant.INCANDESCENT_LIGHT,
                         LightModelProvider.of(new IncandescentLightModel(baker.apply(FairyLightModelLayers.INCANDESCENT_LIGHT))))
                 .put(
+                        SimpleLightVariant.PAPER_LANTERN,
+                        LightModelProvider.of(new PaperLanternModel(baker.apply(FairyLightModelLayers.PAPER_LANTERN))))
+                .put(
+                        SimpleLightVariant.ORB_LANTERN,
+                        LightModelProvider.of(new OrbLanternModel(baker.apply(FairyLightModelLayers.ORB_LANTERN))))
+                .put(
+                        SimpleLightVariant.FLOWER_LIGHT,
+                        LightModelProvider.of(new FlowerLightModel(baker.apply(FairyLightModelLayers.FLOWER_LIGHT))))
+                .put(
+                        SimpleLightVariant.CANDLE_LANTERN_LIGHT,
+                        LightModelProvider.of(new ColorCandleLanternModel(baker.apply(FairyLightModelLayers.CANDLE_LANTERN_LIGHT))))
+                .put(
+                        SimpleLightVariant.JACK_O_LANTERN,
+                        LightModelProvider.of(new JackOLanternLightModel(baker.apply(FairyLightModelLayers.JACK_O_LANTERN))))
+                .put(
+                        SimpleLightVariant.SKULL_LIGHT,
+                        LightModelProvider.of(new SkullLightModel(baker.apply(FairyLightModelLayers.SKULL_LIGHT))))
+                .put(
+                        SimpleLightVariant.GHOST_LIGHT,
+                        LightModelProvider.of(new GhostLightModel(baker.apply(FairyLightModelLayers.GHOST_LIGHT))))
+                .put(
+                        SimpleLightVariant.SPIDER_LIGHT,
+                        LightModelProvider.of(new SpiderLightModel(baker.apply(FairyLightModelLayers.SPIDER_LIGHT))))
+                .put(
+                        SimpleLightVariant.WITCH_LIGHT,
+                        LightModelProvider.of(new WitchLightModel(baker.apply(FairyLightModelLayers.WITCH_LIGHT))))
+                .put(
+                        SimpleLightVariant.SNOWFLAKE_LIGHT,
+                        LightModelProvider.of(new SnowflakeLightModel(baker.apply(FairyLightModelLayers.SNOWFLAKE_LIGHT))))
+                .put(
+                        SimpleLightVariant.HEART_LIGHT,
+                        LightModelProvider.of(new HeartLightModel(baker.apply(FairyLightModelLayers.HEART_LIGHT))))
+                .put(
+                        SimpleLightVariant.MOON_LIGHT,
+                        LightModelProvider.of(new MoonLightModel(baker.apply(FairyLightModelLayers.MOON_LIGHT))))
+                .put(
+                        SimpleLightVariant.STAR_LIGHT,
+                        LightModelProvider.of(new StarLightModel(baker.apply(FairyLightModelLayers.STAR_LIGHT))))
+                .put(
+                        SimpleLightVariant.ICICLE_LIGHTS,
+                        LightModelProvider.of(
+                                new IcicleLightsModel[]{
+                                        new IcicleLightsModel(baker.apply(FairyLightModelLayers.ICICLE_LIGHTS_1), 1),
+                                        new IcicleLightsModel(baker.apply(FairyLightModelLayers.ICICLE_LIGHTS_2), 2),
+                                        new IcicleLightsModel(baker.apply(FairyLightModelLayers.ICICLE_LIGHTS_3), 3),
+                                        new IcicleLightsModel(baker.apply(FairyLightModelLayers.ICICLE_LIGHTS_4), 4)
+                                },
+                                (models, i) -> models[i < 0 ? 3 : MathHelper.mod(MathHelper.hash(i), 4)]
+                        ))
+                .put(
+                        SimpleLightVariant.METEOR_LIGHT,
+                        LightModelProvider.of(new MeteorLightModel(baker.apply(FairyLightModelLayers.METEOR_LIGHT))))
+                .put(
                         SimpleLightVariant.OIL_LANTERN,
-                       LightModelProvider.of(new OilLanternModel(baker.apply(FairyLightModelLayers.OIL_LANTERN)))
+                        LightModelProvider.of(new OilLanternModel(baker.apply(FairyLightModelLayers.OIL_LANTERN)))
                 )
+                .put(
+                        SimpleLightVariant.CANDLE_LANTERN,
+                        LightModelProvider.of(new CandleLanternModel(baker.apply(FairyLightModelLayers.CANDLE_LANTERN))))
                 .build();
     }
 
     public Data start(final VertexConsumerProvider source) {
         // TODO check if unsorted translucency is really needed here
-//        final VertexConsumer buf = RenderConstants.TRANSLUCENT_TEXTURE.getVertexConsumer(source, ForgeRenderTypes::getUnsortedTranslucent);
+//        final VertexConsumer buf = RenderConstants.TRANSLUCENT_TEXTURE
+//                .getVertexConsumer(source, AltRenderLayers::getUnsortedTranslucent);
         final VertexConsumer buf = RenderConstants.TRANSLUCENT_TEXTURE
                 .getVertexConsumer(source, RenderLayer::getEntityTranslucent);
 
@@ -107,8 +139,6 @@ public class LightRenderer {
     }
 
     interface LightModelProvider<T extends LightBehavior> {
-        LightModel<T> get(final int index);
-
         static <T extends LightBehavior> LightModelProvider<T> of(final LightModel<T> model) {
             return i -> model;
         }
@@ -119,6 +149,33 @@ public class LightRenderer {
 
         static <T extends LightBehavior, D> LightModelProvider<T> of(final D data, final BiFunction<? super D, Integer, LightModel<T>> function) {
             return i -> function.apply(data, i);
+        }
+
+        LightModel<T> get(final int index);
+    }
+
+    static class DefaultModel extends LightModel<LightBehavior> {
+        private static final ModelPart EMPTY = new ModelPart(List.of(), Map.of());
+
+        public DefaultModel() {
+            super(new ModelPart(List.of(), Map.of(
+                    "lit", EMPTY,
+                    "lit_tint", EMPTY,
+                    "lit_tint_glow", EMPTY,
+                    "unlit", EMPTY
+            )));
+        }
+
+        @Override
+        public void render(
+                final MatrixStack matrix,
+                final VertexConsumer builder,
+                final int light,
+                final int overlay,
+                final float r,
+                final float g,
+                final float b,
+                final float a) {
         }
     }
 
