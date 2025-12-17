@@ -25,6 +25,7 @@ import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -57,6 +58,10 @@ public final class FairyLightCraftingRecipes {
             "crafting_special_pennant_bunting_augmentation",
             id -> new SpecialRecipeSerializer<>(x -> createPennantBuntingAugmentation(id, x)));
 
+    public static final RecipeSerializer<GenericRecipe> TINSEL_GARLAND = register(
+            "crafting_special_tinsel_garland",
+            id -> new SpecialRecipeSerializer<>(x -> createTinselGarland(id, x)));
+
     public static final RecipeSerializer<GenericRecipe> TRIANGLE_PENNANT = register(
             "crafting_special_triangle_pennant",
             id -> new SpecialRecipeSerializer<>(x -> createTrianglePennant(id, x)));
@@ -68,6 +73,66 @@ public final class FairyLightCraftingRecipes {
     public static final RecipeSerializer<GenericRecipe> FAIRY_LIGHT = register(
             "crafting_special_fairy_light",
             id -> new SpecialRecipeSerializer<>(x -> createFairyLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> PAPER_LANTERN = register(
+            "crafting_special_paper_lantern",
+            id -> new SpecialRecipeSerializer<>(x -> createPaperLantern(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> ORB_LANTERN = register(
+            "crafting_special_orb_lantern",
+            id -> new SpecialRecipeSerializer<>(x -> createOrbLantern(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> FLOWER_LIGHT = register(
+            "crafting_special_flower_light",
+            id -> new SpecialRecipeSerializer<>(x -> createFlowerLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> CANDLE_LANTERN_LIGHT = register(
+            "crafting_special_candle_lantern_light",
+            id -> new SpecialRecipeSerializer<>(x -> createCandleLanternLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> JACK_O_LANTERN = register(
+            "crafting_special_jack_o_lantern",
+            id -> new SpecialRecipeSerializer<>(x -> createJackOLantern(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> SKULL_LIGHT = register(
+            "crafting_special_skull_light",
+            id -> new SpecialRecipeSerializer<>(x -> createSkullLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> GHOST_LIGHT = register(
+            "crafting_special_ghost_light",
+            id -> new SpecialRecipeSerializer<>(x -> createGhostLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> SPIDER_LIGHT = register(
+            "crafting_special_spider_light",
+            id -> new SpecialRecipeSerializer<>(x -> createSpiderLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> WITCH_LIGHT = register(
+            "crafting_special_witch_light",
+            id -> new SpecialRecipeSerializer<>(x -> createWitchLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> SNOWFLAKE_LIGHT = register(
+            "crafting_special_snowflake_light",
+            id -> new SpecialRecipeSerializer<>(x -> createSnowflakeLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> HEART_LIGHT = register(
+            "crafting_special_heart_light",
+            id -> new SpecialRecipeSerializer<>(x -> createHeartLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> MOON_LIGHT = register(
+            "crafting_special_moon_light",
+            id -> new SpecialRecipeSerializer<>(x -> createMoonLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> STAR_LIGHT = register(
+            "crafting_special_star_light",
+            id -> new SpecialRecipeSerializer<>(x -> createStarLight(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> ICICLE_LIGHTS = register(
+            "crafting_special_icicle_lights",
+            id -> new SpecialRecipeSerializer<>(x -> createIcicleLights(id, x)));
+
+    public static final RecipeSerializer<GenericRecipe> METEOR_LIGHT = register(
+            "crafting_special_meteor_light",
+            id -> new SpecialRecipeSerializer<>(x -> createMeteorLight(id, x)));
 
     public static final RecipeSerializer<GenericRecipe> LIGHT_TWINKLE = register(
             "crafting_special_light_twinkle",
@@ -294,13 +359,22 @@ public final class FairyLightCraftingRecipes {
        return stack;
     }
 
-
     private static GenericRecipe createPennantBunting(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
         return new GenericRecipeBuilder(name, () -> PENNANT_BUNTING, FairyLightItems.PENNANT_BUNTING)
                 .withShape("I-I")
                 .withIngredient('I', Items.IRON_INGOT)
                 .withIngredient('-', Items.STRING)
                 .withAuxiliaryIngredient(new PennantIngredient())
+                .build();
+    }
+
+    private static GenericRecipe createTinselGarland(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return new GenericRecipeBuilder(name, () -> TINSEL_GARLAND, FairyLightItems.TINSEL)
+                .withShape(" P ", "I-I", " D ")
+                .withIngredient('P', Items.PAPER)
+                .withIngredient('I', Items.IRON_INGOT)
+                .withIngredient('-', Items.STRING)
+                .withIngredient('D', DYE_SUBTYPE_INGREDIENT)
                 .build();
     }
 
@@ -378,6 +452,127 @@ public final class FairyLightCraftingRecipes {
         return createLight(name, () -> FAIRY_LIGHT, () -> FairyLightItems.FAIRY_LIGHT, b -> b
                 .withShape(" I ", "IDI", " G ")
                 .withIngredient('G', Items.GLASS_PANE)
+        );
+    }
+
+    private static GenericRecipe createPaperLantern(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> PAPER_LANTERN, () -> FairyLightItems.PAPER_LANTERN, b -> b
+                .withShape(" I ", "PDP", "PPP")
+                .withIngredient('P', Items.PAPER)
+        );
+    }
+
+    private static GenericRecipe createOrbLantern(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> ORB_LANTERN, () -> FairyLightItems.ORB_LANTERN, b -> b
+                .withShape(" I ", "SDS", " W ")
+                .withIngredient('S', Items.STRING)
+                .withIngredient('W', Items.WHITE_WOOL)
+        );
+    }
+
+    private static GenericRecipe createFlowerLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> FLOWER_LIGHT, () -> FairyLightItems.FLOWER_LIGHT, b -> b
+                .withShape(" I ", "RDB", " Y ")
+                .withIngredient('R', Items.POPPY)
+                .withIngredient('Y', Items.DANDELION)
+                .withIngredient('B', Items.BLUE_ORCHID)
+        );
+    }
+
+    private static GenericRecipe createCandleLanternLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> CANDLE_LANTERN_LIGHT, () -> FairyLightItems.CANDLE_LANTERN_LIGHT, b -> b
+                .withShape(" I ", "GDG", "IGI")
+                .withIngredient('G', Items.GOLD_NUGGET)
+        );
+    }
+
+    private static GenericRecipe createJackOLantern(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> JACK_O_LANTERN, () -> FairyLightItems.JACK_O_LANTERN, b -> b
+                .withShape(" I ", "SDS", "GPG")
+                .withIngredient('S', ItemTags.WOODEN_SLABS)
+                .withIngredient('G', Items.TORCH)
+                .withIngredient('P', Items.JACK_O_LANTERN)
+        );
+    }
+
+    private static GenericRecipe createSkullLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> SKULL_LIGHT, () -> FairyLightItems.SKULL_LIGHT, b -> b
+                .withShape(" I ", "IDI", " B ")
+                .withIngredient('B', Items.BONE)
+        );
+    }
+
+    private static GenericRecipe createGhostLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> GHOST_LIGHT, () -> FairyLightItems.GHOST_LIGHT, b -> b
+                .withShape(" I ", "PDP", "IGI")
+                .withIngredient('P', Items.PAPER)
+                .withIngredient('G', Items.WHITE_STAINED_GLASS_PANE)
+        );
+    }
+
+    private static GenericRecipe createSpiderLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> SPIDER_LIGHT, () -> FairyLightItems.SPIDER_LIGHT, b -> b
+                .withShape(" I ", "WDW", "SES")
+                .withIngredient('W', Items.COBWEB)
+                .withIngredient('S', Items.STRING)
+                .withIngredient('E', Items.SPIDER_EYE)
+        );
+    }
+
+    private static GenericRecipe createWitchLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> WITCH_LIGHT, () -> FairyLightItems.WITCH_LIGHT, b -> b
+                .withShape(" I ", "BDW", " S ")
+                .withIngredient('B', Items.GLASS_BOTTLE)
+                .withIngredient('W', Items.WHEAT)
+                .withIngredient('S', Items.STICK)
+        );
+    }
+
+    private static GenericRecipe createSnowflakeLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> SNOWFLAKE_LIGHT, () -> FairyLightItems.SNOWFLAKE_LIGHT, b -> b
+                .withShape(" I ", "SDS", " G ")
+                .withIngredient('S', Items.SNOWBALL)
+                .withIngredient('G', Items.WHITE_STAINED_GLASS_PANE)
+        );
+    }
+
+    private static GenericRecipe createHeartLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> HEART_LIGHT, () -> FairyLightItems.HEART_LIGHT, b -> b
+                .withShape(" I ", "IDI", " G ")
+                .withIngredient('G', Items.RED_STAINED_GLASS_PANE)
+        );
+    }
+
+    private static GenericRecipe createMoonLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> MOON_LIGHT, () -> FairyLightItems.MOON_LIGHT, b -> b
+                .withShape(" I ", "GDG", " C ")
+                .withIngredient('G', Items.WHITE_STAINED_GLASS_PANE)
+                .withIngredient('C', Items.CLOCK)
+        );
+    }
+
+
+    private static GenericRecipe createStarLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> STAR_LIGHT, () -> FairyLightItems.STAR_LIGHT, b -> b
+                .withShape(" I ", "PDP", " G ")
+                .withIngredient('P', Items.WHITE_STAINED_GLASS_PANE)
+                .withIngredient('G', Items.GOLD_NUGGET)
+        );
+    }
+
+    private static GenericRecipe createIcicleLights(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> ICICLE_LIGHTS, () -> FairyLightItems.ICICLE_LIGHTS, b -> b
+                .withShape(" I ", "GDG", " B ")
+                .withIngredient('G', Items.GLASS_PANE)
+                .withIngredient('B', Items.WATER_BUCKET)
+        );
+    }
+
+    private static GenericRecipe createMeteorLight(final Identifier name, CraftingRecipeCategory craftingBookCategory) {
+        return createLight(name, () -> METEOR_LIGHT, () -> FairyLightItems.METEOR_LIGHT, b -> b
+                .withShape(" I ", "GDG", "IPI")
+                .withIngredient('G', Items.GLOWSTONE_DUST)
+                .withIngredient('P', Items.PAPER)
         );
     }
 

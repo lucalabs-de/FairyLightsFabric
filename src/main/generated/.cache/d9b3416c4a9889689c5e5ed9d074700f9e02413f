@@ -1,5 +1,9 @@
-// 1.21.1	2025-12-07T20:49:53.12512	Fairy Lights/Recipes
+// 1.21.1	2025-12-18T00:51:03.6095102	Fairy Lights/Recipes
 37d40d3315e101b5be3f2c3a13f5906c7d334da7 data\fairylights\advancement\recipes\decorations\oil_lantern.json
 6eb48b484565a0a166540d0b53449785d446ec5b data\fairylights\recipe\oil_lantern.json
+5cd4403f3af4d70e989d9cdba4d88d1fce6ad701 data\fairylights\advancement\recipes\decorations\candle_lantern.json
+fc2a574802ae2d776287efcdc66e1eb57670a097 data\fairylights\recipe\candle_lantern.json
 d3fc5130b77a3e7079dbb98db0435671f5e48ffb data\fairylights\advancement\recipes\decorations\incandescent_light.json
+2be91c027e0d9992a75e94169cc40e45852bf966 data\fairylights\recipe\garland.json
 f85f53f904970ea7d624131d6d4b44d0ed3153c8 data\fairylights\recipe\incandescent_light.json
+5910b1dea0744a705c13e9aa9412f4cefbf4240c data\fairylights\advancement\recipes\decorations\garland.json

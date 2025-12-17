@@ -40,5 +40,24 @@ public class FairyLightCraftingProvider extends FabricRecipeProvider {
                 .criterion("has_iron", conditionsFromItem(Items.IRON_INGOT))
                 .criterion("has_torch", conditionsFromItem(Items.TORCH))
                 .offerTo(exporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, FairyLightItems.CANDLE_LANTERN, 4)
+                .pattern(" I ")
+                .pattern("GTG")
+                .pattern("IGI")
+                .input('I', Items.IRON_INGOT)
+                .input('G', Items.GOLD_NUGGET)
+                .input('T', Items.TORCH)
+                .criterion("has_iron", conditionsFromItem(Items.IRON_INGOT))
+                .criterion("has_torch", conditionsFromItem(Items.TORCH))
+                .offerTo(exporter);
+
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, FairyLightItems.GARLAND, 2)
+                .pattern("I-I")
+                .input('I', Items.IRON_INGOT)
+                .input('-', Items.VINE)
+                .criterion("has_iron", conditionsFromItem(Items.IRON_INGOT))
+                .criterion("has_vine", conditionsFromItem(Items.VINE))
+                .offerTo(exporter);
     }
 }

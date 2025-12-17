@@ -18,7 +18,23 @@ public final class FairyLightBlockEntities {
 
     public static final BlockEntityType<LightBlockEntity> LIGHT = register("light", () -> BlockEntityType.Builder.create(LightBlockEntity::new,
             FairyLightBlocks.FAIRY_LIGHT,
+            FairyLightBlocks.PAPER_LANTERN,
+            FairyLightBlocks.ORB_LANTERN,
+            FairyLightBlocks.FLOWER_LIGHT,
+            FairyLightBlocks.CANDLE_LANTERN_LIGHT,
+            FairyLightBlocks.JACK_O_LANTERN,
+            FairyLightBlocks.SKULL_LIGHT,
+            FairyLightBlocks.GHOST_LIGHT,
+            FairyLightBlocks.SPIDER_LIGHT,
+            FairyLightBlocks.WITCH_LIGHT,
+            FairyLightBlocks.SNOWFLAKE_LIGHT,
+            FairyLightBlocks.HEART_LIGHT,
+            FairyLightBlocks.MOON_LIGHT,
+            FairyLightBlocks.STAR_LIGHT,
+            FairyLightBlocks.ICICLE_LIGHTS,
+            FairyLightBlocks.METEOR_LIGHT,
             FairyLightBlocks.OIL_LANTERN,
+            FairyLightBlocks.CANDLE_LANTERN,
             FairyLightBlocks.INCANDESCENT_LIGHT).build(null));
 
     private FairyLightBlockEntities() {

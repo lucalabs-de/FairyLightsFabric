@@ -24,10 +24,11 @@ import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.
 
 public class ComponentRecords {
 
-    public record ConnectionLogic(List<ItemStack> pattern, Optional<StringType> string) {
+    public record ConnectionLogic(List<ItemStack> pattern, Optional<StringType> string, Optional<Integer> color) {
         public static final Codec<ConnectionLogic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 ItemStack.CODEC.listOf().fieldOf("pattern").forGetter(ConnectionLogic::pattern),
-                StringType.CODEC.optionalFieldOf("string").forGetter(ConnectionLogic::string)
+                StringType.CODEC.optionalFieldOf("string").forGetter(ConnectionLogic::string),
+                Codec.INT.optionalFieldOf("color").forGetter(ConnectionLogic::color)
         ).apply(instance, ConnectionLogic::new));
 
         public ComponentMapImpl toComponents() {
@@ -63,6 +64,8 @@ public class ComponentRecords {
             private List<ItemStack> pattern = Collections.emptyList();
             @NotNull
             private Optional<StringType> string = Optional.empty();
+            @NotNull
+            private Optional<Integer> color = Optional.empty();
 
             public Builder pattern(List<ItemStack> pattern) {
                 this.pattern = pattern;
@@ -74,8 +77,13 @@ public class ComponentRecords {
                 return this;
             }
 
+            public Builder color(int color) {
+                this.color = Optional.of(color);
+                return this;
+            }
+
             public ConnectionLogic build() {
-                return new ConnectionLogic(pattern, string);
+                return new ConnectionLogic(pattern, string, color);
             }
         }
     }

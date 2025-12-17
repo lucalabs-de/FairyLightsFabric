@@ -1,0 +1,47 @@
+package de.lucalabs.fairylights.model.light;
+
+import de.lucalabs.fairylights.util.MathHelper;
+import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.TexturedModelData;
+import org.jetbrains.annotations.NotNull;
+
+public class WitchLightModel extends ColorLightModel {
+    public WitchLightModel(final ModelPart root) {
+        super(root);
+    }
+
+    public static TexturedModelData createLayer() {
+        final LightMeshHelper helper = LightMeshHelper.create();
+        final BulbBuilder rim = getBulbBuilder(helper);
+        rim.addBox(-4.0F, 0, -4.0F, 8, 1, 8, 0);
+        final EasyMeshBuilder belt = new EasyMeshBuilder("belt", 62, 1);
+        belt.setRotationPoint(0, -4.5F, 0);
+        belt.addBox(-2.5F, 0, -2.5F, 5, 1, 5, 0);
+        helper.unlit().addChild(belt);
+        final EasyMeshBuilder buckle = new EasyMeshBuilder("buckle", 0, 27);
+        buckle.setRotationPoint(0, -0.6F, -2.9F);
+        buckle.yRot = -MathHelper.HALF_PI;
+        buckle.addBox(0, 0, -1, 1, 2, 2, 0);
+        belt.addChild(buckle);
+        final EasyMeshBuilder beltPoke = new EasyMeshBuilder("beltPoke", 66, 4);
+        beltPoke.setRotationPoint(0.2F, 0.5F, -0.5F);
+        beltPoke.addBox(0, 0, 0, 1, 1, 1, 0);
+        buckle.addChild(beltPoke);
+        return helper.build();
+    }
+
+    private static @NotNull BulbBuilder getBulbBuilder(LightMeshHelper helper) {
+        final BulbBuilder bulb = helper.createBulb();
+        final BulbBuilder tip = bulb.createChild("tip", 15, 54);
+        tip.addBox(-1, 0, -1, 2, 2, 2, 0.075F);
+        final BulbBuilder middleTop = bulb.createChild("middleTop", 52, 52);
+        middleTop.setPosition(0, -3, 0);
+        middleTop.addBox(-1.5F, 0, -1.5F, 3, 3, 3, 0);
+        final BulbBuilder middleBottom = middleTop.createChild("middleBottom", 56, 58);
+        middleBottom.setPosition(0, -2, 0);
+        middleBottom.addBox(-2, 0, -2, 4, 2, 4, 0);
+        final BulbBuilder rim = middleBottom.createChild("rim", 58, 7);
+        rim.setPosition(0, -1, 0);
+        return rim;
+    }
+}
