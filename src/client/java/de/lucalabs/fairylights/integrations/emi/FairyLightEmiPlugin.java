@@ -41,33 +41,33 @@ public class FairyLightEmiPlugin implements EmiPlugin {
                     ItemStack output = r.getOutput();
                     List<EmiCraftingRecipe> recipes = new LinkedList<>();
 
-                    if (output.isIn(Tags.DYEABLE)) {
-                        for (final DyeColor color : DyeColor.values()) {
-                            ItemStack coloredOutput = DyeableItem.setColor(output, color);
-
-                            recipes.add(new EmiCraftingRecipe(
-                                    r.getIngredients().stream()
-                                            .map(i -> {
-                                                if (i.getMatchingStacks().length > 0 && Arrays.stream(i.getMatchingStacks()).allMatch(it -> it.isIn(Tags.DYES))) {
-                                                    return Ingredient.ofItems(DyeItem.byColor(color));
-                                                }
-
-                                                return i;
-                                            })
-                                            .map(EmiIngredient::of).toList(),
-                                    EmiStack.of(coloredOutput),
-                                    r.getId().withPath("/" + r.getId().getPath() + "_" + color.getName()),
-                                    false
-                            ));
-                        }
-                    } else {
+//                    if (output.isIn(Tags.DYEABLE)) {
+//                        for (final DyeColor color : DyeColor.values()) {
+//                            ItemStack coloredOutput = DyeableItem.setColor(output, color);
+//
+//                            recipes.add(new EmiCraftingRecipe(
+//                                    r.getIngredients().stream()
+//                                            .map(i -> {
+//                                                if (i.getMatchingStacks().length > 0 && Arrays.stream(i.getMatchingStacks()).allMatch(it -> it.isIn(Tags.DYES))) {
+//                                                    return Ingredient.ofItems(DyeItem.byColor(color));
+//                                                }
+//
+//                                                return i;
+//                                            })
+//                                            .map(EmiIngredient::of).toList(),
+//                                    EmiStack.of(coloredOutput),
+//                                    r.getId().withPath("/" + r.getId().getPath() + "_" + color.getName()),
+//                                    false
+//                            ));
+//                        }
+//                    } else {
                         recipes.add(new EmiCraftingRecipe(
                                 r.getIngredients().stream().map(EmiIngredient::of).toList(),
                                 EmiStack.of(output),
                                 r.getId().withPath("/" + r.getId().getPath()),
                                 false
                         ));
-                    }
+//                    }
 
                     return recipes.stream();
                 })
