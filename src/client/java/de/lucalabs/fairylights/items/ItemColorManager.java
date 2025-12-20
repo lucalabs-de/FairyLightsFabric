@@ -58,6 +58,10 @@ public final class ItemColorManager {
             return 0xFFFFFF;
         }, COLORABLE_LIGHTS);
 
+        ColorProviderRegistry.ITEM.register(
+                (stack, index) -> index == 0 ? DyeableItem.getColor(stack) : 0xFFFFFFFF,
+                FairyLightItems.TINSEL);
+
         ColorProviderRegistry.ITEM.register((stack, index) -> {
             final NbtCompound tag = stack.getNbt();
             if (index == 0) {
