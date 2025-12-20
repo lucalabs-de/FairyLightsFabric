@@ -1,5 +1,6 @@
-// 1.20.1	2025-12-18T00:40:02.7992447	Fairy Lights/Recipes
+// 1.20.1	2025-12-20T22:59:49.6632201	Fairy Lights/Recipes
 c633bf30dec647ac48103614fe5feb00419571a1 data\fairylights\recipes\square_pennant.json
+1a8f28ac8add104e3c2dac5015ba51573433e5e6 data\fairylights\recipes\tinsel_garland.json
 65e642f4f4f21254961892d19d19f18f0a6560b7 data\fairylights\recipes\candle_lantern_light.json
 35f56b43f6d83f6e9b73dc28c3786c434354e798 data\fairylights\recipes\fairy_light.json
 a8230cd353a94c074481985bad94a8b2d7ac0d1c data\fairylights\recipes\flower_light.json
@@ -20,6 +21,7 @@ cbe7874f756bde3f973ba4221978d1c964888826 data\fairylights\advancements\recipes\f
 3fb44ea56f168683859c5fe25fbf80f1ffea6f37 data\fairylights\advancements\recipes\fairylights\triangle_pennant.json
 5ac2b45331ce16885f961ef3faeb2ff366f07a5c data\fairylights\advancements\recipes\fairylights\orb_lantern.json
 645ce2b3dc5a032ee1bb05416e39d6695c16a80b data\fairylights\advancements\recipes\fairylights\candle_lantern_light.json
+a49dfb6b27a67e2f2c0e654f3103328fa387d595 data\fairylights\advancements\recipes\fairylights\tinsel_garland.json
 4300188fa067c5a51f298b23b9ff760629c8d64b data\fairylights\advancements\recipes\fairylights\star_light.json
 7e3a554f62809bb090cf297c3bb81645a5445e2f data\fairylights\recipes\ghost_light.json
 84128676a84fa25075184c4609d31b1f1d67bf65 data\fairylights\advancements\recipes\fairylights\square_pennant.json

@@ -75,6 +75,11 @@ public final class FairyLightRecipeProvider extends FabricRecipeProvider {
                 .unlockedBy("has_pennants", conditionsFromTag(Tags.PENNANTS))
                 .build(consumer, new Identifier(FairyLights.ID, "pennant_bunting"));
 
+        GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.TINSEL_GARLAND)
+                .unlockedBy("has_iron", conditionsFromItem(Items.IRON_INGOT))
+                .unlockedBy("has_string", conditionsFromItem(Items.STRING))
+                .build(consumer, new Identifier(FairyLights.ID, "tinsel_garland"));
+
         GenericRecipeBuilder.customRecipe(FairyLightCraftingRecipes.PENNANT_BUNTING_AUGMENTATION)
                 .build(consumer, new Identifier(FairyLights.ID, "pennant_bunting_augmentation"));
 
