@@ -56,6 +56,9 @@ public class ComponentRecords {
             if (i.contains(PATTERN)) {
                 b.pattern(i.get(PATTERN));
             }
+            if (i.contains(COLOR)) {
+                b.color(i.get(COLOR));
+            }
             return b.build();
         }
 
