@@ -38,7 +38,8 @@ public final class FairyLightItemGroups {
                         }
 
                         entries.add(new ItemStack(FairyLightItems.GARLAND));
-                        entries.add(new ItemStack(FairyLightItems.TINSEL));
+
+                        entries.addAll(generateCollection(FairyLightItems.TINSEL));
 
                         entries.addAll(generateCollection(FairyLightItems.TRIANGLE_PENNANT));
                         entries.addAll(generateCollection(FairyLightItems.SQUARE_PENNANT));

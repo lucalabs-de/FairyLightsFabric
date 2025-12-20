@@ -61,6 +61,10 @@ public final class ItemColorManager {
             return 0xFFFFFFFF;
         }, COLORABLE_LIGHTS);
 
+        ColorProviderRegistry.ITEM.register(
+                (stack, index) -> index == 0 ? DyeableItem.getColor(stack) : 0xFFFFFFFF,
+                FairyLightItems.TINSEL);
+
         ColorProviderRegistry.ITEM.register((stack, index) -> {
             if (index == 0) {
                 if (stack.contains(STRING)) {

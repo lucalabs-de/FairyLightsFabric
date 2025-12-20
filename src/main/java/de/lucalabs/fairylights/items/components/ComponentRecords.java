@@ -19,8 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.PATTERN;
-import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.STRING;
+import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.*;
 
 public class ComponentRecords {
 
@@ -39,13 +38,14 @@ public class ComponentRecords {
         }
 
         public boolean matchesItemStack(ItemStack stack) {
+            Optional<Integer> stackColor = Optional.ofNullable(stack.get(COLOR));
             Optional<StringType> stackString = Optional.ofNullable(stack.get(STRING));
             List<ItemStack> pattern = Objects.requireNonNullElse(stack.get(PATTERN), Collections.emptyList());
 
             boolean patternEqual = this.pattern().size() == pattern.size() && IntStream.range(0, pattern.size())
                     .allMatch(i -> ItemStack.areItemsAndComponentsEqual(pattern.get(i), this.pattern().get(i)));
 
-            return this.string().equals(stackString) && patternEqual;
+            return this.string().equals(stackString) && this.color().equals(stackColor) && patternEqual;
         }
 
         public static ConnectionLogic fromItemStack(ItemStack i) {
