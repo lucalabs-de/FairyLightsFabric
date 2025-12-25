@@ -26,7 +26,7 @@ public final class FairyLightBlocks {
 
     public static final LightBlock FAIRY_LIGHT = register("fairy_light", createLight(SimpleLightVariant.FAIRY_LIGHT));
     public static final LightBlock PAPER_LANTERN = register("paper_lantern", createLight(SimpleLightVariant.PAPER_LANTERN));
-    public static final LightBlock ORB_LANTERN = register("orb_lantern", createLight(SimpleLightVariant.PAPER_LANTERN));
+    public static final LightBlock ORB_LANTERN = register("orb_lantern", createLight(SimpleLightVariant.ORB_LANTERN));
     public static final LightBlock FLOWER_LIGHT = register("flower_light", createLight(SimpleLightVariant.FLOWER_LIGHT));
     public static final LightBlock CANDLE_LANTERN_LIGHT = register("candle_lantern_light", createLight(SimpleLightVariant.CANDLE_LANTERN_LIGHT));
     public static final LightBlock JACK_O_LANTERN = register("jack_o_lantern", createLight(SimpleLightVariant.JACK_O_LANTERN));
