@@ -245,6 +245,6 @@ public final class HangingLightsConnection extends HangingFeatureConnection<Ligh
     public void deserializeLogic(final ComponentRecords.ConnectionLogic logic) {
         super.deserializeLogic(logic);
         this.string = logic.string().orElseThrow();
-        this.pattern = logic.pattern();
+        this.pattern = new ArrayList<>(logic.pattern());
     }
 }

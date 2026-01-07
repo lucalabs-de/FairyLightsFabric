@@ -7,7 +7,7 @@ import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.util.ItemHelper;
-import de.lucalabs.fairylights.util.OreDictUtils;
+import de.lucalabs.fairylights.util.Tags;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -46,7 +46,7 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
             final ItemStack heldStack,
             final Hand hand) {
 
-        if (featureType == FEATURE && OreDictUtils.isDye(heldStack)) {
+        if (featureType == FEATURE && heldStack.isIn(Tags.PENNANTS)) { //OreDictUtils.isDye(heldStack)) {
             final int index = feature % this.pattern.size();
             final ItemStack pennant = this.pattern.get(index);
             if (!ItemStack.areEqual(pennant, heldStack)) {
@@ -56,7 +56,6 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
                 ItemHelper.giveItemToPlayer(player, pennant);
 
                 this.computeCatenary();
-                heldStack.decrement(1);
                 this.world.playSound(null, hit.x, hit.y, hit.z, FairyLightSounds.FEATURE_COLOR_CHANGE, SoundCategory.BLOCKS, 1, 1);
                 return true;
             }
@@ -70,6 +69,11 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
         for (final Pennant light : this.features) {
             light.tick(this.world);
         }
+    }
+
+    @Override
+    protected boolean canReuse(Pennant feature, int index) {
+        return false;
     }
 
     @Override
@@ -98,6 +102,6 @@ public final class PennantBuntingConnection extends HangingFeatureConnection<Pen
     @Override
     public void deserializeLogic(final ComponentRecords.ConnectionLogic logic) {
         super.deserializeLogic(logic);
-        this.pattern = logic.pattern();
+        this.pattern = new ArrayList<>(logic.pattern());
     }
 }

@@ -33,7 +33,6 @@ public final class FairyLightItemGroups {
 
                         for (final DyeColor color : DyeColor.values()) {
                             final ItemStack stack = new ItemStack(FairyLightItems.PENNANT_BUNTING);
-                            DyeableItem.setColor(stack, color);
                             entries.add(FairyLightCraftingRecipes.makePennant(stack, color));
                         }
 
