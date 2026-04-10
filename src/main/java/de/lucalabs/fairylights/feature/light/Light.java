@@ -7,6 +7,8 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.Date;
+
 public final class Light<T extends LightBehavior> extends HangingFeature {
     private static final int SWAY_RATE = 10;
     private static final int SWAY_PEAK_COUNT = 5;

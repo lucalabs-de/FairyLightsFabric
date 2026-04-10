@@ -209,7 +209,6 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
         return Objects.requireNonNullElse(variant, FAIRY_LIGHT);
     }
 
-    // TODO check if the commented-out behaviours are necessary for anything
     private static StandardLightBehavior standardBehavior(final ItemStack stack) {
         final BrightnessLightBehavior brightness;
         if (TwinkleBehavior.exists(stack)) {

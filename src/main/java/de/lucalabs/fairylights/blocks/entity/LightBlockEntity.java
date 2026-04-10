@@ -13,6 +13,7 @@ import net.minecraft.block.enums.BlockFace;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -89,6 +90,11 @@ public class LightBlockEntity extends BlockEntity {
             }
         }
         this.light.getBehavior().animateTick(this.world, Vec3d.of(this.pos).add(matrix.transform(Vec3d.ZERO)), this.light);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup lookup) {
+        return this.createNbt(lookup);
     }
 
     @Override
