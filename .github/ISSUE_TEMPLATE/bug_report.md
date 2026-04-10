@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Describe the bug**
-*A clear and concise description of what the bug is.*
+A clear and concise description of what the bug is.
 
 **To Reproduce**
 If possible, steps to reproduce the behavior:
@@ -23,4 +23,4 @@ If applicable, add screenshots to help explain your problem.
 On which version of Minecraft and Fairy Lights does the problem occur?
 
 **Acknowledgement**
-If you want, your name so I can thank you in the Changelog :)
+If you want, a name so I can thank you in the Changelog :)
