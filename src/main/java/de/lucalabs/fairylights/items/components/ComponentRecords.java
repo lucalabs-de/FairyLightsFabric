@@ -33,6 +33,8 @@ public class ComponentRecords {
         public ComponentMapImpl toComponents() {
             ComponentMapImpl comps = new ComponentMapImpl(ComponentMap.EMPTY);
             comps.set(PATTERN, pattern());
+
+            color.ifPresent(color -> comps.set(COLOR, color));
             string.ifPresent(string -> comps.set(STRING, string));
             return comps;
         }
