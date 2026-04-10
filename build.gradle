@@ -18,6 +18,17 @@ repositories {
 	}
 	maven { url "https://maven.blamejared.com/" }
 	maven { url "https://maven.terraformersmc.com/releases/" }
+	exclusiveContent {
+		forRepository {
+			maven {
+				name = "Modrinth"
+				url = "https://api.modrinth.com/maven"
+			}
+		}
+		filter {
+			includeGroup "maven.modrinth"
+		}
+	}
 }
 
 loom {
@@ -67,6 +78,9 @@ dependencies {
 	if (project.enable_jei.toBoolean()) {
 		modLocalRuntime("mezz.jei:jei-${project.minecraft_version}-fabric:${project.jei_version}") { transitive = false }
 	}
+
+//	modImplementation "maven.modrinth:effortless:ngJJMR0I"
+//	modLocalRuntime "maven.modrinth:effortless:ngJJMR0I"
 }
 
 processResources {

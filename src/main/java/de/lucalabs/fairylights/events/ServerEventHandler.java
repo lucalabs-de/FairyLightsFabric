@@ -1,8 +1,10 @@
 package de.lucalabs.fairylights.events;
 
 import de.lucalabs.fairylights.FairyLights;
+import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.items.ConnectionItem;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
@@ -72,5 +74,10 @@ public final class ServerEventHandler {
     public static void initialize() {
         FairyLights.LOGGER.info("initializing event listener");
         UseBlockCallback.EVENT.register(ServerEventHandler::onRightClickBlock);
+
+        ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(((player, origin, dest) -> {
+            FairyLights.LOGGER.info("changed dimension to {}", dest.getRegistryKey());
+            FairyLightComponents.FASTENER.get(player).get().ifPresent(f -> f.setWorld(dest));
+        }));
     }
 }
