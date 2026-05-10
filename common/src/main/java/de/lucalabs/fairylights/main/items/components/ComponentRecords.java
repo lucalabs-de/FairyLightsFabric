@@ -1,0 +1,181 @@
+package de.lucalabs.fairylights.main.items.components;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import de.lucalabs.fairylights.main.fastener.FastenerType;
+import de.lucalabs.fairylights.main.fastener.accessor.BlockFastenerAccessor;
+import de.lucalabs.fairylights.main.fastener.accessor.FastenerAccessor;
+import de.lucalabs.fairylights.main.fastener.accessor.FenceFastenerAccessor;
+import de.lucalabs.fairylights.main.fastener.accessor.PlayerFastenerAccessor;
+import de.lucalabs.fairylights.main.string.StringType;
+import de.lucalabs.fairylights.main.util.Utils;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+import java.util.stream.IntStream;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
+
+import static de.lucalabs.fairylights.main.items.components.FairyLightItemComponents.*;
+
+public class ComponentRecords {
+
+    public record ConnectionLogic(List<ItemStack> pattern, Optional<StringType> string, Optional<Integer> color) {
+        public static final Codec<ConnectionLogic> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ItemStack.CODEC.listOf().fieldOf("pattern").forGetter(ConnectionLogic::pattern),
+                StringType.CODEC.optionalFieldOf("string").forGetter(ConnectionLogic::string),
+                Codec.INT.optionalFieldOf("color").forGetter(ConnectionLogic::color)
+        ).apply(instance, ConnectionLogic::new));
+
+        public PatchedDataComponentMap toComponents() {
+            PatchedDataComponentMap comps = new PatchedDataComponentMap(DataComponentMap.EMPTY);
+            comps.set(PATTERN, pattern());
+
+            color.ifPresent(color -> comps.set(COLOR, color));
+            string.ifPresent(string -> comps.set(STRING, string));
+            return comps;
+        }
+
+        public boolean matchesItemStack(ItemStack stack) {
+            Optional<Integer> stackColor = Optional.ofNullable(stack.get(COLOR));
+            Optional<StringType> stackString = Optional.ofNullable(stack.get(STRING));
+            List<ItemStack> pattern = Objects.requireNonNullElse(stack.get(PATTERN), Collections.emptyList());
+
+            boolean patternEqual = this.pattern().size() == pattern.size() && IntStream.range(0, pattern.size())
+                    .allMatch(i -> ItemStack.isSameItemSameComponents(pattern.get(i), this.pattern().get(i)));
+
+            return this.string().equals(stackString) && this.color().equals(stackColor) && patternEqual;
+        }
+
+        public static ConnectionLogic fromItemStack(ItemStack i) {
+            Builder b = new Builder();
+            if (i.has(STRING)) {
+                b.stringType(i.get(STRING));
+            }
+            if (i.has(PATTERN)) {
+                b.pattern(i.get(PATTERN));
+            }
+            if (i.has(COLOR)) {
+                b.color(i.get(COLOR));
+            }
+            return b.build();
+        }
+
+        public static class Builder {
+            @NotNull
+            private List<ItemStack> pattern = Collections.emptyList();
+            @NotNull
+            private Optional<StringType> string = Optional.empty();
+            @NotNull
+            private Optional<Integer> color = Optional.empty();
+
+            public Builder pattern(List<ItemStack> pattern) {
+                this.pattern = pattern;
+                return this;
+            }
+
+            public Builder stringType(StringType string) {
+                this.string = Optional.of(string);
+                return this;
+            }
+
+            public Builder color(int color) {
+                this.color = Optional.of(color);
+                return this;
+            }
+
+            public ConnectionLogic build() {
+                return new ConnectionLogic(pattern, string, color);
+            }
+        }
+    }
+
+    public record FastenerAccessorData(FastenerType type, FastenerAccessor accessor) {
+        public static final Codec<FastenerAccessorData> CODEC = RecordCodecBuilder.create(i -> i.group(
+                CompoundTag.CODEC.fieldOf("accessor").forGetter(data -> data.accessor().serialize()),
+                Codec.INT.fieldOf("type").forGetter(data -> data.type.ordinal())
+        ).apply(i, (data, t) -> {
+            FastenerType type = Utils.getEnumValue(FastenerType.class, t);
+            FastenerAccessor accessor = switch (type) {
+                case BLOCK -> new BlockFastenerAccessor();
+                case FENCE -> new FenceFastenerAccessor();
+                case PLAYER -> new PlayerFastenerAccessor();
+            };
+
+            accessor.deserialize(data);
+
+            return new FastenerAccessorData(type, accessor);
+        }));
+
+        public static FastenerAccessorData from(FastenerAccessor accessor) {
+            return new FastenerAccessorData(accessor.getType(), accessor);
+        }
+    }
+
+    public record ConnectionStatus(
+            boolean isOn,
+            boolean drop,
+            float slack,
+            Set<BlockPos> litBlocks,
+            FastenerAccessorData destination,
+            ConnectionLogic logic) {
+        public static final Codec<ConnectionStatus> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.BOOL.fieldOf("isOn").forGetter(ConnectionStatus::isOn),
+                Codec.BOOL.fieldOf("drop").forGetter(ConnectionStatus::drop),
+                Codec.FLOAT.fieldOf("slack").forGetter(ConnectionStatus::slack),
+                BlockPos.CODEC.listOf().fieldOf("litBlocks").forGetter(x -> x.litBlocks.stream().toList()), // TODO verify that the performance of this is okay. I guess it's just a factor 2 in the O(n) serialization
+                FastenerAccessorData.CODEC.fieldOf("destination").forGetter(ConnectionStatus::destination),
+                ConnectionLogic.CODEC.fieldOf("logic").forGetter(ConnectionStatus::logic)
+        ).apply(i, (o, d, s, l, ds, lo) -> new ConnectionStatus(o, d, s, new HashSet<>(l), ds, lo)));
+
+        public static class Builder {
+            private boolean isOn = false;
+            private boolean drop = false;
+            private float slack = 0.0F;
+            @NotNull
+            private Set<BlockPos> litBlocks = Collections.emptySet();
+            @NotNull
+            private ConnectionLogic logic = new ConnectionLogic.Builder().build();
+            @NotNull
+            private FastenerAccessorData accessorData = new FastenerAccessorData(FastenerType.PLAYER, new PlayerFastenerAccessor());
+
+            public Builder slack(float slack) {
+                this.slack = slack;
+                return this;
+            }
+
+            public Builder isOn(boolean isOn) {
+                this.isOn = isOn;
+                return this;
+            }
+
+            public Builder drop(boolean drop) {
+                this.drop = drop;
+                return this;
+            }
+
+            public Builder logic(ConnectionLogic logic) {
+                this.logic = logic;
+                return this;
+            }
+
+            public Builder destination(FastenerAccessor accessor) {
+                this.accessorData = new FastenerAccessorData(accessor.getType(), accessor);
+                return this;
+            }
+
+            public Builder litBlocks(Set<BlockPos> litBlocks) {
+                this.litBlocks = litBlocks;
+                return this;
+            }
+
+            public ConnectionStatus build() {
+                return new ConnectionStatus(isOn, drop, slack, litBlocks, accessorData, logic);
+            }
+        }
+    }
+}
+
