@@ -1,16 +1,16 @@
 package de.lucalabs.fairylights.items;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class PennantItem extends Item {
-    public PennantItem(final Item.Settings settings) {
+    public PennantItem(final Item.Properties settings) {
         super(settings);
     }
 
     @Override
-    public Text getName(final ItemStack stack) {
+    public Component getName(final ItemStack stack) {
         return DyeableItem.getDisplayName(stack, super.getName(stack));
     }
 }

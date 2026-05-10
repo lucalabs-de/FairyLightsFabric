@@ -1,10 +1,10 @@
 package de.lucalabs.fairylights.model.light;
 
 
+import com.mojang.math.Axis;
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -13,7 +13,7 @@ public class JackOLanternLightModel extends ColorLightModel {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final BulbBuilder bulb = helper.createBulb();
         final BulbBuilder pumpkin = bulb.createChild("pumpkin", 28, 42);
@@ -24,7 +24,7 @@ public class JackOLanternLightModel extends ColorLightModel {
         leaf1.addBox(0, -0.5F, 0, 2, 1, 2, 0);
         final Vector3f vec = new Vector3f(-1.0F, 0.0F, 1.0F);
         vec.normalize();
-        final Quaternionf droop = RotationAxis.of(vec).rotation(MathHelper.PI / 12.0F);
+        final Quaternionf droop = Axis.of(vec).rotation(MathHelper.PI / 12.0F);
         float[] leafAngles = toEuler(droop);
         leaf1.xRot = leafAngles[0];
         leaf1.yRot = leafAngles[1];
@@ -33,7 +33,7 @@ public class JackOLanternLightModel extends ColorLightModel {
         final EasyMeshBuilder leaf2 = new EasyMeshBuilder("leaf2", 12, 18);
         leaf2.setRotationPoint(-0.5F, 0, -0.5F);
         leaf2.addBox(0, -0.5F, 0, 2, 1, 2, 0);
-        final Quaternionf q = RotationAxis.POSITIVE_Y.rotation(MathHelper.PI);
+        final Quaternionf q = Axis.YP.rotation(MathHelper.PI);
         q.mul(droop);
         leafAngles = toEuler(q);
         leaf2.xRot = leafAngles[0];

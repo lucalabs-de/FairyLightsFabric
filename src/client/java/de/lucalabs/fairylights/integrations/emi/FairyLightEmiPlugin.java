@@ -12,29 +12,25 @@ import dev.emi.emi.api.recipe.EmiCraftingRecipe;
 import dev.emi.emi.api.stack.Comparison;
 import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.util.DyeColor;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 
 public class FairyLightEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
-        final ClientWorld world = MinecraftClient.getInstance().world;
+        final ClientLevel world = Minecraft.getInstance().level;
         final RecipeManager recipeManager = world.getRecipeManager();
 
         simplifyFastenerRecipes(registry);
 
-        recipeManager.values().stream()
-                .map(RecipeEntry::value)
+        recipeManager.getRecipes().stream()
+                .map(RecipeHolder::value)
                 .filter(GenericRecipe.class::isInstance)
                 .map(GenericRecipe.class::cast)
                 .flatMap(r -> {

@@ -7,16 +7,15 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.recipe.CraftingRecipe;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.RecipeManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.CraftingRecipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.stream.Collectors;
@@ -25,8 +24,8 @@ import java.util.stream.Collectors;
 public class FairyLightJeiPlugin implements IModPlugin {
 
     @Override
-    public @NotNull Identifier getPluginUid() {
-        return Identifier.of(FairyLights.ID, "plugin");
+    public @NotNull ResourceLocation getPluginUid() {
+        return ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "plugin");
     }
 
     @Override
@@ -36,16 +35,16 @@ public class FairyLightJeiPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(final IRecipeRegistration registration) {
-        final ClientWorld world = MinecraftClient.getInstance().world;
+        final ClientLevel world = Minecraft.getInstance().level;
         final RecipeManager recipeManager = world.getRecipeManager();
         registration.addRecipes(
                 RecipeTypes.CRAFTING,
-                recipeManager.values().stream()
-                        .map(RecipeEntry::value)
+                recipeManager.getRecipes().stream()
+                        .map(RecipeHolder::value)
                         .filter(GenericRecipe.class::isInstance)
                         .map(GenericRecipe.class::cast)
-                        .filter(GenericRecipe::isIgnoredInRecipeBook)
-                        .map(x -> new RecipeEntry<CraftingRecipe>(x.getId(), x))
+                        .filter(GenericRecipe::isSpecial)
+                        .map(x -> new RecipeHolder<CraftingRecipe>(x.getId(), x))
                         .collect(Collectors.toList()));
     }
 

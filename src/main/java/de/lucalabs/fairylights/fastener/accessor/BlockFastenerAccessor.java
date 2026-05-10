@@ -5,17 +5,17 @@ import de.lucalabs.fairylights.components.GenericComponent;
 import de.lucalabs.fairylights.fastener.BlockFastener;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 public final class BlockFastenerAccessor implements FastenerAccessor {
-    private BlockPos pos = BlockPos.ORIGIN;
+    private BlockPos pos = BlockPos.ZERO;
 
     public BlockFastenerAccessor() {
     }
@@ -29,8 +29,8 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
     }
 
     @Override
-    public Optional<Fastener<?>> get(final World world, final boolean load) {
-        if (load || world.canSetBlock(this.pos)) {
+    public Optional<Fastener<?>> get(final Level world, final boolean load) {
+        if (load || world.isLoaded(this.pos)) {
             final BlockEntity entity = world.getBlockEntity(this.pos);
             if (entity != null) {
                 return FairyLightComponents.FASTENER.maybeGet(entity).flatMap(GenericComponent::get);
@@ -40,8 +40,8 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
     }
 
     @Override
-    public boolean isGone(final World world) {
-        if (world.isClient() || !world.canSetBlock(this.pos)) return false;
+    public boolean isGone(final Level world) {
+        if (world.isClientSide() || !world.isLoaded(this.pos)) return false;
         final BlockEntity entity = world.getBlockEntity(this.pos);
         return entity == null || FairyLightComponents.FASTENER.get(entity).isEmpty();
     }
@@ -63,14 +63,14 @@ public final class BlockFastenerAccessor implements FastenerAccessor {
     }
 
     @Override
-    public NbtCompound serialize() {
-        NbtCompound compound = new NbtCompound();
-        compound.put("pos", NbtHelper.fromBlockPos(this.pos));
+    public CompoundTag serialize() {
+        CompoundTag compound = new CompoundTag();
+        compound.put("pos", NbtUtils.writeBlockPos(this.pos));
         return compound;
     }
 
     @Override
-    public void deserialize(final NbtCompound nbt) {
-        this.pos = NbtHelper.toBlockPos(nbt, "pos").orElseThrow();
+    public void deserialize(final CompoundTag nbt) {
+        this.pos = NbtUtils.readBlockPos(nbt, "pos").orElseThrow();
     }
 }

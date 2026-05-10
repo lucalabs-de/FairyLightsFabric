@@ -9,15 +9,15 @@ import de.lucalabs.fairylights.fastener.accessor.FenceFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.PlayerFastenerAccessor;
 import de.lucalabs.fairylights.string.StringType;
 import de.lucalabs.fairylights.util.Utils;
-import net.minecraft.component.ComponentMap;
-import net.minecraft.component.ComponentMapImpl;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.stream.IntStream;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.*;
 
@@ -30,8 +30,8 @@ public class ComponentRecords {
                 Codec.INT.optionalFieldOf("color").forGetter(ConnectionLogic::color)
         ).apply(instance, ConnectionLogic::new));
 
-        public ComponentMapImpl toComponents() {
-            ComponentMapImpl comps = new ComponentMapImpl(ComponentMap.EMPTY);
+        public PatchedDataComponentMap toComponents() {
+            PatchedDataComponentMap comps = new PatchedDataComponentMap(DataComponentMap.EMPTY);
             comps.set(PATTERN, pattern());
 
             color.ifPresent(color -> comps.set(COLOR, color));
@@ -45,20 +45,20 @@ public class ComponentRecords {
             List<ItemStack> pattern = Objects.requireNonNullElse(stack.get(PATTERN), Collections.emptyList());
 
             boolean patternEqual = this.pattern().size() == pattern.size() && IntStream.range(0, pattern.size())
-                    .allMatch(i -> ItemStack.areItemsAndComponentsEqual(pattern.get(i), this.pattern().get(i)));
+                    .allMatch(i -> ItemStack.isSameItemSameComponents(pattern.get(i), this.pattern().get(i)));
 
             return this.string().equals(stackString) && this.color().equals(stackColor) && patternEqual;
         }
 
         public static ConnectionLogic fromItemStack(ItemStack i) {
             Builder b = new Builder();
-            if (i.contains(STRING)) {
+            if (i.has(STRING)) {
                 b.stringType(i.get(STRING));
             }
-            if (i.contains(PATTERN)) {
+            if (i.has(PATTERN)) {
                 b.pattern(i.get(PATTERN));
             }
-            if (i.contains(COLOR)) {
+            if (i.has(COLOR)) {
                 b.color(i.get(COLOR));
             }
             return b.build();
@@ -95,7 +95,7 @@ public class ComponentRecords {
 
     public record FastenerAccessorData(FastenerType type, FastenerAccessor accessor) {
         public static final Codec<FastenerAccessorData> CODEC = RecordCodecBuilder.create(i -> i.group(
-                NbtCompound.CODEC.fieldOf("accessor").forGetter(data -> data.accessor().serialize()),
+                CompoundTag.CODEC.fieldOf("accessor").forGetter(data -> data.accessor().serialize()),
                 Codec.INT.fieldOf("type").forGetter(data -> data.type.ordinal())
         ).apply(i, (data, t) -> {
             FastenerType type = Utils.getEnumValue(FastenerType.class, t);

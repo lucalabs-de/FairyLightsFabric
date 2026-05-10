@@ -1,11 +1,10 @@
 package de.lucalabs.fairylights.util;
 
-import net.minecraft.text.Text;
-import net.minecraft.util.Language;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.Component;
 
 public final class Utils {
     private Utils() {
@@ -20,12 +19,12 @@ public final class Utils {
         return list.stream().map(copyFunc).toList();
     }
 
-    public static Text formatRecipeTooltip(final String key) {
-        return formatRecipeTooltipValue(Language.getInstance().get(key));
+    public static Component formatRecipeTooltip(final String key) {
+        return formatRecipeTooltipValue(Language.getInstance().getOrDefault(key));
     }
 
-    private static Text formatRecipeTooltipValue(final String value) {
-        return Text.translatable("recipe.ingredient.tooltip", value);
+    private static Component formatRecipeTooltipValue(final String value) {
+        return Component.translatable("recipe.ingredient.tooltip", value);
     }
 
 }

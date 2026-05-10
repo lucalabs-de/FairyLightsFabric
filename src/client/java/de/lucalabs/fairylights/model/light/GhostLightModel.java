@@ -1,9 +1,9 @@
 package de.lucalabs.fairylights.model.light;
 
+import com.mojang.math.Axis;
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -12,7 +12,7 @@ public class GhostLightModel extends ColorLightModel {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final EasyMeshBuilder littleFace = new EasyMeshBuilder("little_face", 40, 17);
         littleFace.setRotationPoint(0.0F, -1.0F, -2.25F);
@@ -31,17 +31,17 @@ public class GhostLightModel extends ColorLightModel {
         body.setAngles(MathHelper.PI, 0.0F, 0.0F);
         final Vector3f vec = new Vector3f(-1.0F, 0.0F, 1.0F);
         vec.normalize();
-        final Quaternionf droop = RotationAxis.of(vec).rotation(-MathHelper.PI / 3.0F);
+        final Quaternionf droop = Axis.of(vec).rotation(-MathHelper.PI / 3.0F);
         final int finCount = 8;
         for (int i = 0; i < finCount; i++) {
             final BulbBuilder fin = bulb.createChild("fin_" + i, 40, 21);
-            final Quaternionf q = RotationAxis.POSITIVE_Y.rotation(i * MathHelper.TAU / finCount);
+            final Quaternionf q = Axis.YP.rotation(i * MathHelper.TAU / finCount);
             q.mul(droop);
             final float[] magicAngles = toEuler(q);
             final float theta = i * MathHelper.TAU / finCount;
             fin.setPosition(
-                    net.minecraft.util.math.MathHelper.cos(-theta + MathHelper.PI / 4) * 1.1F,
-                    -2.75F, net.minecraft.util.math.MathHelper.sin(-theta + MathHelper.PI / 4.0F) * 1.1F);
+                    net.minecraft.util.Mth.cos(-theta + MathHelper.PI / 4) * 1.1F,
+                    -2.75F, net.minecraft.util.Mth.sin(-theta + MathHelper.PI / 4.0F) * 1.1F);
             fin.addBox(0.0F, 0.0F, 0.0F, 2.0F, 1.0F, 2.0F, -0.1F);
             fin.setAngles(magicAngles[0], magicAngles[1], magicAngles[2]);
         }

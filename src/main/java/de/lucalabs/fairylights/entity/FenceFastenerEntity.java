@@ -4,55 +4,55 @@ import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.items.ConnectionItem;
-import net.minecraft.block.Block;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.phys.AABB;
 
-public final class FenceFastenerEntity extends AbstractDecorationEntity {
+public final class FenceFastenerEntity extends HangingEntity {
     private int surfaceCheckTime;
 
-    public FenceFastenerEntity(final EntityType<? extends FenceFastenerEntity> type, final World world) {
+    public FenceFastenerEntity(final EntityType<? extends FenceFastenerEntity> type, final Level world) {
         super(type, world);
     }
 
-    public FenceFastenerEntity(final World world) {
+    public FenceFastenerEntity(final Level world) {
         this(FairyLightEntities.FASTENER, world);
     }
 
-    public FenceFastenerEntity(final World world, final BlockPos pos) {
+    public FenceFastenerEntity(final Level world, final BlockPos pos) {
         this(world);
-        this.setPosition(pos.getX(), pos.getY(), pos.getZ());
+        this.setPos(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static FenceFastenerEntity create(final World world, final BlockPos fence) {
+    public static FenceFastenerEntity create(final Level world, final BlockPos fence) {
         final FenceFastenerEntity fastener = new FenceFastenerEntity(world, fence);
         //fastener.forceSpawn = true;
-        world.spawnEntity(fastener);
-        fastener.onPlace();
+        world.addFreshEntity(fastener);
+        fastener.playPlacementSound();
         return fastener;
     }
 
     @Nullable
-    public static FenceFastenerEntity find(final World world, final BlockPos pos) {
-        final AbstractDecorationEntity entity = findHanging(world, pos);
+    public static FenceFastenerEntity find(final Level world, final BlockPos pos) {
+        final HangingEntity entity = findHanging(world, pos);
         if (entity instanceof FenceFastenerEntity) {
             return (FenceFastenerEntity) entity;
         }
@@ -60,9 +60,9 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     }
 
     @Nullable
-    public static AbstractDecorationEntity findHanging(final World world, final BlockPos pos) {
-        for (final AbstractDecorationEntity e : world.getNonSpectatingEntities(AbstractDecorationEntity.class, new Box(pos).expand(2))) {
-            if (e.getAttachedBlockPos().equals(pos)) {
+    public static HangingEntity findHanging(final Level world, final BlockPos pos) {
+        for (final HangingEntity e : world.getEntitiesOfClass(HangingEntity.class, new AABB(pos).inflate(2))) {
+            if (e.getPos().equals(pos)) {
                 return e;
             }
         }
@@ -80,27 +80,27 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
 //    }
 
     @Override
-    public boolean shouldRender(final double distance) {
+    public boolean shouldRenderAtSqrDistance(final double distance) {
         return distance < 4096;
     }
 
     @Override
-    public boolean canUsePortals(boolean allowVehicles) {
+    public boolean canUsePortal(boolean allowVehicles) {
         return false;
     }
 
     @Override
-    public boolean isImmuneToExplosion(Explosion exp) {
+    public boolean ignoreExplosion(Explosion exp) {
         return true;
     }
 
     @Override
-    public boolean canStayAttached() {
-        return !this.getWorld().canSetBlock(this.attachedBlockPos) || ConnectionItem.isFence(this.getWorld().getBlockState(this.attachedBlockPos));
+    public boolean survives() {
+        return !this.level().isLoaded(this.pos) || ConnectionItem.isFence(this.level().getBlockState(this.pos));
     }
 
     @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
 
     }
 
@@ -112,44 +112,44 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
 
     // Copy from super but remove() moved to after onBroken()
     @Override
-    public boolean damage(final DamageSource source, final float amount) {
+    public boolean hurt(final DamageSource source, final float amount) {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (!this.getWorld().isClient() && this.isAlive()) {
-            this.scheduleVelocityUpdate();
-            this.onBreak(source.getAttacker());
+        if (!this.level().isClientSide() && this.isAlive()) {
+            this.markHurt();
+            this.dropItem(source.getEntity());
             this.remove(RemovalReason.KILLED);
         }
         return true;
     }
 
     @Override
-    public void onBreak(@Nullable final Entity breaker) {
-        this.getFastener().ifPresent(fastener -> fastener.dropItems(this.getWorld(), this.attachedBlockPos));
+    public void dropItem(@Nullable final Entity breaker) {
+        this.getFastener().ifPresent(fastener -> fastener.dropItems(this.level(), this.pos));
         if (breaker != null) {
-            this.getWorld().syncWorldEvent(2001, this.attachedBlockPos, Block.getRawIdFromState(FairyLightBlocks.FASTENER.getDefaultState()));
+            this.level().levelEvent(2001, this.pos, Block.getId(FairyLightBlocks.FASTENER.defaultBlockState()));
         }
     }
 
     @Override
-    public void onPlace() {
-        final BlockSoundGroup sound = FairyLightBlocks.FASTENER.getDefaultState().getSoundGroup();
+    public void playPlacementSound() {
+        final SoundType sound = FairyLightBlocks.FASTENER.defaultBlockState().getSoundType();
         this.playSound(sound.getPlaceSound(), (sound.getVolume() + 1) / 2, sound.getPitch() * 0.8F);
     }
 
     @Override
-    public SoundCategory getSoundCategory() {
-        return SoundCategory.BLOCKS;
+    public SoundSource getSoundSource() {
+        return SoundSource.BLOCKS;
     }
 
     @Override
-    public void setPosition(final double x, final double y, final double z) {
-        super.setPosition(MathHelper.floor(x) + 0.5, MathHelper.floor(y) + 0.5, MathHelper.floor(z) + 0.5);
+    public void setPos(final double x, final double y, final double z) {
+        super.setPos(Mth.floor(x) + 0.5, Mth.floor(y) + 0.5, Mth.floor(z) + 0.5);
     }
 
     @Override
-    public void setFacing(final Direction facing) {
+    public void setDirection(final Direction facing) {
     }
 
 //    @Override
@@ -165,28 +165,28 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
 
     // TODO verify that this is fine
     @Override
-    protected Box calculateBoundingBox(BlockPos pos, Direction side) {
-        final double posX = this.attachedBlockPos.getX() + 0.5;
-        final double posY = this.attachedBlockPos.getY() + 0.5;
-        final double posZ = this.attachedBlockPos.getZ() + 0.5;
-        this.setPos(posX, posY, posZ);
+    protected AABB calculateBoundingBox(BlockPos pos, Direction side) {
+        final double posX = this.pos.getX() + 0.5;
+        final double posY = this.pos.getY() + 0.5;
+        final double posZ = this.pos.getZ() + 0.5;
+        this.setPosRaw(posX, posY, posZ);
         final float w = 3 / 16F;
         final float h = 3 / 16F;
-        return new Box(posX - w, posY - h, posZ - w, posX + w, posY + h, posZ + w);
+        return new AABB(posX - w, posY - h, posZ - w, posX + w, posY + h, posZ + w);
     }
 
     @Override
-    public Box getVisibilityBoundingBox() {
-        return this.getFastener().map(fastener -> fastener.getBounds().expand(1)).orElseGet(super::getVisibilityBoundingBox);
+    public AABB getBoundingBoxForCulling() {
+        return this.getFastener().map(fastener -> fastener.getBounds().inflate(1)).orElseGet(super::getBoundingBoxForCulling);
     }
 
     @Override
     public void tick() {
         this.getFastener().ifPresent(fastener -> {
-            if (!this.getWorld().isClient() && (fastener.hasNoConnections() || this.checkSurface())) {
-                this.onBreak(null);
+            if (!this.level().isClientSide() && (fastener.hasNoConnections() || this.checkSurface())) {
+                this.dropItem(null);
                 this.remove(RemovalReason.DISCARDED);
-            } else if (fastener.update() && !this.getWorld().isClient()) {
+            } else if (fastener.update() && !this.level().isClientSide()) {
                 // TODO probably not needed because of auto syncing
 //                final UpdateEntityFastenerMessage msg = new UpdateEntityFastenerMessage(this, fastener);
 //                FilteredServerPlayNetworking.sendToPlayersWatchingEntity(this, UpdateEntityFastenerMessage.ID, msg);
@@ -199,21 +199,21 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
     private boolean checkSurface() {
         if (this.surfaceCheckTime++ == 100) {
             this.surfaceCheckTime = 0;
-            return !this.canStayAttached();
+            return !this.survives();
         }
         return false;
     }
 
     @Override
-    public ActionResult interact(final PlayerEntity player, final Hand hand) {
-        final ItemStack stack = player.getStackInHand(hand);
+    public InteractionResult interact(final Player player, final InteractionHand hand) {
+        final ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() instanceof ConnectionItem) {
-            if (this.getWorld().isClient()) {
-                player.swingHand(hand);
+            if (this.level().isClientSide()) {
+                player.swing(hand);
             } else {
-                this.getFastener().ifPresent(fastener -> ((ConnectionItem) stack.getItem()).connect(stack, player, this.getWorld(), fastener));
+                this.getFastener().ifPresent(fastener -> ((ConnectionItem) stack.getItem()).connect(stack, player, this.level(), fastener));
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.interact(player, hand);
     }
@@ -237,7 +237,7 @@ public final class FenceFastenerEntity extends AbstractDecorationEntity {
 
     // TODO check if this breaks something. It is supposed to replace the setShouldReceiveVelocityUpdates(false) in EntityType registration
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return true;
     }
 

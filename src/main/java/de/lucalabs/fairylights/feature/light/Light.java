@@ -2,12 +2,11 @@ package de.lucalabs.fairylights.feature.light;
 
 import de.lucalabs.fairylights.feature.HangingFeature;
 import de.lucalabs.fairylights.items.LightVariant;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.Date;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class Light<T extends LightBehavior> extends HangingFeature {
     private static final int SWAY_RATE = 10;
@@ -25,7 +24,7 @@ public final class Light<T extends LightBehavior> extends HangingFeature {
 
     private boolean powered;
 
-    public Light(final int index, final Vec3d point, final float yaw, final float pitch, final ItemStack item, final LightVariant<T> variant, final float descent) {
+    public Light(final int index, final Vec3 point, final float yaw, final float pitch, final ItemStack item, final LightVariant<T> variant, final float descent) {
         super(index, point, yaw, pitch, 0.0F, descent);
         this.item = item;
         this.variant = variant;
@@ -65,7 +64,7 @@ public final class Light<T extends LightBehavior> extends HangingFeature {
         return this.powered;
     }
 
-    public void tick(final World world, final Vec3d origin) {
+    public void tick(final Level world, final Vec3 origin) {
         super.tick(world);
         this.behavior.tick(world, origin, this);
         if (this.swaying) {
@@ -80,7 +79,7 @@ public final class Light<T extends LightBehavior> extends HangingFeature {
     }
 
     @Override
-    public Box getBounds() {
+    public AABB getBounds() {
         return this.getVariant().getBounds();
     }
 

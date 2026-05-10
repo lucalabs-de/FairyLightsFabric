@@ -1,9 +1,8 @@
 package de.lucalabs.fairylights.util;
 
-import net.minecraft.util.math.Vec3d;
-
 import java.util.Objects;
 import java.util.function.ToIntFunction;
+import net.minecraft.world.phys.Vec3;
 
 public final class MathHelper {
     private MathHelper() {}
@@ -57,13 +56,13 @@ public final class MathHelper {
         return x;
     }
 
-    public static Vec3d lerp(final Vec3d a, final Vec3d b, final double t) {
+    public static Vec3 lerp(final Vec3 a, final Vec3 b, final double t) {
         Objects.requireNonNull(a, "a vector");
         Objects.requireNonNull(b, "b vector");
         final double x = a.x + (b.x - a.x) * t;
         final double y = a.y + (b.y - a.y) * t;
         final double z = a.z + (b.z - a.z) * t;
-        return new Vec3d(x, y, z);
+        return new Vec3(x, y, z);
     }
 
     public static float lerpAngle(final float a, final float b, final float t) {
@@ -116,10 +115,10 @@ public final class MathHelper {
         return a;
     }
 
-    public static double angle(final Vec3d a, final Vec3d b) {
+    public static double angle(final Vec3 a, final Vec3 b) {
         Objects.requireNonNull(a, "a vector");
         Objects.requireNonNull(b, "b vector");
-        final double theta = a.dotProduct(b) / (a.length() * b.length());
+        final double theta = a.dot(b) / (a.length() * b.length());
         if (theta > 1) {
             return 0;
         }

@@ -1,10 +1,10 @@
 package de.lucalabs.fairylights.sounds;
 
 import de.lucalabs.fairylights.FairyLights;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 
 public final class FairyLightSounds {
     public static final SoundEvent CORD_STRETCH = register("cord.stretch");
@@ -20,8 +20,8 @@ public final class FairyLightSounds {
     }
 
     private static SoundEvent register(final String name) {
-        Identifier identifier = Identifier.of(FairyLights.ID, name);
-        return Registry.register(Registries.SOUND_EVENT, identifier, SoundEvent.of(identifier));
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, name);
+        return Registry.register(BuiltInRegistries.SOUND_EVENT, identifier, SoundEvent.createVariableRangeEvent(identifier));
     }
 
     public static void initialize() {

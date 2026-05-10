@@ -2,40 +2,39 @@ package de.lucalabs.fairylights.renderer.block.entity;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.connection.PennantBuntingConnection;
 import de.lucalabs.fairylights.feature.Pennant;
 import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.util.Curve;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.TexturedRenderLayers;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.function.Function;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.phys.Vec3;
 
 public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingConnection> {
-    private static final Identifier TRIANGLE_MODEL = Identifier.of(FairyLights.ID, "entity/triangle_pennant");
-    private static final Identifier SQUARE_MODEL = Identifier.of(FairyLights.ID, "entity/square_pennant");
+    private static final ResourceLocation TRIANGLE_MODEL = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "entity/triangle_pennant");
+    private static final ResourceLocation SQUARE_MODEL = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "entity/square_pennant");
 
-    public static final ImmutableSet<Identifier> MODELS = ImmutableSet.of(TRIANGLE_MODEL, SQUARE_MODEL);
+    public static final ImmutableSet<ResourceLocation> MODELS = ImmutableSet.of(TRIANGLE_MODEL, SQUARE_MODEL);
 
-    private final ImmutableMap<Item, Identifier> models = ImmutableMap.of(
+    private final ImmutableMap<Item, ResourceLocation> models = ImmutableMap.of(
             FairyLightItems.TRIANGLE_PENNANT, TRIANGLE_MODEL,
             FairyLightItems.SQUARE_PENNANT, SQUARE_MODEL
     );
 
-    public PennantBuntingRenderer(final Function<EntityModelLayer, ModelPart> baker) {
+    public PennantBuntingRenderer(final Function<ModelLayerLocation, ModelPart> baker) {
         super(baker, FairyLightModelLayers.PENNANT_WIRE, 0.25F);
     }
 
@@ -44,8 +43,8 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
             final PennantBuntingConnection conn,
             final Curve catenary,
             final float delta,
-            final MatrixStack matrix,
-            final VertexConsumerProvider source,
+            final PoseStack matrix,
+            final MultiBufferSource source,
             final int packedLight,
             final int packedOverlay) {
 
@@ -54,7 +53,7 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
         if (currLights != null) {
             // TODO I decided not to implement pennant text for now
 //            final Font font = MinecraftClient.getInstance().font;
-            final VertexConsumer buf = source.getBuffer(TexturedRenderLayers.getEntityCutout());
+            final VertexConsumer buf = source.getBuffer(Sheets.cutoutBlockSheet());
             final int count = currLights.length;
             if (count == 0) {
                 return;
@@ -71,25 +70,25 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
                 final float g = ((color >> 8) & 0xFF) / 255.0F;
                 final float b = (color & 0xFF) / 255.0F;
 
-                final BakedModel model = MinecraftClient
+                final BakedModel model = Minecraft
                         .getInstance()
-                        .getBakedModelManager()
+                        .getModelManager()
                         .getModel(this.models.getOrDefault(currPennant.getItem(), TRIANGLE_MODEL));
 
-                final Vec3d pos = currPennant.getPoint(delta);
-                matrix.push();
+                final Vec3 pos = currPennant.getPoint(delta);
+                matrix.pushPose();
                 matrix.translate(pos.x, pos.y, pos.z);
-                matrix.multiply(RotationAxis.POSITIVE_Y.rotation(-currPennant.getYaw(delta)));
-                matrix.multiply(RotationAxis.POSITIVE_Z.rotation(currPennant.getPitch(delta)));
-                matrix.multiply(RotationAxis.POSITIVE_X.rotation(currPennant.getRoll(delta)));
-                matrix.push();
+                matrix.mulPose(Axis.YP.rotation(-currPennant.getYaw(delta)));
+                matrix.mulPose(Axis.ZP.rotation(currPennant.getPitch(delta)));
+                matrix.mulPose(Axis.XP.rotation(currPennant.getRoll(delta)));
+                matrix.pushPose();
                 FastenerRenderer.renderBakedModel(model, matrix, buf, r, g, b, packedLight, packedOverlay);
-                matrix.pop();
+                matrix.popPose();
 //                if (i >= offset && i < offset + text.length()) {
 //                    this.drawLetter(matrix, source, currPennant, packedLight, font, text, i - offset, 1, delta);
 //                    this.drawLetter(matrix, source, currPennant, packedLight, font, text, text.length() - 1 - (i - offset), -1, delta);
 //                }
-                matrix.pop();
+                matrix.popPose();
             }
         }
     }
@@ -99,7 +98,7 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
     }
 
 
-    public static TexturedModelData wireLayer() {
+    public static LayerDefinition wireLayer() {
         return WireModel.createLayer(0, 17, 1);
     }
 }

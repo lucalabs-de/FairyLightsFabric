@@ -1,9 +1,8 @@
 package de.lucalabs.fairylights.util.matrix;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.Objects;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public final class Matrix4 {
     public float m00;
@@ -74,8 +73,8 @@ public final class Matrix4 {
 
     public void asRotation(final float x, final float y, final float z, final float angle) {
         this.asIdentity();
-        final float c = MathHelper.cos(angle);
-        final float s = MathHelper.sin(angle);
+        final float c = Mth.cos(angle);
+        final float s = Mth.sin(angle);
         final float t = 1.0F - c;
         this.m00 = c + x * x * t;
         this.m11 = c + y * y * t;
@@ -146,9 +145,9 @@ public final class Matrix4 {
         this.m33 = m33;
     }
 
-    public Vec3d transform(final Vec3d point) {
+    public Vec3 transform(final Vec3 point) {
         Objects.requireNonNull(point, "point");
-        return new Vec3d(
+        return new Vec3(
                 this.m00 * point.x + this.m01 * point.y + this.m02 * point.z + this.m03,
                 this.m10 * point.x + this.m11 * point.y + this.m12 * point.z + this.m13,
                 this.m20 * point.x + this.m21 * point.y + this.m22 * point.z + this.m23

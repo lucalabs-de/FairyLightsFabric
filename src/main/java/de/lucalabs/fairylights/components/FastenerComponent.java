@@ -1,21 +1,21 @@
 package de.lucalabs.fairylights.components;
 
 import de.lucalabs.fairylights.fastener.Fastener;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
 public final class FastenerComponent extends GenericComponent<Fastener<?>> implements AutoSyncedComponent {
 
     @Override
-    public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup lookup) {
+    public void readFromNbt(CompoundTag nbtCompound, HolderLookup.Provider lookup) {
         if (delegate != null) {
             delegate.readFromNbt(nbtCompound);
         }
     }
 
     @Override
-    public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup lookup) {
+    public void writeToNbt(CompoundTag nbtCompound, HolderLookup.Provider lookup) {
         if (delegate != null) {
             delegate.writeToNbt(nbtCompound);
         }

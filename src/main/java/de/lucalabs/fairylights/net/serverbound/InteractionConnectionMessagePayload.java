@@ -11,38 +11,37 @@ import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.util.Utils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.PacketCodec;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Uuids;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 public record InteractionConnectionMessagePayload(
         UUID uuid,
         BlockPos pos,
         FastenerAccessor accessor,
         PlayerAction action,
-        Vec3d hit,
-        FeatureType type,
+        Vec3 hit,
+        FeatureType featureType,
         int featureId
-) implements CustomPayload {
+) implements CustomPacketPayload {
 
-    public static final Identifier PAYLOAD_ID = Identifier.of(FairyLights.ID, "pl_interaction_connection");
-    public static final CustomPayload.Id<InteractionConnectionMessagePayload> ID
-            = new CustomPayload.Id<>(PAYLOAD_ID);
+    public static final ResourceLocation PAYLOAD_ID = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "pl_interaction_connection");
+    public static final CustomPacketPayload.Type<InteractionConnectionMessagePayload> ID
+            = new CustomPacketPayload.Type<>(PAYLOAD_ID);
 
-    public static final PacketCodec<ByteBuf, InteractionConnectionMessagePayload> CODEC = PacketCodecs.codec(
+    public static final StreamCodec<ByteBuf, InteractionConnectionMessagePayload> CODEC = ByteBufCodecs.fromCodec(
             RecordCodecBuilder.create(i -> i.group(
-                    Uuids.CODEC.fieldOf("uuid").forGetter(InteractionConnectionMessagePayload::uuid),
+                    UUIDUtil.AUTHLIB_CODEC.fieldOf("uuid").forGetter(InteractionConnectionMessagePayload::uuid),
                     BlockPos.CODEC.fieldOf("pos").forGetter(InteractionConnectionMessagePayload::pos),
                     ComponentRecords.FastenerAccessorData.CODEC.fieldOf("accessor").forGetter(x -> ComponentRecords.FastenerAccessorData.from(x.accessor())),
                     Codec.INT.fieldOf("action").forGetter(x -> x.action.ordinal()),
-                    Vec3d.CODEC.fieldOf("hit").forGetter(InteractionConnectionMessagePayload::hit),
-                    Codec.INT.fieldOf("type").forGetter(x -> x.type().getId()),
+                    Vec3.CODEC.fieldOf("hit").forGetter(InteractionConnectionMessagePayload::hit),
+                    Codec.INT.fieldOf("type").forGetter(x -> x.featureType.getId()),
                     Codec.INT.fieldOf("featureId").forGetter(InteractionConnectionMessagePayload::featureId)
             ).apply(i, (u, p, a, ac, h, t, fi) ->
                     new InteractionConnectionMessagePayload(
@@ -62,7 +61,7 @@ public record InteractionConnectionMessagePayload(
 
 
     @Override
-    public Id<? extends CustomPayload> getId() {
+    public Type<? extends CustomPacketPayload> type() {
         return ID;
     }
 }

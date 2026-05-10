@@ -1,18 +1,18 @@
 package de.lucalabs.fairylights.items;
 
 import de.lucalabs.fairylights.connection.ConnectionTypes;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 
 public final class TinselConnectionItem extends ConnectionItem
 {
 
-    public TinselConnectionItem(final Settings properties) {
+    public TinselConnectionItem(final Properties properties) {
         super(properties, ConnectionTypes.TINSEL_GARLAND);
     }
 
     @Override
-    public Text getName(final ItemStack stack) {
+    public Component getName(final ItemStack stack) {
         return DyeableItem.getDisplayName(stack, super.getName(stack));
     }
 }

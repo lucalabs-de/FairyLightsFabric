@@ -3,15 +3,14 @@ package de.lucalabs.fairylights.items;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.blocks.LightBlock;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 
 import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.LIGHT_VARIANT;
 
@@ -49,14 +48,14 @@ public final class FairyLightItems {
     private FairyLightItems() {
     }
 
-    private static Item.Settings defaultProperties() {
-        return new Item.Settings();
+    private static Item.Properties defaultProperties() {
+        return new Item.Properties();
     }
 
     private static Supplier<LightItem> createLight(
             final LightBlock block,
-            final BiFunction<LightBlock, Item.Settings, LightItem> factory) {
-        return () -> factory.apply(block, defaultProperties().maxCount(16).component(LIGHT_VARIANT, block.getVariant().getId()));
+            final BiFunction<LightBlock, Item.Properties, LightItem> factory) {
+        return () -> factory.apply(block, defaultProperties().stacksTo(16).component(LIGHT_VARIANT, block.getVariant().getId()));
     }
 
     private static Supplier<LightItem> createColorLight(final LightBlock block) {
@@ -64,8 +63,8 @@ public final class FairyLightItems {
     }
 
     private static <T extends Item> T register(final String name, Supplier<T> supplier) {
-        Identifier identifier = Identifier.of(FairyLights.ID, name);
-        return Registry.register(Registries.ITEM, identifier, supplier.get());
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, name);
+        return Registry.register(BuiltInRegistries.ITEM, identifier, supplier.get());
     }
 
     public static void initialize() {
@@ -73,7 +72,7 @@ public final class FairyLightItems {
     }
 
     public static Stream<LightItem> lights() {
-        return Registries.ITEM.getEntrySet().stream()
+        return BuiltInRegistries.ITEM.entrySet().stream()
                 .map(Map.Entry::getValue)
                 .filter(LightItem.class::isInstance)
                 .map(LightItem.class::cast);

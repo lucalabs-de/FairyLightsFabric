@@ -1,6 +1,6 @@
 package de.lucalabs.fairylights.util;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public final class Curve3D implements Curve {
 
@@ -49,7 +49,7 @@ public final class Curve3D implements Curve {
 
     @Override
     public float getX(int i, float lerp) {
-        return MathHelper.lerp(lerp, this.x[i], this.x[i + 1]);
+        return Mth.lerp(lerp, this.x[i], this.x[i + 1]);
     }
 
     @Override
@@ -59,7 +59,7 @@ public final class Curve3D implements Curve {
 
     @Override
     public float getY(int i, float lerp) {
-        return MathHelper.lerp(lerp, this.y[i], this.y[i + 1]);
+        return Mth.lerp(lerp, this.y[i], this.y[i + 1]);
     }
 
     @Override
@@ -69,7 +69,7 @@ public final class Curve3D implements Curve {
 
     @Override
     public float getZ(int i, float lerp) {
-        return MathHelper.lerp(lerp, this.z[i], this.z[i + 1]);
+        return Mth.lerp(lerp, this.z[i], this.z[i + 1]);
     }
 
     @Override
@@ -109,7 +109,7 @@ public final class Curve3D implements Curve {
                 }
                 final float dx = this.curve.x[this.index + 1] - this.curve.x[this.index];
                 final float dz = this.curve.z[this.index + 1] - this.curve.z[this.index];
-                return (float) MathHelper.atan2(dz, dx);
+                return (float) Mth.atan2(dz, dx);
             }
 
             @Override
@@ -117,7 +117,7 @@ public final class Curve3D implements Curve {
                 final float dx = this.curve.x[index + 1] - this.curve.x[index];
                 final float dy = this.curve.y[index + 1] - this.curve.y[index];
                 final float dz = this.curve.z[index + 1] - this.curve.z[index];
-                return (float) MathHelper.atan2(dy, MathHelper.sqrt(dx * dx + dz * dz));
+                return (float) Mth.atan2(dy, Mth.sqrt(dx * dx + dz * dz));
             }
 
             @Override
@@ -125,7 +125,7 @@ public final class Curve3D implements Curve {
                 final float dx = this.curve.x[index + 1] - this.curve.x[index];
                 final float dy = this.curve.y[index + 1] - this.curve.y[index];
                 final float dz = this.curve.z[index + 1] - this.curve.z[index];
-                return MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
+                return Mth.sqrt(dx * dx + dy * dy + dz * dz);
             }
         };
     }

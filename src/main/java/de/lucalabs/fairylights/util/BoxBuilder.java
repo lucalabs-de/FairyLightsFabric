@@ -1,14 +1,13 @@
 package de.lucalabs.fairylights.util;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3i;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class BoxBuilder {
     private double minX;
@@ -32,7 +31,7 @@ public final class BoxBuilder {
         this.maxZ = (this.minZ = pos.getZ()) + 1;
     }
 
-    public BoxBuilder(final Vec3d min, final Vec3d max) {
+    public BoxBuilder(final Vec3 min, final Vec3 max) {
         this(
                 Objects.requireNonNull(min, "min").x, min.y, min.z,
                 Objects.requireNonNull(max, "max").x, max.y, max.z
@@ -48,7 +47,7 @@ public final class BoxBuilder {
         this.maxZ = Math.max(minZ, maxZ);
     }
 
-    public BoxBuilder add(final Vec3d point) {
+    public BoxBuilder add(final Vec3 point) {
         return this.add(Objects.requireNonNull(point, "point").x, point.y, point.z);
     }
 
@@ -66,7 +65,7 @@ public final class BoxBuilder {
         return this;
     }
 
-    public BoxBuilder include(final Vec3d point) {
+    public BoxBuilder include(final Vec3 point) {
         return this.include(Objects.requireNonNull(point, "point").x, point.y, point.z);
     }
 
@@ -90,20 +89,20 @@ public final class BoxBuilder {
         return this;
     }
 
-    public Box build() {
-        return new Box(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
+    public AABB build() {
+        return new AABB(this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ);
     }
 
-    public static Box union(final List<Box> boxes) {
+    public static AABB union(final List<AABB> boxes) {
         Objects.requireNonNull(boxes, "Boxes");
         return union(boxes, box -> box);
     }
 
-    public static <T> Box union(final List<T> boxes, final Function<T, Box> mapper) {
+    public static <T> AABB union(final List<T> boxes, final Function<T, AABB> mapper) {
         Objects.requireNonNull(boxes, "Boxes");
         Objects.requireNonNull(mapper, "mapper");
         Preconditions.checkArgument(!boxes.isEmpty(), "Must have more than zero Boxs");
-        Box bounds = mapper.apply(boxes.get(0));
+        AABB bounds = mapper.apply(boxes.get(0));
         if (boxes.size() == 1) {
             return Objects.requireNonNull(bounds, "mapper returned bounds");
         }
@@ -118,6 +117,6 @@ public final class BoxBuilder {
             maxY = MathHelper.max(maxY, bounds.minY, bounds.maxY);
             maxZ = MathHelper.max(maxZ, bounds.minZ, bounds.maxZ);
         }
-        return new Box(minX, minY, minZ, maxX, maxY, maxZ);
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 }

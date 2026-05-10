@@ -2,13 +2,13 @@ package de.lucalabs.fairylights.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.DyeColor;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.DyeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public final class OreDictUtils {
     private OreDictUtils() {
@@ -19,7 +19,7 @@ public final class OreDictUtils {
             if (stack.getItem() instanceof DyeItem) {
                 return true;
             }
-            return stack.isIn(Tags.DYES);
+            return stack.is(Tags.DYES);
         }
         return false;
     }
@@ -27,10 +27,10 @@ public final class OreDictUtils {
     public static DyeColor getDyeColor(final ItemStack stack) {
         if (!stack.isEmpty()) {
             if (stack.getItem() instanceof DyeItem) {
-                return ((DyeItem) stack.getItem()).getColor();
+                return ((DyeItem) stack.getItem()).getDyeColor();
             }
             for (final Dye dye : Dye.values()) {
-                if (stack.isIn(dye.getName())) {
+                if (stack.is(dye.getName())) {
                     return dye.getColor();
                 }
             }
@@ -49,7 +49,7 @@ public final class OreDictUtils {
     private static ImmutableMultimap<DyeColor, ItemStack> getDyeItemStacks() {
         final ImmutableMultimap.Builder<DyeColor, ItemStack> bob = ImmutableMultimap.builder();
         for (final Dye dye : Dye.values()) {
-            for (final RegistryEntry<Item> holder : Registries.ITEM.iterateEntries(dye.getName())) {
+            for (final Holder<Item> holder : BuiltInRegistries.ITEM.getTagOrEmpty(dye.getName())) {
                 bob.put(dye.getColor(), new ItemStack(holder));
             }
         }

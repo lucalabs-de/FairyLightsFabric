@@ -1,15 +1,15 @@
 package de.lucalabs.fairylights.model.light;
 
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class SpiderLightModel extends ColorLightModel {
     public SpiderLightModel(final ModelPart root) {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final EasyMeshBuilder string = new EasyMeshBuilder("string", 30, 6);
         string.addBox(-1, 0, -1, 2, 2, 2, -0.05F);

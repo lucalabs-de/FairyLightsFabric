@@ -1,9 +1,9 @@
 package de.lucalabs.fairylights.util;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 public interface NbtSerializable {
-    NbtCompound serialize();
+    CompoundTag serialize();
 
-    void deserialize(NbtCompound compound);
+    void deserialize(CompoundTag compound);
 }

@@ -1,6 +1,8 @@
 package de.lucalabs.fairylights.renderer.block.entity;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.items.LightVariant;
@@ -10,24 +12,21 @@ import de.lucalabs.fairylights.renderer.FairyLightModelLayers;
 import de.lucalabs.fairylights.renderer.RenderConstants;
 import de.lucalabs.fairylights.util.ColorUtils;
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.util.math.MatrixStack;
-
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 
 public class LightRenderer {
     private final LightModelProvider<LightBehavior> defaultLight = LightModelProvider.of(new DefaultModel());
     private final Map<LightVariant<?>, LightModelProvider<?>> lights;
 
-    public LightRenderer(final Function<EntityModelLayer, ModelPart> baker) {
+    public LightRenderer(final Function<ModelLayerLocation, ModelPart> baker) {
         lights = new ImmutableMap.Builder<LightVariant<?>, LightModelProvider<?>>()
                 .put(
                         SimpleLightVariant.FAIRY_LIGHT,
@@ -98,11 +97,11 @@ public class LightRenderer {
                 .build();
     }
 
-    public Data start(final VertexConsumerProvider source) {
+    public Data start(final MultiBufferSource source) {
         // TODO check if unsorted translucency is really needed here
 //        final VertexConsumer buf = RenderConstants.TRANSLUCENT_TEXTURE.getVertexConsumer(source, ForgeRenderTypes::getUnsortedTranslucent);
         final VertexConsumer buf = RenderConstants.TRANSLUCENT_TEXTURE
-                .getVertexConsumer(source, RenderLayer::getEntityTranslucent);
+                .buffer(source, RenderType::entityTranslucent);
 
         ForwardingVertexConsumer translucent = new ForwardingVertexConsumer() {
             @Override
@@ -111,8 +110,8 @@ public class LightRenderer {
             }
 
             @Override
-            public VertexConsumer normal(float x, float y, float z) {
-                return super.normal(0.0F, 1.0F, 0.0F);
+            public VertexConsumer setNormal(float x, float y, float z) {
+                return super.setNormal(0.0F, 1.0F, 0.0F);
             }
         };
 
@@ -128,13 +127,13 @@ public class LightRenderer {
         return (LightModel<T>) this.lights.getOrDefault(variant, this.defaultLight).get(index);
     }
 
-    public void render(final MatrixStack matrix, final Data data, final Light<?> light, final int index, final float delta, final int packedLight, final int packedOverlay) {
+    public void render(final PoseStack matrix, final Data data, final Light<?> light, final int index, final float delta, final int packedLight, final int packedOverlay) {
         this.render(matrix, data, light, this.getModel(light, index), delta, packedLight, packedOverlay);
     }
 
-    public <T extends LightBehavior> void render(final MatrixStack matrix, final Data data, final Light<T> light, final LightModel<T> model, final float delta, final int packedLight, final int packedOverlay) {
+    public <T extends LightBehavior> void render(final PoseStack matrix, final Data data, final Light<T> light, final LightModel<T> model, final float delta, final int packedLight, final int packedOverlay) {
         model.animate(light, light.getBehavior(), delta);
-        model.render(matrix, data.solid, packedLight, packedOverlay, ColorUtils.WHITE);
+        model.renderToBuffer(matrix, data.solid, packedLight, packedOverlay, ColorUtils.WHITE);
         model.renderTranslucent(matrix, data.translucent, packedLight, packedOverlay, ColorUtils.WHITE);
     }
 
@@ -167,8 +166,8 @@ public class LightRenderer {
         }
 
         @Override
-        public void render(
-                final MatrixStack matrix,
+        public void renderToBuffer(
+                final PoseStack matrix,
                 final VertexConsumer builder,
                 final int light,
                 final int overlay,

@@ -1,12 +1,12 @@
 package de.lucalabs.fairylights.model.light;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.lucalabs.fairylights.feature.light.BrightnessLightBehavior;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.util.ColorUtils;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class IncandescentLightModel extends LightModel<BrightnessLightBehavior> {
     final ModelPart bulb;
@@ -18,7 +18,7 @@ public class IncandescentLightModel extends LightModel<BrightnessLightBehavior> 
         this.filament = root.getChild("filament");
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         helper.unlit().setTextureOffset(90, 10);
         helper.unlit().addBox(-1.0F, -0.01F, -1.0F, 2.0F, 1.0F, 2.0F);
@@ -43,8 +43,8 @@ public class IncandescentLightModel extends LightModel<BrightnessLightBehavior> 
     }
 
     @Override
-    public void render(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, int color) {
-        super.render(matrix, builder, light, overlay, color);
+    public void renderToBuffer(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, int color) {
+        super.renderToBuffer(matrix, builder, light, overlay, color);
         final int emissiveLight = this.getLight(light);
 
         final float cr = 0.23F, cg = 0.18F, cb = 0.14F;
@@ -60,7 +60,7 @@ public class IncandescentLightModel extends LightModel<BrightnessLightBehavior> 
     }
 
     @Override
-    public void renderTranslucent(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, int color) {
+    public void renderTranslucent(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, int color) {
         final float bi = this.brightness;
         final int emissiveLight = this.getLight(light);
         final float br = 1.0F, bg = 0.73F, bb = 0.3F;

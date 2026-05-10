@@ -1,10 +1,9 @@
 package de.lucalabs.fairylights.feature.light;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.function.Supplier;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class MultiLightBehavior implements LightBehavior {
     private final ImmutableList<StandardLightBehavior> lights;
@@ -32,7 +31,7 @@ public class MultiLightBehavior implements LightBehavior {
     }
 
     @Override
-    public void tick(final World world, final Vec3d origin, final Light<?> light) {
+    public void tick(final Level world, final Vec3 origin, final Light<?> light) {
         for (final StandardLightBehavior behavior : this.lights) {
             behavior.tick(world, origin, light);
         }

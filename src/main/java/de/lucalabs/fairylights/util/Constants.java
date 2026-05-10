@@ -1,10 +1,10 @@
 package de.lucalabs.fairylights.util;
 
-import net.minecraft.util.math.Box;
+import net.minecraft.world.phys.AABB;
 
 public final class Constants {
 
-    public static final Box INFINITE_BOX = new Box(
+    public static final AABB INFINITE_BOX = new AABB(
             Double.NEGATIVE_INFINITY,
             Double.NEGATIVE_INFINITY,
             Double.NEGATIVE_INFINITY,

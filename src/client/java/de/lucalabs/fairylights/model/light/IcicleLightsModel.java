@@ -1,14 +1,13 @@
 package de.lucalabs.fairylights.model.light;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.MultiLightBehavior;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class IcicleLightsModel extends LightModel<MultiLightBehavior> {
     private final List<ColorLightModel> bulbs;
@@ -29,22 +28,22 @@ public class IcicleLightsModel extends LightModel<MultiLightBehavior> {
     }
 
     @Override
-    public void render(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, int color) {
-        super.render(matrix, builder, light, overlay, color);
+    public void renderToBuffer(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, int color) {
+        super.renderToBuffer(matrix, builder, light, overlay, color);
         for (final ColorLightModel bulb : this.bulbs) {
-            bulb.render(matrix, builder, light, overlay, color);
+            bulb.renderToBuffer(matrix, builder, light, overlay, color);
         }
     }
 
     @Override
-    public void renderTranslucent(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
+    public void renderTranslucent(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
         super.renderTranslucent(matrix, builder, light, overlay, color);
         for (final ColorLightModel bulb : this.bulbs) {
             bulb.renderTranslucent(matrix, builder, light, overlay, color);
         }
     }
 
-    public static TexturedModelData createLayer(final int lights) {
+    public static LayerDefinition createLayer(final int lights) {
         final LightMeshHelper helper = LightMeshHelper.create();
         final EasyMeshBuilder connector = new EasyMeshBuilder("connector", 77, 0);
         connector.setRotationPoint(0, 0, 0);

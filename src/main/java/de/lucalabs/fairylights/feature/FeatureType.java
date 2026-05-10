@@ -2,16 +2,16 @@ package de.lucalabs.fairylights.feature;
 
 import com.mojang.serialization.Lifecycle;
 import de.lucalabs.fairylights.FairyLights;
-import net.minecraft.registry.DefaultedRegistry;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.SimpleDefaultedRegistry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.DefaultedMappedRegistry;
+import net.minecraft.core.DefaultedRegistry;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 public final class FeatureType {
-    private static final DefaultedRegistry<FeatureType> REGISTRY = new SimpleDefaultedRegistry<>(
+    private static final DefaultedRegistry<FeatureType> REGISTRY = new DefaultedMappedRegistry<>(
             "default",
-            RegistryKey.ofRegistry(Identifier.of(FairyLights.ID, "feature")),
+            ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "feature")),
             Lifecycle.experimental(),
             false
     );
@@ -21,14 +21,14 @@ public final class FeatureType {
     private FeatureType() {}
 
     public int getId() {
-        return REGISTRY.getRawId(this);
+        return REGISTRY.getId(this);
     }
 
     public static FeatureType register(final String name) {
-        return Registry.register(REGISTRY, Identifier.of(name), new FeatureType());
+        return Registry.register(REGISTRY, ResourceLocation.parse(name), new FeatureType());
     }
 
     public static FeatureType fromId(final int id) {
-        return REGISTRY.get(id);
+        return REGISTRY.byId(id);
     }
 }

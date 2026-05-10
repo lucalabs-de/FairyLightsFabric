@@ -1,14 +1,14 @@
 package de.lucalabs.fairylights.model.light;
 
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class StarLightModel extends ColorLightModel {
     public StarLightModel(final ModelPart root) {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final int u = 101, v = 73;
         helper.unlit().setTextureOffset(u + 12, v + 0).addBox(-0.5F, 5.0F-7.0f, -0.5F, 1.0F, 3.0F, 1.0F);

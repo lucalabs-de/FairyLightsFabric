@@ -1,8 +1,8 @@
 package de.lucalabs.fairylights.feature.light;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class IncandescentBehavior implements BrightnessLightBehavior {
     private float prevBrightness = 1.0F;
@@ -13,7 +13,7 @@ public class IncandescentBehavior implements BrightnessLightBehavior {
 
     @Override
     public float getBrightness(final float delta) {
-        return MathHelper.lerp(delta, this.prevBrightness, this.brightness);
+        return Mth.lerp(delta, this.prevBrightness, this.brightness);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class IncandescentBehavior implements BrightnessLightBehavior {
     }
 
     @Override
-    public void tick(final World world, final Vec3d origin, final Light<?> light) {
+    public void tick(final Level world, final Vec3 origin, final Light<?> light) {
         this.prevBrightness = this.brightness;
         if (this.powered) {
             this.brighten(1.0F, 0.2F);

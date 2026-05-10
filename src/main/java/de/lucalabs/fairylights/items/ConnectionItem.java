@@ -9,36 +9,35 @@ import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
 import de.lucalabs.fairylights.sounds.FairyLightSounds;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.Optional;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class ConnectionItem extends Item {
     private final ConnectionType<?> type;
 
-    public ConnectionItem(final Settings properties, final ConnectionType<?> type) {
+    public ConnectionItem(final Properties properties, final ConnectionType<?> type) {
         super(properties);
         this.type = type;
     }
 
     @SuppressWarnings("deprecation")
     public static boolean isFence(final BlockState state) {
-        return state.isSolid() && state.isIn(BlockTags.FENCES);
+        return state.isSolid() && state.is(BlockTags.FENCES);
     }
 
     public final ConnectionType<?> getConnectionType() {
@@ -46,70 +45,70 @@ public abstract class ConnectionItem extends Item {
     }
 
     @Override
-    public ActionResult useOnBlock(final ItemUsageContext context) {
-        final PlayerEntity user = context.getPlayer();
+    public InteractionResult useOn(final UseOnContext context) {
+        final Player user = context.getPlayer();
         if (user == null) {
-            return super.useOnBlock(context);
+            return super.useOn(context);
         }
 
-        final World world = context.getWorld();
-        final Direction side = context.getSide();
-        final BlockPos clickPos = context.getBlockPos();
-        final ItemStack stack = context.getStack();
+        final Level world = context.getLevel();
+        final Direction side = context.getClickedFace();
+        final BlockPos clickPos = context.getClickedPos();
+        final ItemStack stack = context.getItemInHand();
 
         if (this.isConnectionInOtherHand(world, user, stack)) {
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
 
         final BlockState fastenerState = FairyLightBlocks.FASTENER
-                .getDefaultState()
-                .with(FastenerBlock.FACING, side);
+                .defaultBlockState()
+                .setValue(FastenerBlock.FACING, side);
 
         final BlockState currentBlockState = world.getBlockState(clickPos);
-        final ItemPlacementContext blockContext = new ItemPlacementContext(context);
-        final BlockPos placePos = blockContext.getBlockPos();
+        final BlockPlaceContext blockContext = new BlockPlaceContext(context);
+        final BlockPos placePos = blockContext.getClickedPos();
 
         if (currentBlockState.getBlock() == FairyLightBlocks.FASTENER) {
-            if (!world.isClient()) {
+            if (!world.isClientSide()) {
                 this.connect(stack, user, world, clickPos);
             }
-            return ActionResult.SUCCESS;
-        } else if (blockContext.canPlace() && fastenerState.canPlaceAt(world, placePos)) {
-            if (!world.isClient()) {
+            return InteractionResult.SUCCESS;
+        } else if (blockContext.canPlace() && fastenerState.canSurvive(world, placePos)) {
+            if (!world.isClientSide()) {
                 this.connect(stack, user, world, placePos, fastenerState);
             }
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         } else if (isFence(currentBlockState)) {
-            final AbstractDecorationEntity entity = FenceFastenerEntity.findHanging(world, clickPos);
+            final HangingEntity entity = FenceFastenerEntity.findHanging(world, clickPos);
             if (entity == null || entity instanceof FenceFastenerEntity) {
-                if (!world.isClient()) {
+                if (!world.isClientSide()) {
                     this.connectFence(stack, user, world, clickPos, (FenceFastenerEntity) entity);
                 }
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
-    private boolean isConnectionInOtherHand(final World world, final PlayerEntity user, final ItemStack stack) {
+    private boolean isConnectionInOtherHand(final Level world, final Player user, final ItemStack stack) {
         final Fastener<?> attacher = FairyLightComponents.FASTENER.get(user).get().orElseThrow(IllegalStateException::new);
         return attacher.getFirstConnection().filter(connection -> !connection.serializeLogic().build().matchesItemStack(stack)).isPresent();
     }
 
-    private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos) {
+    private void connect(final ItemStack stack, final Player user, final Level world, final BlockPos pos) {
         final BlockEntity entity = world.getBlockEntity(pos);
         if (entity != null) {
             FairyLightComponents.FASTENER.get(entity).get().ifPresent(fastener -> this.connect(stack, user, world, fastener));
         }
     }
 
-    private void connect(final ItemStack stack, final PlayerEntity user, final World world, final BlockPos pos, final BlockState state) {
-        if (world.setBlockState(pos, state, 3)) {
-            state.getBlock().onPlaced(world, pos, state, user, stack);
-            final BlockSoundGroup sound = state.getSoundGroup();
+    private void connect(final ItemStack stack, final Player user, final Level world, final BlockPos pos, final BlockState state) {
+        if (world.setBlock(pos, state, 3)) {
+            state.getBlock().setPlacedBy(world, pos, state, user, stack);
+            final SoundType sound = state.getSoundType();
             world.playSound(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
                     sound.getPlaceSound(),
-                    SoundCategory.BLOCKS,
+                    SoundSource.BLOCKS,
                     (sound.getVolume() + 1) / 2,
                     sound.getPitch() * 0.8F
             );
@@ -121,11 +120,11 @@ public abstract class ConnectionItem extends Item {
         }
     }
 
-    public void connect(final ItemStack stack, final PlayerEntity user, final World world, final Fastener<?> fastener) {
+    public void connect(final ItemStack stack, final Player user, final Level world, final Fastener<?> fastener) {
         this.connect(stack, user, world, fastener, true);
     }
 
-    public void connect(final ItemStack stack, final PlayerEntity user, final World world, final Fastener<?> fastener, final boolean playConnectSound) {
+    public void connect(final ItemStack stack, final Player user, final Level world, final Fastener<?> fastener, final boolean playConnectSound) {
         FairyLightComponents.FASTENER.get(user).get().ifPresent(attacher -> {
             boolean playSound = playConnectSound;
             final Optional<Connection> placing = attacher.getFirstConnection();
@@ -133,7 +132,7 @@ public abstract class ConnectionItem extends Item {
                 final Connection conn = placing.get();
                 if (conn.reconnect(fastener)) {
                     conn.onConnect(world, user, stack);
-                    stack.decrement(1);
+                    stack.shrink(1);
                 } else {
                     playSound = false;
                 }
@@ -143,16 +142,16 @@ public abstract class ConnectionItem extends Item {
                 fastener.connect(world, attacher, this.getConnectionType(), ComponentRecords.ConnectionLogic.fromItemStack(stack), false);
             }
             if (playSound) {
-                final Vec3d pos = fastener.getConnectionPoint();
-                world.playSound(null, pos.x, pos.y, pos.z, FairyLightSounds.CORD_CONNECT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                final Vec3 pos = fastener.getConnectionPoint();
+                world.playSound(null, pos.x, pos.y, pos.z, FairyLightSounds.CORD_CONNECT, SoundSource.BLOCKS, 1.0F, 1.0F);
             }
         });
     }
 
     private void connectFence(
             final ItemStack stack,
-            final PlayerEntity user,
-            final World world,
+            final Player user,
+            final Level world,
             final BlockPos pos,
             FenceFastenerEntity fastener) {
         final boolean playConnectSound;

@@ -4,21 +4,20 @@ import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.connection.ConnectionType;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public interface Fastener<F extends FastenerAccessor> {
-    void writeToNbt(NbtCompound tag);
+    void writeToNbt(CompoundTag tag);
 
-    void readFromNbt(NbtCompound tag);
+    void readFromNbt(CompoundTag tag);
 
     Optional<Connection> get(final UUID id);
 
@@ -30,29 +29,29 @@ public interface Fastener<F extends FastenerAccessor> {
         return this.getAllConnections().stream().findFirst();
     }
 
-    Box getBounds();
+    AABB getBounds();
 
-    Vec3d getConnectionPoint();
+    Vec3 getConnectionPoint();
 
     BlockPos getPos();
 
     Direction getFacing();
 
-    void setWorld(World world);
+    void setWorld(Level world);
 
-    World getWorld();
+    Level getWorld();
 
     F createAccessor();
 
     boolean isMoving();
 
-    default void resistSnap(final Vec3d from) {}
+    default void resistSnap(final Vec3 from) {}
 
     boolean update();
 
     void setDirty();
 
-    void dropItems(World world, BlockPos pos);
+    void dropItems(Level world, BlockPos pos);
 
     void remove();
 
@@ -66,17 +65,17 @@ public interface Fastener<F extends FastenerAccessor> {
 
     boolean removeConnection(Connection connection);
 
-    boolean reconnect(final World world, Connection connection, Fastener<?> newDestination);
+    boolean reconnect(final Level world, Connection connection, Fastener<?> newDestination);
 
-    Connection connect(World world, Fastener<?> destination, ConnectionType<?> type, ComponentRecords.ConnectionLogic compound, final boolean drop);
+    Connection connect(Level world, Fastener<?> destination, ConnectionType<?> type, ComponentRecords.ConnectionLogic compound, final boolean drop);
 
     Connection createOutgoingConnection(
-            World world,
+            Level world,
             UUID uuid,
             Fastener<?> destination,
             ConnectionType<?> type,
             ComponentRecords.ConnectionLogic logic,
             final boolean drop);
 
-    void createIncomingConnection(World world, UUID uuid, Fastener<?> destination, ConnectionType<?> type);
+    void createIncomingConnection(Level world, UUID uuid, Fastener<?> destination, ConnectionType<?> type);
 }

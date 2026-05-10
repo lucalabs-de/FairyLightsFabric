@@ -4,20 +4,19 @@ import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.feature.light.*;
 import de.lucalabs.fairylights.items.components.FairyLightItemComponents;
 import de.lucalabs.fairylights.registries.FairyLightRegistries;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
-
 import java.util.Objects;
 import java.util.function.Function;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
 public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T> {
     public static final LightVariant<StandardLightBehavior> FAIRY_LIGHT = getRegistered(
             "var_fairy_light",
             true,
             1.0F,
-            new Box(-0.138D, -0.138D, -0.138D, 0.138D, 0.138D, 0.138D),
+            new AABB(-0.138D, -0.138D, -0.138D, 0.138D, 0.138D, 0.138D),
             0.044D,
             SimpleLightVariant::standardBehavior,
             true
@@ -27,7 +26,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_paper_lantern",
             false,
             1.0F,
-            new Box(-0.250D, -0.906D, -0.250D, 0.250D, 0.091D, 0.250D),
+            new AABB(-0.250D, -0.906D, -0.250D, 0.250D, 0.091D, 0.250D),
             0.000D,
             SimpleLightVariant::standardBehavior);
 
@@ -35,7 +34,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_orb_lantern",
             false,
             1.0F,
-            new Box(-0.262D, -0.512D, -0.262D, 0.262D, 0.091D, 0.262D),
+            new AABB(-0.262D, -0.512D, -0.262D, 0.262D, 0.091D, 0.262D),
             0.044D,
             SimpleLightVariant::standardBehavior);
 
@@ -43,7 +42,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_flower_light",
             true,
             1.0F,
-            new Box(-0.483D, -0.227D, -0.483D, 0.436D, 0.185D, 0.436D),
+            new AABB(-0.483D, -0.227D, -0.483D, 0.436D, 0.185D, 0.436D),
             0.069D,
             SimpleLightVariant::standardBehavior,
             true);
@@ -52,7 +51,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_candle_lantern",
             false,
             1.5F,
-            new Box(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D),
+            new AABB(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D),
             0.000D,
             SimpleLightVariant::standardBehavior);
 
@@ -60,7 +59,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_jack_o_lantern",
             true,
             1.0F,
-            new Box(-0.231D, -0.419D, -0.231D, 0.231D, 0.122D, 0.231D),
+            new AABB(-0.231D, -0.419D, -0.231D, 0.231D, 0.122D, 0.231D),
             0.044D,
             SimpleLightVariant::standardBehavior);
 
@@ -68,21 +67,21 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_skull_light",
             true,
             1.0F,
-            new Box(-0.200D, -0.404D, -0.200D, 0.200D, 0.122D, 0.200D), 0.044D,
+            new AABB(-0.200D, -0.404D, -0.200D, 0.200D, 0.122D, 0.200D), 0.044D,
             SimpleLightVariant::standardBehavior);
 
     public static final LightVariant<StandardLightBehavior> GHOST_LIGHT = getRegistered(
             "var_ghost_light",
             true,
             1.0F,
-            new Box(-0.270D, -0.390D, -0.270D, 0.270D, 0.169D, 0.270D), 0.075D,
+            new AABB(-0.270D, -0.390D, -0.270D, 0.270D, 0.169D, 0.270D), 0.075D,
             SimpleLightVariant::standardBehavior);
 
     public static final LightVariant<StandardLightBehavior> SPIDER_LIGHT = getRegistered(
             "var_spider_light",
             true,
             1.0F,
-            new Box(-0.575D, -0.834D, -0.200D, 0.575D, 0.122D, 0.200D),
+            new AABB(-0.575D, -0.834D, -0.200D, 0.575D, 0.122D, 0.200D),
             0.060D,
             SimpleLightVariant::standardBehavior);
 
@@ -90,7 +89,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_witch_light",
             true,
             1.0F,
-            new Box(-0.294D, -0.419D, -0.294D, 0.294D, 0.173D, 0.294D),
+            new AABB(-0.294D, -0.419D, -0.294D, 0.294D, 0.173D, 0.294D),
             0.044D,
             SimpleLightVariant::standardBehavior);
 
@@ -98,7 +97,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_snowflake_light",
             true,
             1.0F,
-            new Box(-0.518D, -1.050D, -0.082D, 0.517D, 0.072D, 0.082D),
+            new AABB(-0.518D, -1.050D, -0.082D, 0.517D, 0.072D, 0.082D),
             0.044D,
             SimpleLightVariant::standardBehavior);
 
@@ -106,7 +105,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_heart_light",
             true,
             1.0F,
-            new Box(-0.280D, -0.408D, -0.106D, 0.274D, 0.063D, 0.106D),
+            new AABB(-0.280D, -0.408D, -0.106D, 0.274D, 0.063D, 0.106D),
             0.062D,
             SimpleLightVariant::standardBehavior,
             true);
@@ -115,7 +114,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_moon_light",
             true,
             1.0F,
-            new Box(-0.200D, -0.669D, -0.144D, 0.300D, 0.063D, 0.144D),
+            new AABB(-0.200D, -0.669D, -0.144D, 0.300D, 0.063D, 0.144D),
             0.044D,
             SimpleLightVariant::standardBehavior,
             true);
@@ -124,7 +123,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_star_light",
             true,
             1.0F,
-            new Box(-0.200D, -0.669D, -0.144D, 0.300D, 0.063D, 0.144D),
+            new AABB(-0.200D, -0.669D, -0.144D, 0.300D, 0.063D, 0.144D),
             0.044D,
             SimpleLightVariant::standardBehavior,
             true);
@@ -133,14 +132,14 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_icicle_lights",
             false,
             0.625F,
-            new Box(-0.264D, -1.032D, -0.253D, 0.276D, 0.091D, 0.266D), 0.012D,
+            new AABB(-0.264D, -1.032D, -0.253D, 0.276D, 0.091D, 0.266D), 0.012D,
             stack -> MultiLightBehavior.create(4, () -> standardBehavior(stack)));
 
     public static final LightVariant<MeteorLightBehavior> METEOR_LIGHT = getRegistered(
             "var_meteor_light",
             false,
             1.5F,
-            new Box(-0.090D, -1.588D, -0.090D, 0.090D, 0.091D, 0.090D),
+            new AABB(-0.090D, -1.588D, -0.090D, 0.090D, 0.091D, 0.090D),
             0.000D,
             stack -> {
                 final ColorLightBehavior color;
@@ -155,7 +154,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
     public static final LightVariant<BrightnessLightBehavior> CANDLE_LANTERN = getRegistered(
             "var_candle_lantern",
             false,
-            1.5F, new Box(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D),
+            1.5F, new AABB(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D),
             0.000D,
             stack -> new TorchLightBehavior(0.2D));
 
@@ -163,7 +162,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_oil_lantern",
             false,
             1.5F,
-            new Box(-0.219D, -0.656D, -0.188D, 0.219D, 0.091D, 0.188D),
+            new AABB(-0.219D, -0.656D, -0.188D, 0.219D, 0.091D, 0.188D),
             0.000D,
             stack -> new TorchLightBehavior(0.13D));
 
@@ -171,18 +170,18 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             "var_incandescent",
             true,
             1.0F,
-            new Box(-0.166D, -0.291D, -0.166D, 0.166D, 0.062D, 0.166D),
+            new AABB(-0.166D, -0.291D, -0.166D, 0.166D, 0.062D, 0.166D),
             0.103D,
             stack -> new IncandescentBehavior(),
             true);
 
-    private final Identifier id;
+    private final ResourceLocation id;
 
     private final boolean parallelsCord;
 
     private final float spacing;
 
-    private final Box bounds;
+    private final AABB bounds;
 
     private final double floorOffset;
 
@@ -190,11 +189,11 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
 
     private final boolean orientable;
 
-    SimpleLightVariant(final Identifier id, final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory) {
+    SimpleLightVariant(final ResourceLocation id, final boolean parallelsCord, final float spacing, final AABB bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory) {
         this(id, parallelsCord, spacing, bounds, floorOffset, behaviorFactory, false);
     }
 
-    SimpleLightVariant(final Identifier id, final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
+    SimpleLightVariant(final ResourceLocation id, final boolean parallelsCord, final float spacing, final AABB bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
         this.id = id;
         this.parallelsCord = parallelsCord;
         this.spacing = spacing;
@@ -225,12 +224,12 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
         return new CompositeBehavior(brightness, color);
     }
 
-    private static <T extends LightBehavior> LightVariant<T> getRegistered(String id, final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory) {
+    private static <T extends LightBehavior> LightVariant<T> getRegistered(String id, final boolean parallelsCord, final float spacing, final AABB bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory) {
         return getRegistered(id, parallelsCord, spacing, bounds, floorOffset, behaviorFactory, false);
     }
 
-    private static <T extends LightBehavior> LightVariant<T> getRegistered(String id, final boolean parallelsCord, final float spacing, final Box bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
-        Identifier identifier = Identifier.of(FairyLights.ID, id);
+    private static <T extends LightBehavior> LightVariant<T> getRegistered(String id, final boolean parallelsCord, final float spacing, final AABB bounds, final double floorOffset, final Function<ItemStack, T> behaviorFactory, final boolean orientable) {
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, id);
         return Registry.register(
                 FairyLightRegistries.LIGHT_VARIANTS,
                 identifier,
@@ -246,7 +245,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
     }
 
     @Override
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return id;
     }
 
@@ -261,7 +260,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
     }
 
     @Override
-    public Box getBounds() {
+    public AABB getBounds() {
         return this.bounds;
     }
 

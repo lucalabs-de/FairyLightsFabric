@@ -1,9 +1,8 @@
 package de.lucalabs.fairylights.items.crafting.ingredient;
 
-import net.minecraft.component.ComponentMapImpl;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.Nullable;
 
 public class InertBasicAuxiliaryIngredient extends BasicAuxiliaryIngredient<Void> {
@@ -25,7 +24,7 @@ public class InertBasicAuxiliaryIngredient extends BasicAuxiliaryIngredient<Void
     public final void consume(final Void v, final ItemStack ingredient) {}
 
     @Override
-    public final boolean finish(final Void v, final ComponentMapImpl comps) {
+    public final boolean finish(final Void v, final PatchedDataComponentMap comps) {
         return false;
     }
 }

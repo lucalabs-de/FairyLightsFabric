@@ -3,8 +3,8 @@ package de.lucalabs.fairylights.model.light;
 import de.lucalabs.fairylights.feature.light.BrightnessLightBehavior;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class OilLanternModel extends LightModel<BrightnessLightBehavior> {
     public OilLanternModel(final ModelPart root) {
@@ -17,7 +17,7 @@ public class OilLanternModel extends LightModel<BrightnessLightBehavior> {
         this.brightness = behavior.getBrightness(delta);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         helper.unlit().yRot = -MathHelper.PI / 2.0F;
         helper.unlit().setTextureOffset(10, 6);

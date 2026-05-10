@@ -12,17 +12,17 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 
 public class FairyLightsClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        BlockEntityRendererFactories.register(
+        BlockEntityRenderers.register(
                 FairyLightBlockEntities.FASTENER,
                 context -> new FastenerBlockEntityRenderer(context, new RegularBlockView()));
 
-        BlockEntityRendererFactories.register(
+        BlockEntityRenderers.register(
                 FairyLightBlockEntities.LIGHT,
                 LightBlockEntityRenderer::new
         );

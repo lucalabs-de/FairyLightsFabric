@@ -6,39 +6,39 @@ import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.items.ConnectionItem;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityWorldChangeEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.entity.decoration.AbstractDecorationEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 
 public final class ServerEventHandler {
     private ServerEventHandler() {
     }
 
     // TODO no fucking idea what this function does
-    public static ActionResult onRightClickBlock(PlayerEntity player, World world, Hand hand, HitResult hitResult) {
+    public static InteractionResult onRightClickBlock(Player player, Level world, InteractionHand hand, HitResult hitResult) {
         boolean shouldFail = false;
 
-        final BlockPos pos = new BlockPos((int) hitResult.getPos().x, (int) hitResult.getPos().y, (int) hitResult.getPos().z);
+        final BlockPos pos = new BlockPos((int) hitResult.getLocation().x, (int) hitResult.getLocation().y, (int) hitResult.getLocation().z);
         if (!(world.getBlockState(pos).getBlock() instanceof FenceBlock)) {
-            return ActionResult.PASS;
+            return InteractionResult.PASS;
         }
 
-        final ItemStack stack = player.getStackInHand(hand);
+        final ItemStack stack = player.getItemInHand(hand);
         boolean checkHanging = stack.getItem() == Items.LEAD;
-        if (hand == Hand.MAIN_HAND) {
-            final ItemStack offhandStack = player.getOffHandStack();
+        if (hand == InteractionHand.MAIN_HAND) {
+            final ItemStack offhandStack = player.getOffhandItem();
             if (offhandStack.getItem() instanceof ConnectionItem) {
                 if (checkHanging) {
-                    return ActionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 } else {
 //                    event.setUseBlock(Event.Result.DENY);
                     shouldFail = true;
@@ -46,13 +46,13 @@ public final class ServerEventHandler {
             }
         }
 
-        if (!checkHanging && !world.isClient()) {
+        if (!checkHanging && !world.isClientSide()) {
             final double range = 7;
             final int x = pos.getX();
             final int y = pos.getY();
             final int z = pos.getZ();
-            final Box area = new Box(x - range, y - range, z - range, x + range, y + range, z + range);
-            for (final MobEntity entity : world.getNonSpectatingEntities(MobEntity.class, area)) {
+            final AABB area = new AABB(x - range, y - range, z - range, x + range, y + range, z + range);
+            for (final Mob entity : world.getEntitiesOfClass(Mob.class, area)) {
                 if (entity.isLeashed() && entity.getLeashHolder() == player) {
                     checkHanging = true;
                     break;
@@ -61,14 +61,14 @@ public final class ServerEventHandler {
         }
 
         if (checkHanging) {
-            final AbstractDecorationEntity entity = FenceFastenerEntity.findHanging(world, pos);
+            final HangingEntity entity = FenceFastenerEntity.findHanging(world, pos);
             if (entity != null) {
-                return shouldFail ? ActionResult.FAIL : ActionResult.SUCCESS;
+                return shouldFail ? InteractionResult.FAIL : InteractionResult.SUCCESS;
 //                event.setCanceled(true);
             }
         }
 
-        return shouldFail ? ActionResult.FAIL : ActionResult.PASS;
+        return shouldFail ? InteractionResult.FAIL : InteractionResult.PASS;
     }
 
     public static void initialize() {
@@ -76,7 +76,7 @@ public final class ServerEventHandler {
         UseBlockCallback.EVENT.register(ServerEventHandler::onRightClickBlock);
 
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(((player, origin, dest) -> {
-            FairyLights.LOGGER.info("changed dimension to {}", dest.getRegistryKey());
+            FairyLights.LOGGER.info("changed dimension to {}", dest.dimension());
             FairyLightComponents.FASTENER.get(player).get().ifPresent(f -> f.setWorld(dest));
         }));
     }

@@ -3,7 +3,7 @@ package de.lucalabs.fairylights.integrations.jei;
 import de.lucalabs.fairylights.items.components.FairyLightItemComponents;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.ingredients.subtypes.UidContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ public final class ColorSubtypeInterpreter implements ISubtypeInterpreter<ItemSt
 
     @Override
     public @NotNull String getLegacyStringSubtypeInfo(ItemStack stack, UidContext uidContext) {
-        if (stack.contains(FairyLightItemComponents.COLOR)) {
+        if (stack.has(FairyLightItemComponents.COLOR)) {
             return String.format("%06x", stack.get(FairyLightItemComponents.COLOR));
         }
 

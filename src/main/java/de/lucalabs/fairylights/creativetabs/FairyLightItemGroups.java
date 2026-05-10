@@ -5,14 +5,14 @@ import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.FairyLightItems;
 import de.lucalabs.fairylights.items.crafting.FairyLightCraftingRecipes;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.DyeColor;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -21,47 +21,47 @@ import java.util.List;
 
 public final class FairyLightItemGroups {
 
-    public static final ItemGroup FAIRY_LIGHTS = register(
-            Identifier.of(FairyLights.ID, "item_group"),
+    public static final CreativeModeTab FAIRY_LIGHTS = register(
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "item_group"),
             FabricItemGroup.builder()
                     .icon(() -> new ItemStack(FairyLightItems.HANGING_LIGHTS))
-                    .displayName(Text.translatable("itemGroup.fairylights"))
-                    .entries((context, entries) -> {
+                    .title(Component.translatable("itemGroup.fairylights"))
+                    .displayItems((context, entries) -> {
                         for (final DyeColor color : DyeColor.values()) {
-                            entries.add(FairyLightCraftingRecipes.makeHangingLights(new ItemStack(FairyLightItems.HANGING_LIGHTS), color));
+                            entries.accept(FairyLightCraftingRecipes.makeHangingLights(new ItemStack(FairyLightItems.HANGING_LIGHTS), color));
                         }
 
                         for (final DyeColor color : DyeColor.values()) {
                             final ItemStack stack = new ItemStack(FairyLightItems.PENNANT_BUNTING);
-                            entries.add(FairyLightCraftingRecipes.makePennant(stack, color));
+                            entries.accept(FairyLightCraftingRecipes.makePennant(stack, color));
                         }
 
-                        entries.add(new ItemStack(FairyLightItems.GARLAND));
+                        entries.accept(new ItemStack(FairyLightItems.GARLAND));
 
-                        entries.addAll(generateCollection(FairyLightItems.TINSEL));
+                        entries.acceptAll(generateCollection(FairyLightItems.TINSEL));
 
-                        entries.addAll(generateCollection(FairyLightItems.TRIANGLE_PENNANT));
-                        entries.addAll(generateCollection(FairyLightItems.SQUARE_PENNANT));
+                        entries.acceptAll(generateCollection(FairyLightItems.TRIANGLE_PENNANT));
+                        entries.acceptAll(generateCollection(FairyLightItems.SQUARE_PENNANT));
 
-                        entries.addAll(generateCollection(FairyLightItems.FAIRY_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.PAPER_LANTERN));
-                        entries.addAll(generateCollection(FairyLightItems.ORB_LANTERN));
-                        entries.addAll(generateCollection(FairyLightItems.FLOWER_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.CANDLE_LANTERN_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.JACK_O_LANTERN));
-                        entries.addAll(generateCollection(FairyLightItems.SKULL_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.GHOST_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.SPIDER_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.WITCH_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.SNOWFLAKE_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.HEART_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.MOON_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.STAR_LIGHT));
-                        entries.addAll(generateCollection(FairyLightItems.ICICLE_LIGHTS));
-                        entries.addAll(generateCollection(FairyLightItems.METEOR_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.FAIRY_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.PAPER_LANTERN));
+                        entries.acceptAll(generateCollection(FairyLightItems.ORB_LANTERN));
+                        entries.acceptAll(generateCollection(FairyLightItems.FLOWER_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.CANDLE_LANTERN_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.JACK_O_LANTERN));
+                        entries.acceptAll(generateCollection(FairyLightItems.SKULL_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.GHOST_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.SPIDER_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.WITCH_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.SNOWFLAKE_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.HEART_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.MOON_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.STAR_LIGHT));
+                        entries.acceptAll(generateCollection(FairyLightItems.ICICLE_LIGHTS));
+                        entries.acceptAll(generateCollection(FairyLightItems.METEOR_LIGHT));
 
-                        entries.add(new ItemStack(FairyLightItems.OIL_LANTERN));
-                        entries.add(new ItemStack(FairyLightItems.INCANDESCENT_LIGHT));
+                        entries.accept(new ItemStack(FairyLightItems.OIL_LANTERN));
+                        entries.accept(new ItemStack(FairyLightItems.INCANDESCENT_LIGHT));
                     }));
 
     private FairyLightItemGroups() {
@@ -75,8 +75,8 @@ public final class FairyLightItemGroups {
         return stacks;
     }
 
-    private static ItemGroup register(final Identifier name, final ItemGroup.Builder g) {
-        return Registry.register(Registries.ITEM_GROUP, name, g.build());
+    private static CreativeModeTab register(final ResourceLocation name, final CreativeModeTab.Builder g) {
+        return Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, name, g.build());
     }
 
     public static void initialize() {

@@ -1,11 +1,11 @@
 package de.lucalabs.fairylights.collision;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public interface Collidable {
     @Nullable
-    Intersection intersect(final Vec3d origin, final Vec3d end);
+    Intersection intersect(final Vec3 origin, final Vec3 end);
 
     static Collidable empty() {
         return (o, e) -> null;

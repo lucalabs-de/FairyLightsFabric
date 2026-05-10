@@ -3,22 +3,22 @@ package de.lucalabs.fairylights.collision;
 import de.lucalabs.fairylights.feature.Feature;
 import de.lucalabs.fairylights.feature.FeatureType;
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public final class FeatureCollisionTree implements Collidable {
     private final FeatureType type;
 
-    public final Box[] tree;
+    public final AABB[] tree;
 
     private final Feature[] nodeToFeature;
 
-    private FeatureCollisionTree(final FeatureType type, final Box[] tree, final Feature[] nodeToFeature) {
+    private FeatureCollisionTree(final FeatureType type, final AABB[] tree, final Feature[] nodeToFeature) {
         this.type = type;
         this.tree = tree;
         this.nodeToFeature = nodeToFeature;
@@ -26,17 +26,17 @@ public final class FeatureCollisionTree implements Collidable {
 
     @Nullable
     @Override
-    public Intersection intersect(final Vec3d origin, final Vec3d end) {
+    public Intersection intersect(final Vec3 origin, final Vec3 end) {
         return this.intersect(origin, end, 0);
     }
 
     @Nullable
-    private Intersection intersect(final Vec3d origin, final Vec3d end, final int node) {
-        final Vec3d result;
+    private Intersection intersect(final Vec3 origin, final Vec3 end, final int node) {
+        final Vec3 result;
         if (this.tree[node].contains(origin)) {
             result = origin;
         } else {
-            result = this.tree[node].raycast(origin, end).orElse(null);
+            result = this.tree[node].clip(origin, end).orElse(null);
         }
         // If there is no intersection then there is no child intersection
         if (result == null) {
@@ -60,14 +60,14 @@ public final class FeatureCollisionTree implements Collidable {
     public static <T extends Feature> FeatureCollisionTree build(
             final FeatureType type,
             final T[] features,
-            final Function<T, Box> mapper) {
+            final Function<T, AABB> mapper) {
         return build(type, features, mapper, 0, features.length - 1);
     }
 
     public static <T extends Feature> FeatureCollisionTree build(
             final FeatureType type,
             final T[] features,
-            final Function<T, Box> mapper,
+            final Function<T, AABB> mapper,
             final int start,
             final int end) {
         return build(type, i -> features[i], i -> mapper.apply(features[i]), start, end);
@@ -76,20 +76,20 @@ public final class FeatureCollisionTree implements Collidable {
     public static <T extends Feature> FeatureCollisionTree build(
             final FeatureType type,
             final IntFunction<T> features,
-            final IntFunction<Box> mapper,
+            final IntFunction<AABB> mapper,
             final int start,
             final int end) {
 
-        final Box[] tree = new Box[end == 0 ? 1 : (1 << (MathHelper.log2(end - start) + 2)) - 1];
+        final AABB[] tree = new AABB[end == 0 ? 1 : (1 << (MathHelper.log2(end - start) + 2)) - 1];
         final Feature[] treeFeatures = new Feature[tree.length];
         tree[0] = build(features, mapper, tree, treeFeatures, start, end, 0);
         return new FeatureCollisionTree(type, tree, treeFeatures);
     }
 
-    private static <T extends Feature> Box build(
+    private static <T extends Feature> AABB build(
             final IntFunction<T> features,
-            final IntFunction<Box> mapper,
-            final Box[] tree,
+            final IntFunction<AABB> mapper,
+            final AABB[] tree,
             final Feature[] treeFeatures,
             final int min,
             final int max,
@@ -106,6 +106,6 @@ public final class FeatureCollisionTree implements Collidable {
         final int nL = node * 2 + 1;
         final int nR = node * 2 + 2;
         return (tree[nL] = build(features, mapper, tree, treeFeatures, min, mid, nL))
-                .union(tree[nR] = build(features, mapper, tree, treeFeatures, mid + 1, max, nR));
+                .minmax(tree[nR] = build(features, mapper, tree, treeFeatures, mid + 1, max, nR));
     }
 }

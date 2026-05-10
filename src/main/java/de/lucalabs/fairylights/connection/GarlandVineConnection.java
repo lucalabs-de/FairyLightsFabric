@@ -1,12 +1,11 @@
 package de.lucalabs.fairylights.connection;
 
 import de.lucalabs.fairylights.fastener.Fastener;
-import net.minecraft.world.World;
-
 import java.util.UUID;
+import net.minecraft.world.level.Level;
 
 public final class GarlandVineConnection extends Connection {
-    public GarlandVineConnection(final ConnectionType<? extends GarlandVineConnection> type, final World world, final Fastener<?> fastener, final UUID uuid) {
+    public GarlandVineConnection(final ConnectionType<? extends GarlandVineConnection> type, final Level world, final Fastener<?> fastener, final UUID uuid) {
         super(type, world, fastener, uuid);
     }
 

@@ -3,23 +3,22 @@ package de.lucalabs.fairylights.fastener.accessor;
 import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.fastener.FastenerType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.world.World;
-
 import java.util.Optional;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.Level;
 
 public interface FastenerAccessor {
-    default Optional<Fastener<?>> get(final World world) {
+    default Optional<Fastener<?>> get(final Level world) {
         return this.get(world, true);
     }
 
-    Optional<Fastener<?>> get(final World world, final boolean load);
+    Optional<Fastener<?>> get(final Level world, final boolean load);
 
-    boolean isGone(final World world);
+    boolean isGone(final Level world);
 
     FastenerType getType();
 
-    NbtCompound serialize();
+    CompoundTag serialize();
 
-    void deserialize(NbtCompound compound);
+    void deserialize(CompoundTag compound);
 }

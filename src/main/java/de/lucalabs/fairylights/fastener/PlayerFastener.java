@@ -3,27 +3,27 @@ package de.lucalabs.fairylights.fastener;
 import de.lucalabs.fairylights.connection.Connection;
 import de.lucalabs.fairylights.fastener.accessor.PlayerFastenerAccessor;
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
-public final class PlayerFastener extends EntityFastener<PlayerEntity> {
-    public PlayerFastener(final PlayerEntity entity) {
+public final class PlayerFastener extends EntityFastener<Player> {
+    public PlayerFastener(final Player entity) {
         super(entity);
     }
 
     @Override
-    public Vec3d getConnectionPoint() {
-        final Vec3d point = super.getConnectionPoint();
+    public Vec3 getConnectionPoint() {
+        final Vec3 point = super.getConnectionPoint();
         if (this.entity.isFallFlying()) {
             return point;
         }
-        final double angle = (this.entity.bodyYaw - 90) * MathHelper.DEG_TO_RAD;
+        final double angle = (this.entity.yBodyRot - 90) * MathHelper.DEG_TO_RAD;
         final double perpAngle = angle - Math.PI / 2;
-        final boolean sneaking = this.entity.isInSneakingPose();
-        final double perpDist = 0.4 * (this.matchesStack(this.entity.getMainHandStack()) ? 1 : -1);
+        final boolean sneaking = this.entity.isCrouching();
+        final double perpDist = 0.4 * (this.matchesStack(this.entity.getMainHandItem()) ? 1 : -1);
         final double forwardDist;
         final double dy;
         if (sneaking) {
@@ -46,8 +46,8 @@ public final class PlayerFastener extends EntityFastener<PlayerEntity> {
     @Override
     public boolean update() {
         if (!this.hasNoConnections()
-                && !this.matchesStack(this.entity.getMainHandStack())
-                && !this.matchesStack(this.entity.getOffHandStack())) {
+                && !this.matchesStack(this.entity.getMainHandItem())
+                && !this.matchesStack(this.entity.getOffhandItem())) {
             for (final Connection connection : this.getAllConnections()) {
                 if (!connection.shouldDrop()) {
                     connection.remove();
@@ -62,7 +62,7 @@ public final class PlayerFastener extends EntityFastener<PlayerEntity> {
     }
 
     @Override
-    public void resistSnap(final Vec3d from) {
+    public void resistSnap(final Vec3 from) {
         final double dist = this.getConnectionPoint().distanceTo(from);
         if (dist > Connection.MAX_LENGTH) {
             final double dx = this.entity.getX() - from.x;
@@ -72,8 +72,8 @@ public final class PlayerFastener extends EntityFastener<PlayerEntity> {
             final double vectorY = dy / dist;
             final double vectorZ = dz / dist;
             final double factor = Math.min((dist - Connection.MAX_LENGTH) / Connection.PULL_RANGE, Connection.PULL_RANGE);
-            final Vec3d motion = this.entity.getVelocity();
-            final double tangent = Math.cos(net.minecraft.util.math.MathHelper.atan2(dy, Math.sqrt(dx * dx + dz * dz))) * Math.signum(motion.y);
+            final Vec3 motion = this.entity.getDeltaMovement();
+            final double tangent = Math.cos(net.minecraft.util.Mth.atan2(dy, Math.sqrt(dx * dx + dz * dz))) * Math.signum(motion.y);
             final double speed = motion.length();
             final double swing = Math.abs(speed) < 1e-6 ? 0 : (1 - Math.abs(motion.y / speed - tangent)) * 0.1;
             final double mag = Math.sqrt(motion.x * motion.x + tangent * tangent + motion.z * motion.z);
@@ -87,14 +87,14 @@ public final class PlayerFastener extends EntityFastener<PlayerEntity> {
                 arcY = tangent / mag * swing;
                 arcZ = motion.z / mag * swing;
             }
-            this.entity.setVelocity(
+            this.entity.setDeltaMovement(
                     motion.x + vectorX * -Math.abs(vectorX) * factor + arcX,
                     motion.y + vectorY * -Math.abs(vectorY) * factor + arcY,
                     motion.z + vectorZ * -Math.abs(vectorZ) * factor + arcZ
             );
             this.entity.fallDistance = 0;
-            if (this.entity instanceof ServerPlayerEntity) {
-                ((ServerPlayerEntity) this.entity).networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(this.entity));
+            if (this.entity instanceof ServerPlayer) {
+                ((ServerPlayer) this.entity).connection.send(new ClientboundSetEntityMotionPacket(this.entity));
             }
         }
     }

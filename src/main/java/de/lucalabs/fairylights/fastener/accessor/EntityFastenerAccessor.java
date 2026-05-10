@@ -4,20 +4,20 @@ import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.components.GenericComponent;
 import de.lucalabs.fairylights.fastener.EntityFastener;
 import de.lucalabs.fairylights.fastener.Fastener;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtDouble;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class EntityFastenerAccessor<E extends Entity> implements FastenerAccessor {
 
@@ -29,16 +29,16 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     private E entity;
 
     @Nullable
-    private Vec3d pos;
+    private Vec3 pos;
 
     public EntityFastenerAccessor(final Class<? extends E> entityClass) {
         this(entityClass, (UUID) null);
     }
 
     public EntityFastenerAccessor(final Class<? extends E> entityClass, final EntityFastener<E> fastener) {
-        this(entityClass, fastener.getEntity().getUuid());
+        this(entityClass, fastener.getEntity().getUUID());
         this.entity = fastener.getEntity();
-        this.pos = this.entity.getPos();
+        this.pos = this.entity.position();
     }
 
     public EntityFastenerAccessor(final Class<? extends E> entityClass, final UUID uuid) {
@@ -47,21 +47,21 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     }
 
     @Override
-    public Optional<Fastener<?>> get(final World world, final boolean load) {
+    public Optional<Fastener<?>> get(final Level world, final boolean load) {
         if (this.entity == null) {
-            if (world instanceof ServerWorld) {
-                final Entity e = ((ServerWorld) world).getEntity(this.uuid);
+            if (world instanceof ServerLevel) {
+                final Entity e = ((ServerLevel) world).getEntity(this.uuid);
                 if (this.entityClass.isInstance(e)) {
                     this.entity = this.entityClass.cast(e);
                 }
             } else if (this.pos != null) {
-                List<? extends E> relevantEntities = world.getNonSpectatingEntities(
+                List<? extends E> relevantEntities = world.getEntitiesOfClass(
                         this.entityClass,
-                        new Box(this.pos.subtract(1.0D, 1.0D, 1.0D),
+                        new AABB(this.pos.subtract(1.0D, 1.0D, 1.0D),
                                 this.pos.add(1.0D, 1.0D, 1.0D)));
 
                 for (final E entity : relevantEntities) {
-                    if (this.uuid.equals(entity.getUuid())) {
+                    if (this.uuid.equals(entity.getUUID())) {
                         this.entity = entity;
                         break;
                     }
@@ -69,8 +69,8 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
             }
         }
 
-        if (this.entity != null && this.entity.getWorld() == world) {
-            this.pos = this.entity.getPos();
+        if (this.entity != null && this.entity.level() == world) {
+            this.pos = this.entity.position();
             return FairyLightComponents.FASTENER.maybeGet(entity).flatMap(GenericComponent::get);
         }
 
@@ -78,10 +78,10 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     }
 
     @Override
-    public boolean isGone(final World world) {
-        return !world.isClient()
+    public boolean isGone(final Level world) {
+        return !world.isClientSide()
                 && this.entity != null
-                && (FairyLightComponents.FASTENER.get(this.entity).get().isEmpty() || this.entity.getWorld() != world);
+                && (FairyLightComponents.FASTENER.get(this.entity).get().isEmpty() || this.entity.level() != world);
     }
 
     @Override
@@ -96,25 +96,25 @@ public abstract class EntityFastenerAccessor<E extends Entity> implements Fasten
     }
 
     @Override
-    public NbtCompound serialize() {
-        final NbtCompound tag = new NbtCompound();
-        tag.putUuid("UUID", this.uuid);
+    public CompoundTag serialize() {
+        final CompoundTag tag = new CompoundTag();
+        tag.putUUID("UUID", this.uuid);
         if (this.pos != null) {
-            final NbtList pos = new NbtList();
-            pos.add(NbtDouble.of(this.pos.x));
-            pos.add(NbtDouble.of(this.pos.y));
-            pos.add(NbtDouble.of(this.pos.z));
+            final ListTag pos = new ListTag();
+            pos.add(DoubleTag.valueOf(this.pos.x));
+            pos.add(DoubleTag.valueOf(this.pos.y));
+            pos.add(DoubleTag.valueOf(this.pos.z));
             tag.put("Pos", pos);
         }
         return tag;
     }
 
     @Override
-    public void deserialize(final NbtCompound tag) {
-        this.uuid = tag.getUuid("UUID");
-        if (tag.contains("Pos", NbtElement.LIST_TYPE)) {
-            final NbtList pos = tag.getList("Pos", NbtElement.DOUBLE_TYPE);
-            this.pos = new Vec3d(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
+    public void deserialize(final CompoundTag tag) {
+        this.uuid = tag.getUUID("UUID");
+        if (tag.contains("Pos", Tag.TAG_LIST)) {
+            final ListTag pos = tag.getList("Pos", Tag.TAG_DOUBLE);
+            this.pos = new Vec3(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
         } else {
             this.pos = null;
         }

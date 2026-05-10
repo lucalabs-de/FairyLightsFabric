@@ -1,14 +1,14 @@
 package de.lucalabs.fairylights.model.light;
 
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class MoonLightModel extends ColorLightModel {
     public MoonLightModel(final ModelPart root) {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         int u = 76, v = 60;
         helper.unlit().setTextureOffset(u + 14, v + 0).addBox(-0.5F, 5.0F -7.0F, -0.5F, 1.0F, 3.0F, 1.0F);

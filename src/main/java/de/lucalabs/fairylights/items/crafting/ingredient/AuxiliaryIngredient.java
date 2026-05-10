@@ -4,15 +4,15 @@ import com.google.common.collect.Multimap;
 import de.lucalabs.fairylights.items.crafting.GenericIngredient;
 import de.lucalabs.fairylights.items.crafting.GenericRecipe;
 import de.lucalabs.fairylights.util.Utils;
-import net.minecraft.component.ComponentMapImpl;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.StringVisitable;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.world.item.ItemStack;
 
 public interface AuxiliaryIngredient<A> extends GenericIngredient<AuxiliaryIngredient<?>, GenericRecipe.MatchResultAuxiliary> {
     boolean isRequired();
@@ -24,9 +24,9 @@ public interface AuxiliaryIngredient<A> extends GenericIngredient<AuxiliaryIngre
 
     void consume(A accumulator, ItemStack ingredient);
 
-    boolean finish(A accumulator, ComponentMapImpl comps);
+    boolean finish(A accumulator, PatchedDataComponentMap comps);
 
-    default boolean process(final Multimap<AuxiliaryIngredient<?>, GenericRecipe.MatchResultAuxiliary> map, final ComponentMapImpl comps) {
+    default boolean process(final Multimap<AuxiliaryIngredient<?>, GenericRecipe.MatchResultAuxiliary> map, final PatchedDataComponentMap comps) {
         final Collection<GenericRecipe.MatchResultAuxiliary> results = map.get(this);
         if (results.isEmpty() && this.isRequired()) {
             return true;
@@ -39,7 +39,7 @@ public interface AuxiliaryIngredient<A> extends GenericIngredient<AuxiliaryIngre
     }
 
     @Override
-    default List<StringVisitable> getTooltip() {
+    default List<FormattedText> getTooltip() {
         if (!this.isRequired()) {
             return Collections.singletonList(Utils.formatRecipeTooltip("recipe.fairylights.ingredient.auxiliary.optional"));
         }

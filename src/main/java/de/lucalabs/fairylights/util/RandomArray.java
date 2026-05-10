@@ -26,7 +26,7 @@ public final class RandomArray {
     }
 
     public float get(final float t) {
-        final int t0 = net.minecraft.util.math.MathHelper.floor(MathHelper.mod(t, this.values.length));
+        final int t0 = net.minecraft.util.Mth.floor(MathHelper.mod(t, this.values.length));
         final int t1 = MathHelper.mod(t0 + 1, this.values.length);
         return this.values[t0] * (1 - t % 1) + this.values[t1] * (t % 1);
     }

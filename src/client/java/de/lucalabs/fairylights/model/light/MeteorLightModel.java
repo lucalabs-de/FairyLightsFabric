@@ -1,12 +1,12 @@
 package de.lucalabs.fairylights.model.light;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.MeteorLightBehavior;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.util.Mth;
 
 public class MeteorLightModel extends LightModel<MeteorLightBehavior> {
     private static final int LIGHT_COUNT = 12;
@@ -49,11 +49,11 @@ public class MeteorLightModel extends LightModel<MeteorLightBehavior> {
     }
 
     private float computeBrightness(final float t) {
-        return MathHelper.clamp(t - this.stage > 0.0F ? 1.0F - Math.abs(t - this.stage) * 4.0F : 1.0F - Math.abs(t - this.stage), 0.0F, 1.0F);
+        return Mth.clamp(t - this.stage > 0.0F ? 1.0F - Math.abs(t - this.stage) * 4.0F : 1.0F - Math.abs(t - this.stage), 0.0F, 1.0F);
     }
 
     @Override
-    public void render(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
+    public void renderToBuffer(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
         for (int i = 0; i < this.lights.length; i++) {
             this.brightness = this.computeBrightness((float) i / this.lights.length);
             for (int n = 0; n < this.lights.length; n++) {
@@ -61,12 +61,12 @@ public class MeteorLightModel extends LightModel<MeteorLightBehavior> {
             }
             this.connector.visible = i == 0;
             this.cap.visible = i == this.lights.length - 1;
-            super.render(matrix, builder, light, overlay, color);
+            super.renderToBuffer(matrix, builder, light, overlay, color);
         }
     }
 
     @Override
-    public void renderTranslucent(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
+    public void renderTranslucent(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
         for (int i = 0; i < this.lights.length; i++) {
             this.brightness = this.computeBrightness((float) i / this.lights.length);
             for (int n = 0; n < this.lights.length; n++) {
@@ -76,7 +76,7 @@ public class MeteorLightModel extends LightModel<MeteorLightBehavior> {
         }
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final EasyMeshBuilder connector = new EasyMeshBuilder("connector", 77, 0);
         connector.addBox(-1, -0.5F, -1, 2, 2, 2, -0.05F);
@@ -88,7 +88,7 @@ public class MeteorLightModel extends LightModel<MeteorLightBehavior> {
         final BulbBuilder bulb = helper.createBulb();
         for (int i = 0; i < LIGHT_COUNT; i++) {
             final BulbBuilder light = bulb.createChild("light_" + i, 37, 72);
-            light.addBox(-1, -i * 2 - 2.5F + 0.05F, -1, 2, 2, 2, MathHelper.sin(i * MathHelper.PI / LIGHT_COUNT) * 0.1F);
+            light.addBox(-1, -i * 2 - 2.5F + 0.05F, -1, 2, 2, 2, Mth.sin(i * Mth.PI / LIGHT_COUNT) * 0.1F);
         }
         return helper.build();
     }

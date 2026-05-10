@@ -8,13 +8,12 @@ import de.lucalabs.fairylights.feature.HangingFeature;
 import de.lucalabs.fairylights.util.BoxBuilder;
 import de.lucalabs.fairylights.util.Curve;
 import de.lucalabs.fairylights.util.matrix.MatrixStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class HangingFeatureConnection<F extends HangingFeature> extends Connection {
     protected static final FeatureType FEATURE = FeatureType.register("feature");
@@ -23,7 +22,7 @@ public abstract class HangingFeatureConnection<F extends HangingFeature> extends
 
     public HangingFeatureConnection(
             final ConnectionType<? extends HangingFeatureConnection<F>> type,
-            final World world,
+            final Level world,
             final Fastener<?> fastener,
             final UUID uuid) {
         super(type, world, fastener, uuid);
@@ -55,9 +54,9 @@ public abstract class HangingFeatureConnection<F extends HangingFeature> extends
             final F feature;
             if (!relocated && prev != null && index < prev.length && this.canReuse(prev[index], index)) {
                 feature = prev[index];
-                feature.set(new Vec3d(x, y, z), yaw, pitch);
+                feature.set(new Vec3(x, y, z), yaw, pitch);
             } else {
-                feature = this.createFeature(index, new Vec3d(x, y, z), yaw, pitch);
+                feature = this.createFeature(index, new Vec3(x, y, z), yaw, pitch);
             }
             this.updateFeature(feature);
             features.add(feature);
@@ -72,7 +71,7 @@ public abstract class HangingFeatureConnection<F extends HangingFeature> extends
 
     protected abstract F[] createFeatures(int length);
 
-    protected abstract F createFeature(int index, Vec3d point, float yaw, final float pitch);
+    protected abstract F createFeature(int index, Vec3 point, float yaw, final float pitch);
 
     protected abstract float getFeatureSpacing();
 
@@ -83,12 +82,12 @@ public abstract class HangingFeatureConnection<F extends HangingFeature> extends
     protected void onAfterUpdateFeatures() {}
 
     @Override
-    public void addCollision(final CollidableList.Builder collision, final Vec3d origin) {
+    public void addCollision(final CollidableList.Builder collision, final Vec3 origin) {
         super.addCollision(collision, origin);
         if (this.features.length > 0) {
             final MatrixStack matrix = new MatrixStack();
             collision.add(FeatureCollisionTree.build(FEATURE, this.features, f -> {
-                final Vec3d pos = f.getPoint();
+                final Vec3 pos = f.getPoint();
                 final double x = origin.x + pos.x;
                 final double y = origin.y + pos.y;
                 final double z = origin.z + pos.z;
@@ -99,18 +98,18 @@ public abstract class HangingFeatureConnection<F extends HangingFeature> extends
                 }
                 matrix.translate(0.0F, -f.getDescent(), 0.0F);
                 final BoxBuilder bounds = new BoxBuilder();
-                final Box bb = f.getBounds().expand(0.01D);
-                final Vec3d[] verts = {
-                        new Vec3d(bb.minX, bb.minY, bb.minZ),
-                        new Vec3d(bb.maxX, bb.minY, bb.minZ),
-                        new Vec3d(bb.maxX, bb.minY, bb.minZ),
-                        new Vec3d(bb.minX, bb.minY, bb.maxZ),
-                        new Vec3d(bb.minX, bb.maxY, bb.minZ),
-                        new Vec3d(bb.maxX, bb.maxY, bb.minZ),
-                        new Vec3d(bb.maxX, bb.maxY, bb.maxZ),
-                        new Vec3d(bb.minX, bb.maxY, bb.maxZ)
+                final AABB bb = f.getBounds().inflate(0.01D);
+                final Vec3[] verts = {
+                        new Vec3(bb.minX, bb.minY, bb.minZ),
+                        new Vec3(bb.maxX, bb.minY, bb.minZ),
+                        new Vec3(bb.maxX, bb.minY, bb.minZ),
+                        new Vec3(bb.minX, bb.minY, bb.maxZ),
+                        new Vec3(bb.minX, bb.maxY, bb.minZ),
+                        new Vec3(bb.maxX, bb.maxY, bb.minZ),
+                        new Vec3(bb.maxX, bb.maxY, bb.maxZ),
+                        new Vec3(bb.minX, bb.maxY, bb.maxZ)
                 };
-                for (final Vec3d vert : verts) {
+                for (final Vec3 vert : verts) {
                     bounds.include(matrix.transform(vert));
                 }
                 matrix.pop();

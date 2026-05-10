@@ -3,15 +3,14 @@ package de.lucalabs.fairylights.connection;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.items.components.ComponentRecords;
-import net.minecraft.util.DyeColor;
-import net.minecraft.world.World;
-
 import java.util.UUID;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.Level;
 
 public final class GarlandTinselConnection extends Connection {
     private int color;
 
-    public GarlandTinselConnection(final ConnectionType<? extends GarlandTinselConnection> type, final World world, final Fastener<?> fastener, final UUID uuid) {
+    public GarlandTinselConnection(final ConnectionType<? extends GarlandTinselConnection> type, final Level world, final Fastener<?> fastener, final UUID uuid) {
         super(type, world, fastener, uuid);
         this.color = DyeableItem.getColor(DyeColor.LIGHT_GRAY);
     }

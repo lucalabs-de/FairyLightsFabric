@@ -2,26 +2,26 @@ package de.lucalabs.fairylights.items.crafting;
 
 import de.lucalabs.fairylights.items.DyeableItem;
 import de.lucalabs.fairylights.util.Tags;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public class CopyColorRecipe extends SpecialCraftingRecipe {
-    public CopyColorRecipe(CraftingRecipeCategory category) {
+public class CopyColorRecipe extends CustomRecipe {
+    public CopyColorRecipe(CraftingBookCategory category) {
         super(category);
     }
 
     @Override
-    public boolean matches(final CraftingRecipeInput inv, final World world) {
+    public boolean matches(final CraftingInput inv, final Level world) {
         int count = 0;
-        for (int i = 0; i < inv.getSize(); i++) {
-            final ItemStack stack = inv.getStacks().get(i);
-            if (!stack.isEmpty() && (!stack.isIn(Tags.DYEABLE) || count++ >= 2)) {
+        for (int i = 0; i < inv.size(); i++) {
+            final ItemStack stack = inv.items().get(i);
+            if (!stack.isEmpty() && (!stack.is(Tags.DYEABLE) || count++ >= 2)) {
                 return false;
             }
         }
@@ -29,12 +29,12 @@ public class CopyColorRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(final CraftingRecipeInput inv, final RegistryWrapper.WrapperLookup lookup) {
+    public ItemStack assemble(final CraftingInput inv, final HolderLookup.Provider lookup) {
         ItemStack original = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getSize(); i++) {
-            final ItemStack stack = inv.getStacks().get(i);
+        for (int i = 0; i < inv.size(); i++) {
+            final ItemStack stack = inv.items().get(i);
             if (!stack.isEmpty()) {
-                if (stack.isIn(Tags.DYEABLE)) {
+                if (stack.is(Tags.DYEABLE)) {
                     if (original.isEmpty()) {
                         original = stack;
                     } else {
@@ -52,14 +52,14 @@ public class CopyColorRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainder(final CraftingRecipeInput inv) {
+    public NonNullList<ItemStack> getRemainingItems(final CraftingInput inv) {
         ItemStack original = ItemStack.EMPTY;
-        final DefaultedList<ItemStack> remaining = DefaultedList.ofSize(inv.getSize(), ItemStack.EMPTY);
+        final NonNullList<ItemStack> remaining = NonNullList.withSize(inv.size(), ItemStack.EMPTY);
         for (int i = 0; i < remaining.size(); i++) {
-            final ItemStack stack = inv.getStacks().get(i);
-            if (stack.getItem().hasRecipeRemainder()) {
+            final ItemStack stack = inv.items().get(i);
+            if (stack.getItem().hasCraftingRemainingItem()) {
                 remaining.set(i, stack.getItem().getRecipeRemainder(stack));
-            } else if (original.isEmpty() && !stack.isEmpty() && stack.isIn(Tags.DYEABLE)) {
+            } else if (original.isEmpty() && !stack.isEmpty() && stack.is(Tags.DYEABLE)) {
                 final ItemStack rem = stack.copy();
                 rem.setCount(1);
                 remaining.set(i, rem);
@@ -70,7 +70,7 @@ public class CopyColorRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean fits(final int width, final int height) {
+    public boolean canCraftInDimensions(final int width, final int height) {
         return width * height >= 2;
     }
 

@@ -1,32 +1,32 @@
 package de.lucalabs.fairylights.renderer.block.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import de.lucalabs.fairylights.blocks.LightBlock;
 import de.lucalabs.fairylights.blocks.entity.LightBlockEntity;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.model.light.LightModel;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.enums.BlockFace;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.RotationAxis;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.AttachFace;
+import net.minecraft.world.phys.AABB;
 
 public class LightBlockEntityRenderer implements BlockEntityRenderer<LightBlockEntity> {
     private final LightRenderer lights;
 
-    public LightBlockEntityRenderer(final BlockEntityRendererFactory.Context context) {
-        this.lights = new LightRenderer(context::getLayerModelPart);
+    public LightBlockEntityRenderer(final BlockEntityRendererProvider.Context context) {
+        this.lights = new LightRenderer(context::bakeLayer);
     }
 
     @Override
     public void render(
             final LightBlockEntity entity,
             final float delta,
-            final MatrixStack matrix,
-            final VertexConsumerProvider source,
+            final PoseStack matrix,
+            final MultiBufferSource source,
             final int packedLight,
             final int packedOverlay) {
 
@@ -36,37 +36,37 @@ public class LightBlockEntityRenderer implements BlockEntityRenderer<LightBlockE
     private <T extends LightBehavior> void render(
             final LightBlockEntity entity,
             final float delta,
-            final MatrixStack matrix,
-            final VertexConsumerProvider source,
+            final PoseStack matrix,
+            final MultiBufferSource source,
             final int packedLight,
             final int packedOverlay,
             final Light<T> light) {
 
         final LightModel<T> model = this.lights.getModel(light, -1);
-        final Box box = model.getBounds();
-        final BlockState state = entity.getCachedState();
-        final BlockFace face = state.get(LightBlock.FACE);
-        final float rotation = state.get(LightBlock.FACING).asRotation();
-        matrix.push();
+        final AABB box = model.getBounds();
+        final BlockState state = entity.getBlockState();
+        final AttachFace face = state.getValue(LightBlock.FACE);
+        final float rotation = state.getValue(LightBlock.FACING).toYRot();
+        matrix.pushPose();
         matrix.translate(0.5D, 0.5D, 0.5D);
-        matrix.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - rotation));
+        matrix.mulPose(Axis.YP.rotationDegrees(180.0F - rotation));
         if (light.getVariant().isOrientable()) {
-            if (face == BlockFace.WALL) {
-                matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
-            } else if (face == BlockFace.FLOOR) {
-                matrix.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-180.0F));
+            if (face == AttachFace.WALL) {
+                matrix.mulPose(Axis.XP.rotationDegrees(90.0F));
+            } else if (face == AttachFace.FLOOR) {
+                matrix.mulPose(Axis.XP.rotationDegrees(-180.0F));
             }
             matrix.translate(0.0D, 0.5D, 0.0D);
         } else {
-            if (face == BlockFace.CEILING) {
+            if (face == AttachFace.CEILING) {
                 matrix.translate(0.0D, 0.25D, 0.0D);
-            } else if (face == BlockFace.WALL) {
+            } else if (face == AttachFace.WALL) {
                 matrix.translate(0.0D, 3.0D / 16.0D, 0.125D);
             } else {
                 matrix.translate(0.0D, -box.minY - model.getFloorOffset() - 0.5D, 0.0D);
             }
         }
         this.lights.render(matrix, this.lights.start(source), light, model, delta, packedLight, packedOverlay);
-        matrix.pop();
+        matrix.popPose();
     }
 }

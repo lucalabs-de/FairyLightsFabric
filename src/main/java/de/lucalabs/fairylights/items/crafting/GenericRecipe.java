@@ -7,28 +7,28 @@ import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
 import de.lucalabs.fairylights.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.items.crafting.ingredient.EmptyRegularIngredient;
-import net.minecraft.component.ComponentMapImpl;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeSerializer;
-import net.minecraft.recipe.SpecialCraftingRecipe;
-import net.minecraft.recipe.book.CraftingRecipeCategory;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.PatchedDataComponentMap;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.CustomRecipe;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.level.Level;
 
-public final class GenericRecipe extends SpecialCraftingRecipe {
+public final class GenericRecipe extends CustomRecipe {
     public static final EmptyRegularIngredient EMPTY = new EmptyRegularIngredient();
 
-    private final Identifier id;
+    private final ResourceLocation id;
 
     private final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer;
     private final ItemStack output;
@@ -42,8 +42,8 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     private ItemStack result = ItemStack.EMPTY;
     private int room;
 
-    GenericRecipe(final Identifier id, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output, final RegularIngredient[] ingredients, final AuxiliaryIngredient<?>[] auxiliaryIngredients, final int width, final int height, final int outputIngredient) {
-        super(CraftingRecipeCategory.MISC);
+    GenericRecipe(final ResourceLocation id, final Supplier<? extends RecipeSerializer<GenericRecipe>> serializer, final ItemStack output, final RegularIngredient[] ingredients, final AuxiliaryIngredient<?>[] auxiliaryIngredients, final int width, final int height, final int outputIngredient) {
+        super(CraftingBookCategory.MISC);
         Preconditions.checkArgument(width > 0, "width must be greater than zero");
         Preconditions.checkArgument(height > 0, "height must be greater than zero");
         this.id = id;
@@ -85,7 +85,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         return foundDictator;
     }
 
-    public Identifier getId() {
+    public ResourceLocation getId() {
         return this.id;
     }
 
@@ -107,14 +107,14 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         return this.room;
     }
 
-    private DefaultedList<Ingredient> getDisplayIngredients() {
+    private NonNullList<Ingredient> getDisplayIngredients() {
         // set regular ingredients according to pattern
-        final DefaultedList<Ingredient> ingredients = DefaultedList.ofSize(9, Ingredient.EMPTY);
+        final NonNullList<Ingredient> ingredients = NonNullList.withSize(9, Ingredient.EMPTY);
         for (int i = 0; i < this.ingredients.length; i++) {
             final int x = i % this.width;
             final int y = i / this.width;
             final ItemStack[] stacks = this.ingredients[i].getInputs().toArray(new ItemStack[0]);
-            ingredients.set(x + y * 3, Ingredient.ofStacks(stacks));
+            ingredients.set(x + y * 3, Ingredient.of(stacks));
         }
 
         // fill empty slots with required auxiliary ingredients
@@ -125,7 +125,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
                     final AuxiliaryIngredient<?> aux = this.auxiliaryIngredients[i++];
                     if (aux.isRequired()) {
                         final ItemStack[] stacks = aux.getInputs().toArray(new ItemStack[0]);
-                        ingredients.set(slot, Ingredient.ofStacks(stacks));
+                        ingredients.set(slot, Ingredient.of(stacks));
                         break;
                     }
                 }
@@ -135,7 +135,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public boolean isIgnoredInRecipeBook() {
+    public boolean isSpecial() {
         return this.output.isEmpty();
     }
 
@@ -165,25 +165,25 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public DefaultedList<Ingredient> getIngredients() {
+    public NonNullList<Ingredient> getIngredients() {
         return this.getDisplayIngredients();
     }
 
     @Override
-    public boolean fits(final int width, final int height) {
+    public boolean canCraftInDimensions(final int width, final int height) {
         return this.width <= width
                 && this.height <= height
                 && (this.getRoom() >= 0 || width * height - this.width * this.height + this.getRoom() >= 0);
     }
 
     @Override
-    public boolean matches(final CraftingRecipeInput inventory, @Nullable final World world) {
+    public boolean matches(final CraftingInput inventory, @Nullable final Level world) {
 
-        if (!this.fits(inventory.getWidth(), inventory.getHeight())) {
+        if (!this.canCraftInDimensions(inventory.width(), inventory.height())) {
             return false;
         }
-        final int scanWidth = inventory.getWidth() + 1 - this.width;
-        final int scanHeight = inventory.getHeight() + 1 - this.height;
+        final int scanWidth = inventory.width() + 1 - this.width;
+        final int scanHeight = inventory.height() + 1 - this.height;
         // iterate over possible origins for recipe (in case it is smaller than the crafting table)
         for (int i = 0, end = scanWidth * scanHeight; i < end; i++) {
             final int x = i % scanWidth;
@@ -203,7 +203,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         return false;
     }
 
-    private ItemStack getResult(final CraftingRecipeInput inventory, final int originX, final int originY, final IntUnaryOperator funcX) {
+    private ItemStack getResult(final CraftingInput inventory, final int originX, final int originY, final IntUnaryOperator funcX) {
         final MatchResultRegular[] match = new MatchResultRegular[this.ingredients.length];
         final Multimap<AuxiliaryIngredient<?>, MatchResultAuxiliary> auxMatchResults = LinkedListMultimap.create();
         final Map<AuxiliaryIngredient<?>, Integer> auxMatchTotals = new HashMap<>();
@@ -211,13 +211,13 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         final List<MatchResultAuxiliary> auxResults = new ArrayList<>();
         Item item = this.output.getItem();
 
-        final ComponentMapImpl comps = new ComponentMapImpl(ComponentMapImpl.EMPTY);
-        for (int i = 0, w = inventory.getWidth(), size = w * inventory.getHeight(); i < size; i++) {
+        final PatchedDataComponentMap comps = new PatchedDataComponentMap(PatchedDataComponentMap.EMPTY);
+        for (int i = 0, w = inventory.width(), size = w * inventory.height(); i < size; i++) {
             final int x = i % w;
             final int y = i / w;
             final int ingX = x - originX;
             final int ingY = y - originY;
-            final ItemStack input = inventory.getStackInSlot(x, y);
+            final ItemStack input = inventory.getItem(x, y);
             if (this.contains(ingX, ingY)) {
                 final int index = funcX.applyAsInt(ingX) + ingY * this.width;
                 final RegularIngredient ingredient = this.ingredients[index];
@@ -268,7 +268,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         final ItemStack output = this.output.isEmpty() ? new ItemStack(item) : this.output.copy();
-        output.applyComponentsFrom(comps);
+        output.applyComponents(comps);
         return output;
     }
 
@@ -277,7 +277,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(final CraftingRecipeInput inventory, final RegistryWrapper.WrapperLookup lookup) {
+    public ItemStack assemble(final CraftingInput inventory, final HolderLookup.Provider lookup) {
         final ItemStack result = this.result;
         return result.isEmpty() ? result : result.copy();
     }
@@ -289,9 +289,9 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
 
         boolean doesMatch();
 
-        void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps);
+        void forMatch(final Set<GenericIngredient<?, ?>> called, final PatchedDataComponentMap comps);
 
-        void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps);
+        void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final PatchedDataComponentMap comps);
 
         M withParent(final M parent);
     }
@@ -328,7 +328,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final PatchedDataComponentMap comps) {
             this.ingredient.matched(this.input, comps);
             if (called.add(this.ingredient)) {
                 this.ingredient.present(comps);
@@ -336,7 +336,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final PatchedDataComponentMap comps) {
             if (!presentCalled.contains(this.ingredient) && !absentCalled.contains(this.ingredient)) {
                 this.ingredient.absent(comps);
                 absentCalled.add(this.ingredient);
@@ -361,13 +361,13 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final PatchedDataComponentMap comps) {
             super.forMatch(called, comps);
             this.parent.forMatch(called, comps);
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final PatchedDataComponentMap comps) {
             super.notifyAbsence(presentCalled, absentCalled, comps);
             this.parent.notifyAbsence(presentCalled, absentCalled, comps);
         }
@@ -410,7 +410,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final PatchedDataComponentMap comps) {
             if (!called.contains(this.ingredient)) {
                 this.ingredient.present(comps);
                 called.add(this.ingredient);
@@ -418,7 +418,7 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final PatchedDataComponentMap comps) {
             if (!presentCalled.contains(this.ingredient) && !absentCalled.contains(this.ingredient)) {
                 this.ingredient.absent(comps);
                 absentCalled.add(this.ingredient);
@@ -451,13 +451,13 @@ public final class GenericRecipe extends SpecialCraftingRecipe {
         }
 
         @Override
-        public void forMatch(final Set<GenericIngredient<?, ?>> called, final ComponentMapImpl comps) {
+        public void forMatch(final Set<GenericIngredient<?, ?>> called, final PatchedDataComponentMap comps) {
             super.forMatch(called, comps);
             this.parent.forMatch(called, comps);
         }
 
         @Override
-        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final ComponentMapImpl comps) {
+        public void notifyAbsence(final Set<GenericIngredient<?, ?>> presentCalled, final Set<GenericIngredient<?, ?>> absentCalled, final PatchedDataComponentMap comps) {
             super.notifyAbsence(presentCalled, absentCalled, comps);
             this.parent.notifyAbsence(presentCalled, absentCalled, comps);
         }

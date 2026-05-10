@@ -1,10 +1,9 @@
 package de.lucalabs.fairylights.util.matrix;
 
-import net.minecraft.util.math.Vec3d;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Objects;
+import net.minecraft.world.phys.Vec3;
 
 public final class MatrixStack implements Matrix {
     private final Deque<Matrix4> stack;
@@ -53,7 +52,7 @@ public final class MatrixStack implements Matrix {
         mat.mul(scale);
     }
 
-    public Vec3d transform(final Vec3d point) {
+    public Vec3 transform(final Vec3 point) {
         Objects.requireNonNull(point, "point");
         final Matrix4 mat = this.stack.getLast();
         return mat.transform(point);

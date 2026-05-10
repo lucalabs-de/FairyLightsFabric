@@ -1,8 +1,7 @@
 package de.lucalabs.fairylights.util;
 
-import net.minecraft.util.math.Vec3d;
-
 import java.util.NoSuchElementException;
+import net.minecraft.world.phys.Vec3;
 
 public interface Curve {
 
@@ -75,7 +74,7 @@ public interface Curve {
 
         float getZ(final float t);
 
-        Vec3d getPos();
+        Vec3 getPos();
 
         float getYaw();
 
@@ -164,8 +163,8 @@ public interface Curve {
         }
 
         @Override
-        public Vec3d getPos() {
-            return new Vec3d(this.curve.getX(this.index), this.curve.getY(this.index), this.curve.getZ(this.index));
+        public Vec3 getPos() {
+            return new Vec3(this.curve.getX(this.index), this.curve.getY(this.index), this.curve.getZ(this.index));
         }
 
         @Override

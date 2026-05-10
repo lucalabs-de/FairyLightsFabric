@@ -1,7 +1,7 @@
 package de.lucalabs.fairylights.feature.light;
 
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class DefaultBehavior extends FixedColorBehavior implements StandardLightBehavior {
     private float value = 1.0F;
@@ -21,5 +21,5 @@ public class DefaultBehavior extends FixedColorBehavior implements StandardLight
     }
 
     @Override
-    public void tick(final World world, final Vec3d origin, final Light<?> light) {}
+    public void tick(final Level world, final Vec3 origin, final Light<?> light) {}
 }

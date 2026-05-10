@@ -1,23 +1,22 @@
 package de.lucalabs.fairylights.entity;
 
 import de.lucalabs.fairylights.FairyLights;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-
 import java.util.function.Supplier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 
 public final class FairyLightEntities {
 
     public static final EntityType<FenceFastenerEntity> FASTENER = register("fastener", () ->
-            EntityType.Builder.<FenceFastenerEntity>create(FenceFastenerEntity::new, SpawnGroup.MISC)
-                    .dimensions(1.15F, 2.8F)
+            EntityType.Builder.<FenceFastenerEntity>of(FenceFastenerEntity::new, MobCategory.MISC)
+                    .sized(1.15F, 2.8F)
                     .eyeHeight(1)
-                    .maxTrackingRange(10)
-                    .trackingTickInterval(Integer.MAX_VALUE)
+                    .clientTrackingRange(10)
+                    .updateInterval(Integer.MAX_VALUE)
                     .build(FairyLights.ID + ":fastener")
     );
 
@@ -25,8 +24,8 @@ public final class FairyLightEntities {
     }
 
     private static <T extends Entity> EntityType<T> register(final String name, Supplier<EntityType<T>> supplier) {
-        Identifier identifier = Identifier.of(FairyLights.ID, name);
-        return Registry.register(Registries.ENTITY_TYPE, identifier, supplier.get());
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, name);
+        return Registry.register(BuiltInRegistries.ENTITY_TYPE, identifier, supplier.get());
     }
 
     public static void initialize() {

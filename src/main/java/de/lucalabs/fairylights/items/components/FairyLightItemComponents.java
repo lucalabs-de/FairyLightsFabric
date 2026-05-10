@@ -3,50 +3,49 @@ package de.lucalabs.fairylights.items.components;
 import com.mojang.serialization.Codec;
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.string.StringType;
-import net.minecraft.component.ComponentType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-
 import java.util.List;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 public final class FairyLightItemComponents {
 
-    public static final ComponentType<List<Integer>> COLORS = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "colors"),
-            ComponentType.<List<Integer>>builder().codec(Codec.INT.listOf()).build()
+    public static final DataComponentType<List<Integer>> COLORS = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "colors"),
+            DataComponentType.<List<Integer>>builder().persistent(Codec.INT.listOf()).build()
     );
 
-    public static final ComponentType<Integer> COLOR = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "color"),
-            ComponentType.<Integer>builder().codec(Codec.INT).build()
+    public static final DataComponentType<Integer> COLOR = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "color"),
+            DataComponentType.<Integer>builder().persistent(Codec.INT).build()
     );
 
-    public static final ComponentType<StringType> STRING = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "string"),
-            ComponentType.<StringType>builder().codec(StringType.CODEC).build()
+    public static final DataComponentType<StringType> STRING = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "string"),
+            DataComponentType.<StringType>builder().persistent(StringType.CODEC).build()
     );
 
-    public static final ComponentType<List<ItemStack>> PATTERN = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "pattern"),
-            ComponentType.<List<ItemStack>>builder().codec(ItemStack.CODEC.listOf()).build()
+    public static final DataComponentType<List<ItemStack>> PATTERN = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "pattern"),
+            DataComponentType.<List<ItemStack>>builder().persistent(ItemStack.CODEC.listOf()).build()
     );
 
-    public static final ComponentType<Boolean> TWINKLE = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "twinkle"),
-            ComponentType.<Boolean>builder().codec(Codec.BOOL).build()
+    public static final DataComponentType<Boolean> TWINKLE = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "twinkle"),
+            DataComponentType.<Boolean>builder().persistent(Codec.BOOL).build()
     );
 
-    public static final ComponentType<Identifier> LIGHT_VARIANT = Registry.register(
-            Registries.DATA_COMPONENT_TYPE,
-            Identifier.of(FairyLights.ID, "variant"),
-            ComponentType.<Identifier>builder().codec(Identifier.CODEC).build()
+    public static final DataComponentType<ResourceLocation> LIGHT_VARIANT = Registry.register(
+            BuiltInRegistries.DATA_COMPONENT_TYPE,
+            ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "variant"),
+            DataComponentType.<ResourceLocation>builder().persistent(ResourceLocation.CODEC).build()
     );
 
     private FairyLightItemComponents() {

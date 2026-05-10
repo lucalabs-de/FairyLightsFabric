@@ -1,15 +1,15 @@
 package de.lucalabs.fairylights.model.light;
 
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class ColorCandleLanternModel extends ColorLightModel {
     public ColorCandleLanternModel(final ModelPart root) {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         helper.unlit().setTextureOffset(21, 0);
         helper.unlit().addBox(-1, 0.5F, -1, 2, 1, 2, -0.05F);

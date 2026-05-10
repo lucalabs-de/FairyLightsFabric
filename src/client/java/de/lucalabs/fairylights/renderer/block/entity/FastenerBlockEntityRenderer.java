@@ -1,15 +1,15 @@
 package de.lucalabs.fairylights.renderer.block.entity;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.lucalabs.fairylights.blocks.entity.FastenerBlockEntity;
 import de.lucalabs.fairylights.components.FairyLightComponents;
 import de.lucalabs.fairylights.fastener.BlockView;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.world.phys.Vec3;
 
 @Environment(EnvType.CLIENT)
 public final class FastenerBlockEntityRenderer implements BlockEntityRenderer<FastenerBlockEntity> {
@@ -17,13 +17,13 @@ public final class FastenerBlockEntityRenderer implements BlockEntityRenderer<Fa
     private final BlockView view;
     private final FastenerRenderer renderer;
 
-    public FastenerBlockEntityRenderer(final BlockEntityRendererFactory.Context context, final BlockView view) {
+    public FastenerBlockEntityRenderer(final BlockEntityRendererProvider.Context context, final BlockView view) {
         this.view = view;
-        this.renderer = new FastenerRenderer(context::getLayerModelPart);
+        this.renderer = new FastenerRenderer(context::bakeLayer);
     }
 
     @Override
-    public boolean rendersOutsideBoundingBox(final FastenerBlockEntity fastener) {
+    public boolean shouldRenderOffScreen(final FastenerBlockEntity fastener) {
         return true;
     }
 
@@ -31,19 +31,19 @@ public final class FastenerBlockEntityRenderer implements BlockEntityRenderer<Fa
     public void render(
             final FastenerBlockEntity fastener,
             final float delta,
-            final MatrixStack matrix,
-            final VertexConsumerProvider bufferSource,
+            final PoseStack matrix,
+            final MultiBufferSource bufferSource,
             final int packedLight,
             final int packedOverlay) {
 
         FairyLightComponents.FASTENER.get(fastener).get().ifPresent(f -> {
             //this.bindTexture(FastenerRenderer.TEXTURE);
-            matrix.push();
-            final Vec3d offset = fastener.getOffset();
+            matrix.pushPose();
+            final Vec3 offset = fastener.getOffset();
             matrix.translate(offset.x, offset.y, offset.z);
             //this.view.unrotate(this.getWorld(), f.getPos(), FastenerBlockEntityRenderer.GlMatrix.INSTANCE, delta);
             this.renderer.render(f, delta, matrix, bufferSource, packedLight, packedOverlay);
-            matrix.pop();
+            matrix.popPose();
         });
     }
 }

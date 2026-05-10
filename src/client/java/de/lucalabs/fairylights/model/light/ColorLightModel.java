@@ -2,7 +2,7 @@ package de.lucalabs.fairylights.model.light;
 
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.StandardLightBehavior;
-import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.geom.ModelPart;
 
 public class ColorLightModel extends LightModel<StandardLightBehavior> {
 

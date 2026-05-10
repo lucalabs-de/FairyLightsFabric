@@ -1,12 +1,11 @@
 package de.lucalabs.fairylights.feature.light;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
 import java.util.List;
+import net.minecraft.Util;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import static de.lucalabs.fairylights.items.components.FairyLightItemComponents.COLORS;
 
@@ -51,7 +50,7 @@ public class ColorChangingBehavior implements ColorLightBehavior {
         if (colors.size() == 1) {
             return colors.getFirst();
         }
-        final float p = de.lucalabs.fairylights.util.MathHelper.mod(Util.getMeasuringTimeMs() * (20.0F / 1000.0F) * (colors.size() / 960.0F), colors.size());
+        final float p = de.lucalabs.fairylights.util.MathHelper.mod(Util.getMillis() * (20.0F / 1000.0F) * (colors.size() / 960.0F), colors.size());
         final int i = (int) p;
         final int c0 = colors.get(i % colors.size());
         final float r0 = (c0 >> 16 & 0xFF) / 255.0F;
@@ -61,13 +60,13 @@ public class ColorChangingBehavior implements ColorLightBehavior {
         final float r1 = (c1 >> 16 & 0xFF) / 255.0F;
         final float g1 = (c1 >> 8 & 0xFF) / 255.0F;
         final float b1 = (c1 & 0xFF) / 255.0F;
-        return (int) (MathHelper.lerp(p - i, r0, r1) * 255.0F) << 16 |
-                (int) (MathHelper.lerp(p - i, g0, g1) * 255.0F) << 8 |
-                (int) (MathHelper.lerp(p - i, b0, b1) * 255.0F);
+        return (int) (Mth.lerp(p - i, r0, r1) * 255.0F) << 16 |
+                (int) (Mth.lerp(p - i, g0, g1) * 255.0F) << 8 |
+                (int) (Mth.lerp(p - i, b0, b1) * 255.0F);
     }
 
     public static boolean exists(final ItemStack stack) {
-        return stack.contains(COLORS);
+        return stack.has(COLORS);
     }
 
     @Override
@@ -86,9 +85,9 @@ public class ColorChangingBehavior implements ColorLightBehavior {
     }
 
     private float get(final float[] values, final float delta) {
-        final float p = this.powered ? de.lucalabs.fairylights.util.MathHelper.mod(Util.getMeasuringTimeMs() * (20.0F / 1000.0F) * this.rate, values.length) : 0.0F;
+        final float p = this.powered ? de.lucalabs.fairylights.util.MathHelper.mod(Util.getMillis() * (20.0F / 1000.0F) * this.rate, values.length) : 0.0F;
         final int i = (int) p;
-        return MathHelper.lerp(p - i, values[i % values.length], values[(i + 1) % values.length]);
+        return Mth.lerp(p - i, values[i % values.length], values[(i + 1) % values.length]);
     }
 
     @Override
@@ -97,6 +96,6 @@ public class ColorChangingBehavior implements ColorLightBehavior {
     }
 
     @Override
-    public void tick(final World world, final Vec3d origin, final Light<?> light) {
+    public void tick(final Level world, final Vec3 origin, final Light<?> light) {
     }
 }

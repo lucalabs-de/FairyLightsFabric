@@ -2,8 +2,8 @@ package de.lucalabs.fairylights.collision;
 
 import de.lucalabs.fairylights.feature.Feature;
 import de.lucalabs.fairylights.feature.FeatureType;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
-public record Intersection(Vec3d result, Box hitBox, FeatureType featureType, Feature feature) {
+public record Intersection(Vec3 result, AABB hitBox, FeatureType featureType, Feature feature) {
 }

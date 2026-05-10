@@ -3,18 +3,18 @@ package de.lucalabs.fairylights.feature;
 import de.lucalabs.fairylights.fastener.Fastener;
 import de.lucalabs.fairylights.util.MathHelper;
 import de.lucalabs.fairylights.util.matrix.MatrixStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class HangingFeature implements Feature {
     protected final int index;
 
-    protected Vec3d point;
+    protected Vec3 point;
 
-    protected Vec3d prevPoint;
+    protected Vec3 prevPoint;
 
-    private Vec3d targetPoint;
+    private Vec3 targetPoint;
 
     protected float yaw, pitch, roll;
 
@@ -24,7 +24,7 @@ public abstract class HangingFeature implements Feature {
 
     protected final float descent;
 
-    public HangingFeature(final int index, final Vec3d point, final float yaw, final float pitch, final float roll, final float descent) {
+    public HangingFeature(final int index, final Vec3 point, final float yaw, final float pitch, final float roll, final float descent) {
         this.index = index;
         this.point = this.prevPoint = this.targetPoint = point;
         this.prevYaw = this.yaw = this.targetYaw = yaw;
@@ -33,7 +33,7 @@ public abstract class HangingFeature implements Feature {
         this.descent = descent;
     }
 
-    public void set(final Vec3d point, final float yaw, final float pitch) {
+    public void set(final Vec3 point, final float yaw, final float pitch) {
         this.targetPoint = point;
         this.targetYaw = yaw;
         this.targetPitch = pitch;
@@ -44,12 +44,12 @@ public abstract class HangingFeature implements Feature {
         return this.index;
     }
 
-    public final Vec3d getPoint() {
+    public final Vec3 getPoint() {
         return this.targetPoint;
     }
 
-    public final Vec3d getPoint(final float delta) {
-        return this.point.subtract(this.prevPoint).multiply(delta).add(this.prevPoint);
+    public final Vec3 getPoint(final float delta) {
+        return this.point.subtract(this.prevPoint).scale(delta).add(this.prevPoint);
     }
 
     public final float getYaw() {
@@ -80,15 +80,15 @@ public abstract class HangingFeature implements Feature {
         return this.descent;
     }
 
-    public final Vec3d getAbsolutePoint(final Fastener<?> fastener) {
+    public final Vec3 getAbsolutePoint(final Fastener<?> fastener) {
         return this.getAbsolutePoint(fastener.getConnectionPoint());
     }
 
-    public final Vec3d getAbsolutePoint(final Vec3d origin) {
+    public final Vec3 getAbsolutePoint(final Vec3 origin) {
         return this.point.add(origin);
     }
 
-    public Vec3d getTransformedPoint(final Vec3d origin, final Vec3d point) {
+    public Vec3 getTransformedPoint(final Vec3 origin, final Vec3 point) {
         final MatrixStack matrix = new MatrixStack();
         matrix.rotate(-this.getYaw(), 0.0F, 1.0F, 0.0F);
         if (this.parallelsCord()) {
@@ -99,7 +99,7 @@ public abstract class HangingFeature implements Feature {
         return this.point.add(matrix.transform(point)).add(origin);
     }
 
-    public void tick(final World world) {
+    public void tick(final Level world) {
         this.prevPoint = this.point;
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
@@ -109,7 +109,7 @@ public abstract class HangingFeature implements Feature {
         this.pitch = this.targetPitch;
     }
 
-    public abstract Box getBounds();
+    public abstract AABB getBounds();
 
     public abstract boolean parallelsCord();
 }

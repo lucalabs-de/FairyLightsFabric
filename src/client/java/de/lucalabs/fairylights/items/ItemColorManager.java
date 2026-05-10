@@ -3,8 +3,8 @@ package de.lucalabs.fairylights.items;
 import de.lucalabs.fairylights.feature.light.ColorChangingBehavior;
 import de.lucalabs.fairylights.string.StringTypes;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
@@ -67,7 +67,7 @@ public final class ItemColorManager {
 
         ColorProviderRegistry.ITEM.register((stack, index) -> {
             if (index == 0) {
-                if (stack.contains(STRING)) {
+                if (stack.has(STRING)) {
                     return Objects.requireNonNull(stack.get(STRING)).color();
                 }
                 return StringTypes.BLACK_STRING.color();

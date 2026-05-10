@@ -1,14 +1,14 @@
 package de.lucalabs.fairylights.model.light;
 
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class FairyLightModel extends ColorLightModel {
     public FairyLightModel(ModelPart root) {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final BulbBuilder bulb = helper.createBulb();
         bulb.setUV(46, 0);

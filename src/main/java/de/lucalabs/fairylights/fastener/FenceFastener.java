@@ -3,7 +3,7 @@ package de.lucalabs.fairylights.fastener;
 import de.lucalabs.fairylights.entity.FenceFastenerEntity;
 import de.lucalabs.fairylights.fastener.accessor.EntityFastenerAccessor;
 import de.lucalabs.fairylights.fastener.accessor.FenceFastenerAccessor;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 public final class FenceFastener extends EntityFastener<FenceFastenerEntity> {
     public FenceFastener(final FenceFastenerEntity entity) {
@@ -17,7 +17,7 @@ public final class FenceFastener extends EntityFastener<FenceFastenerEntity> {
 
     @Override
     public BlockPos getPos() {
-        return this.entity.getAttachedBlockPos();
+        return this.entity.getPos();
     }
 
     @Override

@@ -13,10 +13,9 @@ import mezz.jei.api.gui.ingredient.ICraftingGridHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeEntry;
-import net.minecraft.recipe.input.CraftingRecipeInput;
-
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingInput;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -112,10 +111,10 @@ public final class GenericRecipeWrapper implements ICraftingCategoryExtension<Ge
                 ingredients.set(i, stacks.isEmpty() ? ItemStack.EMPTY : stacks.getFirst());
             }
 
-            final CraftingRecipeInput crafting = CraftingRecipeInput.create(3, 3, ingredients);
+            final CraftingInput crafting = CraftingInput.of(3, 3, ingredients);
 
             if (this.recipe.matches(crafting, null)) {
-                outputConsumer.accept(ItemStack.EMPTY, this.recipe.craft(crafting, null));
+                outputConsumer.accept(ItemStack.EMPTY, this.recipe.assemble(crafting, null));
             }
         } else {
             final List<ItemStack> dictators = this.minimalInputStacks.get(this.subtypeIndex);
@@ -129,22 +128,22 @@ public final class GenericRecipeWrapper implements ICraftingCategoryExtension<Ge
                     }
                 }
 
-                final CraftingRecipeInput crafting = CraftingRecipeInput.create(3, 3, ingredients);
+                final CraftingInput crafting = CraftingInput.of(3, 3, ingredients);
 
                 if (this.recipe.matches(crafting, null)) {
-                    outputConsumer.accept(subtype, this.recipe.craft(crafting, null));
+                    outputConsumer.accept(subtype, this.recipe.assemble(crafting, null));
                 }
             }
         }
     }
 
     @Override
-    public int getWidth(RecipeEntry<GenericRecipe> entry) {
+    public int getWidth(RecipeHolder<GenericRecipe> entry) {
         return 3;
     }
 
     @Override
-    public int getHeight(RecipeEntry<GenericRecipe> entry) {
+    public int getHeight(RecipeHolder<GenericRecipe> entry) {
         return 3;
     }
 
@@ -217,7 +216,7 @@ public final class GenericRecipeWrapper implements ICraftingCategoryExtension<Ge
                 ingredients.set(n, i == n ? matched : stacks.isEmpty() ? ItemStack.EMPTY : stacks.get(0));
             }
 
-            final CraftingRecipeInput crafting = CraftingRecipeInput.create(3, 3, ingredients);
+            final CraftingInput crafting = CraftingInput.of(3, 3, ingredients);
 
             if (this.recipe.matches(crafting, null)) {
                 final List<List<ItemStack>> inputs = new ArrayList<>(this.allInputs.size());
@@ -249,17 +248,17 @@ public final class GenericRecipeWrapper implements ICraftingCategoryExtension<Ge
                 ingredients.set(i, stacks.isEmpty() ? ItemStack.EMPTY : stacks.get(n % stacks.size()));
             }
 
-            final CraftingRecipeInput crafting = CraftingRecipeInput.create(3, 3, ingredients);
+            final CraftingInput crafting = CraftingInput.of(3, 3, ingredients);
 
             if (this.recipe.matches(crafting, null)) {
-                outputs.add(this.recipe.craft(crafting, null));
+                outputs.add(this.recipe.assemble(crafting, null));
             }
         }
         return outputs;
     }
 
     @Override
-    public void setRecipe(RecipeEntry<GenericRecipe> holder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
+    public void setRecipe(RecipeHolder<GenericRecipe> holder, IRecipeLayoutBuilder builder, ICraftingGridHelper craftingGridHelper, IFocusGroup focuses) {
         setupForRecipe(holder.value());
 
         focuses.getFocuses(VanillaTypes.ITEM_STACK).flatMap(focus -> {

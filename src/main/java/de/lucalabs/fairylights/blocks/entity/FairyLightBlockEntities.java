@@ -2,21 +2,20 @@ package de.lucalabs.fairylights.blocks.entity;
 
 import de.lucalabs.fairylights.FairyLights;
 import de.lucalabs.fairylights.blocks.FairyLightBlocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-
 import java.util.function.Supplier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 public final class FairyLightBlockEntities {
 
     public static final BlockEntityType<FastenerBlockEntity> FASTENER = register(
             "fastener",
-            () -> BlockEntityType.Builder.create(FastenerBlockEntity::new, FairyLightBlocks.FASTENER).build(null));
+            () -> BlockEntityType.Builder.of(FastenerBlockEntity::new, FairyLightBlocks.FASTENER).build(null));
 
-    public static final BlockEntityType<LightBlockEntity> LIGHT = register("light", () -> BlockEntityType.Builder.create(LightBlockEntity::new,
+    public static final BlockEntityType<LightBlockEntity> LIGHT = register("light", () -> BlockEntityType.Builder.of(LightBlockEntity::new,
             FairyLightBlocks.FAIRY_LIGHT,
             FairyLightBlocks.PAPER_LANTERN,
             FairyLightBlocks.ORB_LANTERN,
@@ -41,8 +40,8 @@ public final class FairyLightBlockEntities {
     }
 
     private static <T extends BlockEntity> BlockEntityType<T> register(final String name, Supplier<BlockEntityType<T>> supplier) {
-        Identifier identifier = Identifier.of(FairyLights.ID, name);
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, identifier, supplier.get());
+        ResourceLocation identifier = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, name);
+        return Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, identifier, supplier.get());
     }
 
     public static void initialize() {

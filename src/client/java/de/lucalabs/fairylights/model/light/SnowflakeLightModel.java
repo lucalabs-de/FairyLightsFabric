@@ -1,17 +1,16 @@
 package de.lucalabs.fairylights.model.light;
 
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-
 import java.util.Random;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 
 public class SnowflakeLightModel extends ColorLightModel {
     public SnowflakeLightModel(final ModelPart root) {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final EasyMeshBuilder connector = new EasyMeshBuilder("connector", 90, 40);
         connector.addBox(-1.0F, 0.2F, -1.0F, 2.0F, 1.0F, 2.0F, -0.05F);

@@ -3,17 +3,16 @@ package de.lucalabs.fairylights.items.crafting.ingredient;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
-
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.recipe.RecipeMatcher;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.tag.TagKey;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.player.StackedContents;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public class LazyTagIngredient extends Ingredient {
     private final TagKey<Item> tag;
@@ -24,21 +23,21 @@ public class LazyTagIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack[] getMatchingStacks() {
-        return StreamSupport.stream(Registries.ITEM.iterateEntries(this.tag).spliterator(), false).map(ItemStack::new).toArray(ItemStack[]::new);
+    public ItemStack[] getItems() {
+        return StreamSupport.stream(BuiltInRegistries.ITEM.getTagOrEmpty(this.tag).spliterator(), false).map(ItemStack::new).toArray(ItemStack[]::new);
     }
 
     @Override
     public boolean test(@Nullable final ItemStack stack) {
-        return stack != null && stack.isIn(this.tag);
+        return stack != null && stack.is(this.tag);
     }
 
     @Override
-    public IntList getMatchingItemIds() {
-        final ItemStack[] stacks = this.getMatchingStacks();
+    public IntList getStackingIds() {
+        final ItemStack[] stacks = this.getItems();
         final IntList list = new IntArrayList(stacks.length);
         for (final ItemStack stack : stacks) {
-            list.add(RecipeMatcher.getItemId(stack));
+            list.add(StackedContents.getStackingIndex(stack));
         }
         list.sort(IntComparators.NATURAL_COMPARATOR);
         return list;
@@ -46,7 +45,7 @@ public class LazyTagIngredient extends Ingredient {
 
     @Override
     public boolean isEmpty() {
-        return !Registries.ITEM.iterateEntries(this.tag).iterator().hasNext();
+        return !BuiltInRegistries.ITEM.getTagOrEmpty(this.tag).iterator().hasNext();
     }
 
     public static LazyTagIngredient of(final TagKey<Item> tag) {

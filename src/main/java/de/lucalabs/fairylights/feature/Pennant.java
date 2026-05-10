@@ -1,15 +1,15 @@
 package de.lucalabs.fairylights.feature;
 
-import net.minecraft.item.Item;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class Pennant extends HangingFeature {
     private final int color;
 
     private final Item item;
 
-    public Pennant(final int index, final Vec3d point, final float yaw, final float pitch, final int color, final Item item) {
+    public Pennant(final int index, final Vec3 point, final float yaw, final float pitch, final int color, final Item item) {
         super(index, point, yaw, pitch, 0.0F, 0.0F);
         this.color = color;
         this.item = item;
@@ -24,8 +24,8 @@ public class Pennant extends HangingFeature {
     }
 
     @Override
-    public Box getBounds() {
-        return new Box(-0.22D, -0.5D, -0.02D, 0.22D, 0.0D, 0.02D);
+    public AABB getBounds() {
+        return new AABB(-0.22D, -0.5D, -0.02D, 0.22D, 0.0D, 0.02D);
     }
 
     @Override

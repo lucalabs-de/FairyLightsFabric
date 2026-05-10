@@ -6,51 +6,50 @@ import de.lucalabs.fairylights.connection.PlayerAction;
 import de.lucalabs.fairylights.fastener.accessor.FastenerAccessor;
 import de.lucalabs.fairylights.feature.FeatureType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
 public class InteractionConnectionMessage {
 
-    public static final Identifier ID = Identifier.of(FairyLights.ID, "interaction_connection");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(FairyLights.ID, "interaction_connection");
 
     private static final float RANGE = (Connection.MAX_LENGTH + 1) * (Connection.MAX_LENGTH + 1);
     private static final float REACH = 6 * 6;
 
     public static void apply(InteractionConnectionMessagePayload payload, ServerPlayNetworking.Context context) {
 
-        ServerPlayerEntity player = context.player();
+        ServerPlayer player = context.player();
 
-        getConnection(payload.accessor(), payload.uuid(), c -> true, player.getWorld()).ifPresent(connection -> {
+        getConnection(payload.accessor(), payload.uuid(), c -> true, player.level()).ifPresent(connection -> {
             if (connection.isModifiable(player) &&
-                    player.squaredDistanceTo(Vec3d.of(connection.getFastener().getPos())) < RANGE &&
-                    player.squaredDistanceTo(payload.hit().x, payload.hit().y, payload.hit().z) < REACH
+                    player.distanceToSqr(Vec3.atLowerCornerOf(connection.getFastener().getPos())) < RANGE &&
+                    player.distanceToSqr(payload.hit().x, payload.hit().y, payload.hit().z) < REACH
             ) {
                 if (payload.action() == PlayerAction.ATTACK) {
                     connection.disconnect(player, payload.hit());
                 } else {
-                    interact(player, connection, payload.type(), payload.featureId(), payload.hit());
+                    interact(player, connection, payload.featureType(), payload.featureId(), payload.hit());
                 }
             }
         });
     }
 
     private static void interact(
-            final PlayerEntity player,
+            final Player player,
             final Connection connection,
             final FeatureType featureType,
             final int featureId,
-            final Vec3d hit) {
-        for (final Hand hand : Hand.values()) {
-            final ItemStack stack = player.getStackInHand(hand);
+            final Vec3 hit) {
+        for (final InteractionHand hand : InteractionHand.values()) {
+            final ItemStack stack = player.getItemInHand(hand);
             final ItemStack oldStack = stack.copy();
             if (connection.interact(player, hit, featureType, featureId, stack, hand)) {
                 updateItem(player, oldStack, stack, hand);
@@ -60,13 +59,13 @@ public class InteractionConnectionMessage {
     }
 
     private static void updateItem(
-            final PlayerEntity player,
+            final Player player,
             final ItemStack oldStack,
             final ItemStack stack,
-            final Hand hand) {
-        if (stack.getCount() <= 0 && !player.getAbilities().creativeMode) {
-            player.setStackInHand(hand, ItemStack.EMPTY);
-        } else if (stack.getCount() < oldStack.getCount() && player.getAbilities().creativeMode) {
+            final InteractionHand hand) {
+        if (stack.getCount() <= 0 && !player.getAbilities().instabuild) {
+            player.setItemInHand(hand, ItemStack.EMPTY);
+        } else if (stack.getCount() < oldStack.getCount() && player.getAbilities().instabuild) {
             stack.setCount(oldStack.getCount());
         }
     }
@@ -76,7 +75,7 @@ public class InteractionConnectionMessage {
             final FastenerAccessor accessor,
             final UUID id,
             final Predicate<? super Connection> typePredicate,
-            final World world) {
+            final Level world) {
         return accessor.get(world, false).flatMap(f -> (Optional<C>) f.get(id).filter(typePredicate));
     }
 }

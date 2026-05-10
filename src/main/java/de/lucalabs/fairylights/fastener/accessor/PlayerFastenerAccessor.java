@@ -2,15 +2,15 @@ package de.lucalabs.fairylights.fastener.accessor;
 
 import de.lucalabs.fairylights.fastener.FastenerType;
 import de.lucalabs.fairylights.fastener.PlayerFastener;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
-public final class PlayerFastenerAccessor extends EntityFastenerAccessor<PlayerEntity> {
+public final class PlayerFastenerAccessor extends EntityFastenerAccessor<Player> {
     public PlayerFastenerAccessor() {
-        super(PlayerEntity.class);
+        super(Player.class);
     }
 
     public PlayerFastenerAccessor(final PlayerFastener fastener) {
-        super(PlayerEntity.class, fastener);
+        super(Player.class, fastener);
     }
 
     @Override

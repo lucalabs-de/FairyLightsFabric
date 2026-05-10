@@ -3,11 +3,10 @@ package de.lucalabs.fairylights.items.crafting.ingredient;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import de.lucalabs.fairylights.items.crafting.GenericRecipe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-
 import java.util.Collections;
 import java.util.Objects;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 
 public abstract class BasicAuxiliaryIngredient<A> implements AuxiliaryIngredient<A> {
     protected final Ingredient ingredient;

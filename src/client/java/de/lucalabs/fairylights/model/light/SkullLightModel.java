@@ -1,8 +1,8 @@
 package de.lucalabs.fairylights.model.light;
 
 import de.lucalabs.fairylights.util.MathHelper;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
 import org.jetbrains.annotations.NotNull;
 
 public class SkullLightModel extends ColorLightModel {
@@ -10,7 +10,7 @@ public class SkullLightModel extends ColorLightModel {
         super(root);
     }
 
-    public static TexturedModelData createLayer() {
+    public static LayerDefinition createLayer() {
         final LightMeshHelper helper = LightMeshHelper.create();
         final EasyMeshBuilder apertures = new EasyMeshBuilder("apertures", 12, 10);
         apertures.setRotationPoint(0, -3, -2.75F);

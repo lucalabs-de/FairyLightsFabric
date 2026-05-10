@@ -3,9 +3,8 @@ package de.lucalabs.fairylights.items.crafting.ingredient;
 import com.google.common.collect.ImmutableList;
 import de.lucalabs.fairylights.items.crafting.GenericRecipe;
 import de.lucalabs.fairylights.items.crafting.RegularIngredient;
-import net.minecraft.item.ItemStack;
-
 import java.util.Collections;
+import net.minecraft.world.item.ItemStack;
 
 public class EmptyRegularIngredient implements RegularIngredient {
     @Override

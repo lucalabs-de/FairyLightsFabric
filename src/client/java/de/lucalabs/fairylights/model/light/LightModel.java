@@ -1,19 +1,19 @@
 package de.lucalabs.fairylights.model.light;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.lucalabs.fairylights.feature.light.Light;
 import de.lucalabs.fairylights.feature.light.LightBehavior;
 import de.lucalabs.fairylights.util.BoxBuilder;
 import de.lucalabs.fairylights.util.ColorUtils;
 import net.minecraft.client.model.Model;
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 
@@ -32,14 +32,14 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
     protected float blue = 1.0F;
 
     @Nullable
-    private Box bounds;
+    private AABB bounds;
 
     private double floorOffset = Double.NaN;
 
     private boolean powered;
 
     public LightModel(ModelPart root) {
-        super(RenderLayer::getEntityTranslucent);
+        super(RenderType::entityTranslucent);
         this.lit = root.getChild("lit");
         this.litTint = root.getChild("lit_tint");
         this.litTintGlow = root.getChild("lit_tint_glow");
@@ -54,17 +54,17 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
         final float r31 = 2.0F * (q.y() * q.z() + q.w() * q.x());
         final float r32 = q.w() * q.w() - q.x() * q.x() - q.y() * q.y() + q.z() * q.z();
         return new float[]{
-                (float) MathHelper.atan2(r31, r32),
+                (float) Mth.atan2(r31, r32),
                 (float) Math.asin(r21),
-                (float) MathHelper.atan2(r11, r12)
+                (float) Mth.atan2(r11, r12)
         };
     }
 
-    public Box getBounds() {
+    public AABB getBounds() {
         if (this.bounds == null) {
-            final MatrixStack matrix = new MatrixStack();
+            final PoseStack matrix = new PoseStack();
             final BoxVertexBuilder builder = new BoxVertexBuilder();
-            this.render(matrix, builder, 0, 0, ColorUtils.WHITE);
+            this.renderToBuffer(matrix, builder, 0, 0, ColorUtils.WHITE);
             this.renderTranslucent(matrix, builder, 0, 0, ColorUtils.WHITE);
             this.bounds = builder.build();
         }
@@ -74,7 +74,7 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
     public double getFloorOffset() {
         if (Double.isNaN(this.floorOffset)) {
             final BoxVertexBuilder builder = new BoxVertexBuilder();
-            this.render(new MatrixStack(), builder, 0, 0, ColorHelper.Argb.fromFloats(1, 1, 1, 1));
+            this.renderToBuffer(new PoseStack(), builder, 0, 0, FastColor.ARGB32.colorFromFloat(1, 1, 1, 1));
             this.floorOffset = builder.build().minY - this.getBounds().minY;
         }
         return this.floorOffset;
@@ -85,8 +85,8 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
     }
 
     @Override
-    public void render(
-            final MatrixStack matrix,
+    public void renderToBuffer(
+            final PoseStack matrix,
             final VertexConsumer builder,
             final int light,
             final int overlay,
@@ -105,7 +105,7 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
                 ));
     }
 
-    public void renderTranslucent(final MatrixStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
+    public void renderTranslucent(final PoseStack matrix, final VertexConsumer builder, final int light, final int overlay, final int color) {
         final float v = this.brightness;
         this.litTintGlow.render(
                 matrix,
@@ -143,8 +143,8 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
             return new BulbBuilder(this.litTint(), this.litTintGlow());
         }
 
-        public TexturedModelData build() {
-            ModelData def = new ModelData();
+        public LayerDefinition build() {
+            MeshDefinition def = new MeshDefinition();
             this.lit().build(def.getRoot());
             this.litTint().build(def.getRoot());
             this.litTintGlow().build(def.getRoot());
@@ -152,7 +152,7 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
             for (EasyMeshBuilder builder : this.extra()) {
                 builder.build(def.getRoot());
             }
-            return TexturedModelData.of(def, 128, 128);
+            return LayerDefinition.create(def, 128, 128);
         }
 
         public EasyMeshBuilder parented(final String name) {
@@ -172,37 +172,37 @@ public abstract class LightModel<T extends LightBehavior> extends Model {
         final BoxBuilder builder = new BoxBuilder();
 
         @Override
-        public VertexConsumer vertex(final float x, final float y, final float z) {
+        public VertexConsumer addVertex(final float x, final float y, final float z) {
             this.builder.include(x, y, z);
             return this;
         }
 
         @Override
-        public VertexConsumer color(int r, int g, int b, int a) {
+        public VertexConsumer setColor(int r, int g, int b, int a) {
             return this;
         }
 
         @Override
-        public VertexConsumer texture(float u, float v) {
+        public VertexConsumer setUv(float u, float v) {
             return this;
         }
 
         @Override
-        public VertexConsumer overlay(int u, int v) {
+        public VertexConsumer setUv1(int u, int v) {
             return this;
         }
 
         @Override
-        public VertexConsumer light(int u, int v) {
+        public VertexConsumer setUv2(int u, int v) {
             return this;
         }
 
         @Override
-        public VertexConsumer normal(float x, float y, float z) {
+        public VertexConsumer setNormal(float x, float y, float z) {
             return this;
         }
 
-        Box build() {
+        AABB build() {
             return this.builder.build();
         }
     }
