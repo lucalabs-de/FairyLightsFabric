@@ -2,7 +2,6 @@ package de.lucalabs.fairylights.client.renderer;
 
 import de.lucalabs.fairylights.Common;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.resources.ResourceLocation;
 
 public final class FairyLightModelLayers {
 

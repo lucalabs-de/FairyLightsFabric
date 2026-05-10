@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.main.registries.vendor;
+package de.lucalabs.fairylights.vendor.fabricapi.registries;
 
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;

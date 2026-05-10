@@ -4,6 +4,7 @@ import de.lucalabs.fairylights.main.items.DyeableItem;
 import de.lucalabs.fairylights.main.util.Tags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -59,7 +60,7 @@ public class CopyColorRecipe extends CustomRecipe {
         for (int i = 0; i < remaining.size(); i++) {
             final ItemStack stack = inv.items().get(i);
             if (stack.getItem().hasCraftingRemainingItem()) {
-                remaining.set(i, stack.getItem().getRecipeRemainder(stack));
+                remaining.set(i, getCraftingRemainingItem(stack.getItem()));
             } else if (original.isEmpty() && !stack.isEmpty() && stack.is(Tags.DYEABLE)) {
                 final ItemStack rem = stack.copy();
                 rem.setCount(1);
@@ -78,5 +79,9 @@ public class CopyColorRecipe extends CustomRecipe {
     @Override
     public RecipeSerializer<?> getSerializer() {
         return FairyLightCraftingRecipes.COPY_COLOR;
+    }
+
+    private ItemStack getCraftingRemainingItem(Item item) {
+        return item.hasCraftingRemainingItem() ? item.getCraftingRemainingItem().getDefaultInstance() : ItemStack.EMPTY;
     }
 }

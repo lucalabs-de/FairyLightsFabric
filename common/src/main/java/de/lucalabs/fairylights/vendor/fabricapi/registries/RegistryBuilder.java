@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.main.registries.vendor;
+package de.lucalabs.fairylights.vendor.fabricapi.registries;
 
 import com.mojang.serialization.Lifecycle;
 import de.lucalabs.fairylights.main.mixin.RegistriesAccessor;

@@ -4,7 +4,7 @@ import de.lucalabs.fairylights.Common;
 import de.lucalabs.fairylights.Constants;
 import de.lucalabs.fairylights.main.connection.ConnectionType;
 import de.lucalabs.fairylights.main.items.LightVariant;
-import de.lucalabs.fairylights.main.registries.vendor.RegistryBuilder;
+import de.lucalabs.fairylights.vendor.fabricapi.registries.RegistryBuilder;
 import de.lucalabs.fairylights.main.string.StringType;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
