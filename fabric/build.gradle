@@ -61,4 +61,6 @@ loom {
             runDir('runs/server')
         }
     }
+
+    accessWidenerPath = file("src/main/resources/fairylights.accesswidener")
 }
