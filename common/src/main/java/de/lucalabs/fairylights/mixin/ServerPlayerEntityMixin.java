@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.main.mixin;
+package de.lucalabs.fairylights.mixin;
 
 
 import de.lucalabs.fairylights.platform.Services;

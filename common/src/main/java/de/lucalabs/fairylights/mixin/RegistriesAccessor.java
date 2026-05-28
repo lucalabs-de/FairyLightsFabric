@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.main.mixin;
+package de.lucalabs.fairylights.mixin;
 
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;

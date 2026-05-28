@@ -1,7 +1,7 @@
 package de.lucalabs.fairylights.vendor.fabricapi.registries;
 
 import com.mojang.serialization.Lifecycle;
-import de.lucalabs.fairylights.main.mixin.RegistriesAccessor;
+import de.lucalabs.fairylights.mixin.RegistriesAccessor;
 import net.minecraft.core.*;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
