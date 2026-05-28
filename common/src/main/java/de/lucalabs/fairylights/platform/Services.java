@@ -23,7 +23,7 @@ public class Services {
     public static final ComponentAccessor COMPONENTS = load(ComponentAccessor.class);
     public static final Keys KEYS = load(Keys.class);
 
-    public static final ServerNetworking SERVER_NETWORKING = load(ServerNetworking.class);
+//    public static final ServerNetworking SERVER_NETWORKING = load(ServerNetworking.class);
     public static final ClientNetworking CLIENT_NETWORKING = load(ClientNetworking.class);
 
     public static final ModelLoader MODELS = load(ModelLoader.class);
