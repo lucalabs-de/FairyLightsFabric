@@ -21,6 +21,9 @@
         "client": [
             "de.lucalabs.fairylights.client.FairyLightsClient"
         ],
+        "cardinal-components": [
+            "de.lucalabs.fairylights.main.components.FairyLightComponents"
+        ],
         "emi": [
             "de.lucalabs.fairylights.integrations.emi.FairyLightEmiPlugin"
         ]
@@ -28,6 +31,12 @@
     "mixins": [
         "fairylights.mixins.json"
     ],
+    "custom": {
+        "cardinal-components": [
+            "fairylights:fastener",
+            "fairylights:light_variant"
+        ]
+    },
     "accessWidener": "fairylights.accesswidener",
     "depends": {
         "fabricloader": ">=${fabric_loader_version}",
