@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.client.mixin.client;
+package de.lucalabs.fairylights.mixin.client;
 
 import de.lucalabs.fairylights.client.events.ClientEventHandler;
 import net.minecraft.client.renderer.GameRenderer;

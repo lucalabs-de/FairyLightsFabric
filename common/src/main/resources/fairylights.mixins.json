@@ -1,17 +1,17 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "de.lucalabs.fairylights",
+  "package": "de.lucalabs.fairylights.mixin",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_18",
   "mixins": [
-    "main.mixin.PlayerManagerMixin",
-    "main.mixin.RegistriesAccessor",
-    "main.mixin.ServerPlayerEntityMixin"
+    "PlayerManagerMixin",
+    "RegistriesAccessor",
+    "ServerPlayerEntityMixin"
   ],
   "client": [
-    "client.mixin.client.GameRendererMixin",
-    "client.mixin.client.WorldRendererMixin"
+    "client.GameRendererMixin",
+    "client.WorldRendererMixin"
   ],
   "server": [],
   "injectors": {

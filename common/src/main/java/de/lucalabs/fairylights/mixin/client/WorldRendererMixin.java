@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.client.mixin.client;
+package de.lucalabs.fairylights.mixin.client;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;

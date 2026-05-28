@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.main.mixin;
+package de.lucalabs.fairylights.mixin;
 
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface RegistriesAccessor<T> {
     @Accessor
     static WritableRegistry<WritableRegistry<?>> getWRITABLE_REGISTRY() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("cum");
     }
 }
