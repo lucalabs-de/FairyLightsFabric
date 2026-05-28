@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.main.creativetabs;
 
 import de.lucalabs.fairylights.Common;
+import de.lucalabs.fairylights.Constants;
 import de.lucalabs.fairylights.main.items.DyeableItem;
 import de.lucalabs.fairylights.main.items.FairyLightItems;
 import de.lucalabs.fairylights.main.items.crafting.FairyLightCraftingRecipes;

@@ -11,6 +11,7 @@ import de.lucalabs.fairylights.main.connection.PennantBuntingConnection;
 import de.lucalabs.fairylights.main.feature.Pennant;
 import de.lucalabs.fairylights.main.items.FairyLightItems;
 import de.lucalabs.fairylights.main.util.Curve;
+import de.lucalabs.fairylights.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -71,9 +72,7 @@ public class PennantBuntingRenderer extends ConnectionRenderer<PennantBuntingCon
                 final float g = ((color >> 8) & 0xFF) / 255.0F;
                 final float b = (color & 0xFF) / 255.0F;
 
-                final BakedModel model = Minecraft
-                        .getInstance()
-                        .getModelManager()
+                final BakedModel model = Services.MODELS
                         .getModel(this.models.getOrDefault(currPennant.getItem(), TRIANGLE_MODEL));
 
                 final Vec3 pos = currPennant.getPoint(delta);

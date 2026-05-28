@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.client.items;
 
 import de.lucalabs.fairylights.main.feature.light.ColorChangingBehavior;
+import de.lucalabs.fairylights.main.items.DyeableItem;
 import de.lucalabs.fairylights.main.items.FairyLightItems;
 import de.lucalabs.fairylights.main.string.StringTypes;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;

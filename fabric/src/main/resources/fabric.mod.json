@@ -16,10 +16,13 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-          "de.lucalabs.fairylights.Common"
+          "de.lucalabs.fairylights.FairyLights"
+        ],
+        "client": [
+            "de.lucalabs.fairylights.client.FairyLightsClient"
         ],
         "emi": [
-            "de.lucalabs.fairylights.client.integrations.emi.FairyLightEmiPlugin"
+            "de.lucalabs.fairylights.integrations.emi.FairyLightEmiPlugin"
         ]
     },
     "mixins": [

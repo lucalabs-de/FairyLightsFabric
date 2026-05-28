@@ -21,4 +21,11 @@ public class FastenerKey implements Key<Fastener<?>> {
 
         return KEY.maybeGet(o).flatMap(GenericComponent::get).orElse(null);
     }
+
+    public void syncFor(Object o) {
+        if (! (o instanceof ComponentAccess)) {
+            return;
+        }
+        KEY.sync(o);
+    }
 }

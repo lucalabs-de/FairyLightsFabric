@@ -1,4 +1,4 @@
-package de.lucalabs.fairylights.client.integrations.emi;
+package de.lucalabs.fairylights.integrations.emi;
 
 import de.lucalabs.fairylights.main.items.FairyLightItems;
 import de.lucalabs.fairylights.main.items.crafting.GenericRecipe;

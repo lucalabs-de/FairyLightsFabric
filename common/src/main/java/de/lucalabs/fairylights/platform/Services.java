@@ -1,6 +1,7 @@
 package de.lucalabs.fairylights.platform;
 
 import de.lucalabs.fairylights.Constants;
+import de.lucalabs.fairylights.client.model.ModelLoader;
 import de.lucalabs.fairylights.client.net.ClientNetworking;
 import de.lucalabs.fairylights.main.components.ComponentAccessor;
 import de.lucalabs.fairylights.main.components.Keys;
@@ -24,6 +25,8 @@ public class Services {
 
     public static final ServerNetworking SERVER_NETWORKING = load(ServerNetworking.class);
     public static final ClientNetworking CLIENT_NETWORKING = load(ClientNetworking.class);
+
+    public static final ModelLoader MODELS = load(ModelLoader.class);
 
     // This code is used to load a service for the current environment. Your implementation of the service must be defined
     // manually by including a text file in META-INF/services named with the fully qualified class name of the service.

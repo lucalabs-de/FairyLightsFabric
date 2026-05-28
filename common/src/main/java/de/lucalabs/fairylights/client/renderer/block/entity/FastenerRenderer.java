@@ -11,6 +11,7 @@ import de.lucalabs.fairylights.main.fastener.Fastener;
 import de.lucalabs.fairylights.main.fastener.FenceFastener;
 import de.lucalabs.fairylights.main.util.ColorUtils;
 import de.lucalabs.fairylights.main.util.Tags;
+import de.lucalabs.fairylights.platform.Services;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -18,6 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -139,7 +141,7 @@ public class FastenerRenderer {
     }
 
     public static void renderBakedModel(final ResourceLocation path, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {
-        renderBakedModel(Minecraft.getInstance().getModelManager().getModel(path), matrix, buf, r, g, b, packedLight, packedOverlay);
+        renderBakedModel(Services.MODELS.getModel(path), matrix, buf, r, g, b, packedLight, packedOverlay);
     }
 
     public static void renderBakedModel(final BakedModel model, final PoseStack matrix, final VertexConsumer buf, final float r, final float g, final float b, final int packedLight, final int packedOverlay) {

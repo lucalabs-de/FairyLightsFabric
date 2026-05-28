@@ -3,6 +3,7 @@ package de.lucalabs.fairylights.main.items.crafting.ingredient;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparators;
 import it.unimi.dsi.fastutil.ints.IntList;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -23,7 +24,7 @@ public class LazyTagIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack[] getItems() {
+    public ItemStack @NotNull [] getItems() {
         return StreamSupport.stream(BuiltInRegistries.ITEM.getTagOrEmpty(this.tag).spliterator(), false).map(ItemStack::new).toArray(ItemStack[]::new);
     }
 
@@ -33,7 +34,7 @@ public class LazyTagIngredient extends Ingredient {
     }
 
     @Override
-    public IntList getStackingIds() {
+    public @NotNull IntList getStackingIds() {
         final ItemStack[] stacks = this.getItems();
         final IntList list = new IntArrayList(stacks.length);
         for (final ItemStack stack : stacks) {
@@ -48,7 +49,7 @@ public class LazyTagIngredient extends Ingredient {
         return !BuiltInRegistries.ITEM.getTagOrEmpty(this.tag).iterator().hasNext();
     }
 
-    public static LazyTagIngredient of(final TagKey<Item> tag) {
+    public static @NotNull LazyTagIngredient of(final @NotNull TagKey<Item> tag) {
         return new LazyTagIngredient(tag);
     }
 }
