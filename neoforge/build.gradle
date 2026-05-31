@@ -3,6 +3,19 @@ plugins {
     id 'net.neoforged.moddev'
 }
 
+repositories {
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
+}
+
+dependencies {
+    if (project.enable_emi.toBoolean()) {
+        implementation("dev.emi:emi-neoforge:${emi_version}+${project.minecraft_version}") { transitive = false }
+    }
+}
+
 neoForge {
     version = neoforge_version
     // Automatically enable neoforge AccessTransformers if the file exists
