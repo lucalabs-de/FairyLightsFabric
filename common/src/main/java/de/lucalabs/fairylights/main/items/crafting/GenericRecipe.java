@@ -7,6 +7,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.math.IntMath;
 import de.lucalabs.fairylights.main.items.crafting.ingredient.AuxiliaryIngredient;
 import de.lucalabs.fairylights.main.items.crafting.ingredient.EmptyRegularIngredient;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -277,7 +278,7 @@ public final class GenericRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(final CraftingInput inventory, final HolderLookup.Provider lookup) {
+    public @NotNull ItemStack assemble(final @NotNull CraftingInput inventory, final HolderLookup.Provider lookup) {
         final ItemStack result = this.result;
         return result.isEmpty() ? result : result.copy();
     }

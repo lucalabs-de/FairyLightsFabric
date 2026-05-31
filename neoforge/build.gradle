@@ -11,8 +11,14 @@ repositories {
 }
 
 dependencies {
+    compileOnly("dev.emi:emi-neoforge:${emi_version}+${project.minecraft_version}") { transitive = false }
     if (project.enable_emi.toBoolean()) {
-        implementation("dev.emi:emi-neoforge:${emi_version}+${project.minecraft_version}") { transitive = false }
+        runtimeOnly("dev.emi:emi-neoforge:${emi_version}+${project.minecraft_version}") { transitive = false }
+    }
+
+    compileOnly("mezz.jei:jei-${project.minecraft_version}-neoforge-api:${jei_version}")
+    if (project.enable_jei.toBoolean()) {
+        runtimeOnly("mezz.jei:jei-${project.minecraft_version}-neoforge:${jei_version}")
     }
 }
 

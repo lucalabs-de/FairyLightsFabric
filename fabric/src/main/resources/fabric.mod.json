@@ -27,6 +27,9 @@
         "emi": [
             "de.lucalabs.fairylights.integrations.emi.FairyLightEmiPlugin"
         ],
+        "jei_mod_plugin": [
+            "de.lucalabs.fairylights.integrations.jei.FairyLightJeiPlugin"
+        ],
         "fabric-datagen": [
             "de.lucalabs.fairylights.client.FairyLightsDataGenerator"
         ]

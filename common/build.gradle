@@ -21,6 +21,10 @@ repositories {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
     }
+    maven {
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
 }
 
 dependencies {
@@ -30,6 +34,7 @@ dependencies {
     annotationProcessor group: 'io.github.llamalad7', name: 'mixinextras-common', version: '0.3.5'
 
     compileOnly "dev.emi:emi-xplat-mojmap:${emi_version}+1.21.1:api"
+    compileOnly("mezz.jei:jei-${project.minecraft_version}-common-api:${jei_version}")
 }
 
 configurations {
