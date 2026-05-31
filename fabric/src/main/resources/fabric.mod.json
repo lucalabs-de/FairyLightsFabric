@@ -26,6 +26,9 @@
         ],
         "emi": [
             "de.lucalabs.fairylights.integrations.emi.FairyLightEmiPlugin"
+        ],
+        "fabric-datagen": [
+            "de.lucalabs.fairylights.client.FairyLightsDataGenerator"
         ]
     },
     "mixins": [

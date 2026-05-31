@@ -1,5 +1,6 @@
 package de.lucalabs.fairylights;
 
+import de.lucalabs.fairylights.client.data.FairyLightCraftingProvider;
 import de.lucalabs.fairylights.main.attachments.FairyLightsAttachments;
 import de.lucalabs.fairylights.main.blocks.FairyLightBlocks;
 import de.lucalabs.fairylights.main.blocks.entity.FairyLightBlockEntities;
@@ -15,10 +16,16 @@ import de.lucalabs.fairylights.main.sounds.FairyLightSounds;
 import de.lucalabs.fairylights.main.string.StringTypes;
 import de.lucalabs.fairylights.main.util.Tags;
 import de.lucalabs.fairylights.mixin.MappedRegistryAccessor;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.WritableRegistry;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+
+import java.util.concurrent.CompletableFuture;
 
 @Mod(Constants.MOD_ID)
 public class FairyLights {
@@ -27,6 +34,7 @@ public class FairyLights {
 
     public FairyLights(final IEventBus modBus) {
         modBus.addListener(RegisterEvent.class, this::onRegister);
+        modBus.addListener(GatherDataEvent.class, this::onGatherData);
         FairyLightsAttachments.init(modBus);
         FairyLightItemGroups.init(modBus);
         NeoForgeNetworking.init(modBus);
@@ -66,5 +74,16 @@ public class FairyLights {
         FairyLightCraftingRecipes.initialize();
         ConnectionTypes.initialize();
         StringTypes.initialize();
+    }
+
+    private void onGatherData(GatherDataEvent event) {
+        DataGenerator generator = event.getGenerator();
+        PackOutput output = generator.getPackOutput();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+
+        generator.addProvider(
+                event.includeServer(),
+                new FairyLightCraftingProvider(output, lookupProvider)
+        );
     }
 }
