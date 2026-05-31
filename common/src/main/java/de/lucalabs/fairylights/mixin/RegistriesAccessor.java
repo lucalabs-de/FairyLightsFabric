@@ -9,6 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface RegistriesAccessor<T> {
     @Accessor
     static WritableRegistry<WritableRegistry<?>> getWRITABLE_REGISTRY() {
-        throw new UnsupportedOperationException("cum");
+        throw new UnsupportedOperationException();
     }
 }
