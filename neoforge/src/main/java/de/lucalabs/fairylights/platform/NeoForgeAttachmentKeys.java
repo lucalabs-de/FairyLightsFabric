@@ -6,8 +6,10 @@ import de.lucalabs.fairylights.main.fastener.Fastener;
 
 public class NeoForgeAttachmentKeys extends Keys {
 
+    private final NeoForgeFastenerKey fastener = new NeoForgeFastenerKey();
+
     @Override
     public Key<Fastener<?>> FASTENER() {
-        return null;
+        return this.fastener;
     }
 }

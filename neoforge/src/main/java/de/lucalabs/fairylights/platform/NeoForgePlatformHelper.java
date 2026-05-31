@@ -23,9 +23,4 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
 
         return !FMLLoader.isProduction();
     }
-
-    @Override
-    public NeoForgeAttachmentManager getComponentImpl() {
-        return null;
-    }
 }
