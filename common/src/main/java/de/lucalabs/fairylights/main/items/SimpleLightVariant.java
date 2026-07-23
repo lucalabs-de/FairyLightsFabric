@@ -48,7 +48,7 @@ public class SimpleLightVariant<T extends LightBehavior> extends LightVariant<T>
             true);
 
     public static final LightVariant<StandardLightBehavior> CANDLE_LANTERN_LIGHT = getRegistered(
-            "var_candle_lantern",
+            "var_candle_lantern_light",
             false,
             1.5F,
             new AABB(-0.198D, -0.531D, -0.198D, 0.198D, 0.091D, 0.198D),

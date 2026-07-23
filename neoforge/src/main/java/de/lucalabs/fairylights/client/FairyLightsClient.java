@@ -26,7 +26,7 @@ import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
  * Client-side registration, mirroring the Fabric {@code FairyLightsClient}. Only loaded on the
  * client ({@link Dist#CLIENT}); all rendering logic itself lives in the common module.
  */
-@EventBusSubscriber(modid = Constants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Constants.MOD_ID, value = Dist.CLIENT)
 public final class FairyLightsClient {
 
     private FairyLightsClient() {
