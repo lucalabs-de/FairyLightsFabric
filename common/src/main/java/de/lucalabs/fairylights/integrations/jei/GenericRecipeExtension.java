@@ -41,6 +41,9 @@ public class GenericRecipeExtension implements ICraftingCategoryExtension<Generi
             List<IRecipeSlotBuilder> slots = craftingGridHelper.createAndSetInputs(builder, VanillaTypes.ITEM_STACK, input.inputs, this.width, this.height);
             for (int i = 0; i < 9; i++) {
                 GenericIngredient<?, ?> ingredient = input.ingredients[i];
+                if (ingredient == null) {
+                    continue;
+                }
                 IRecipeSlotBuilder slot = slots.get(i);
                 slot.addRichTooltipCallback((recipeSlotView, tooltip) -> {
                     if (recipeSlotView.getRole() == RecipeIngredientRole.INPUT) {
